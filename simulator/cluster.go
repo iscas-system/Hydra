@@ -1,16 +1,21 @@
 package simulator
 
-import "math"
+import (
+	"DES-go/util"
+	"fmt"
+	"math"
+	"sync"
+)
 
 type Cluster struct {
 	gpuType2CountConfig map[GPUType]int
-	gpus                map[GPUType][]*GPU
-	timer               Time
-	gpuJobQueues        map[GPUID]*GPUJobQueue
+	gpus         map[GPUType][]*GPU
+	Timer        Time `json:"timer"`
+	GPUJobQueues map[GPUID]*GPUJobQueue `json:"gpu_job_queues"`
 }
 
 func (c *Cluster) GpuJobQueues() map[GPUID]*GPUJobQueue {
-	return c.gpuJobQueues
+	return c.GPUJobQueues
 }
 
 func NewCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
@@ -32,11 +37,14 @@ func NewCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
 		}
 	}
 
+	gpusConfigJson := util.Pretty(gpuType2CountConfig)
+	fmt.Printf("Cluster Inited, gpus config = %s.", gpusConfigJson)
+
 	return &Cluster{
 		gpuType2CountConfig: gpuType2CountConfig,
 		gpus:                gpus,
-		timer:               Time(-1),
-		gpuJobQueues:        gpuJobQueues,
+		Timer:               Time(-1),
+		GPUJobQueues:        gpuJobQueues,
 	}
 }
 
@@ -45,35 +53,66 @@ func (c *Cluster) GPUs() map[GPUType][]*GPU {
 }
 
 func (c *Cluster) StartServe() {
-	c.timer = 0
+	c.Timer = 0
 }
 
 func (c *Cluster) IsServing() bool {
-	return c.timer != -1
+	return c.Timer != -1
 }
 
 func (c *Cluster) Now() Time {
-	return c.timer
+	return c.Timer
 }
 
 func (c *Cluster) PassDuration(duration Duration) []*Job {
 	if !c.IsServing() {
-		panic("Cluster PassDuration called when is not serving")
+		panic("Cluster passDuration called when is not serving")
 	}
-	fromTime := c.timer
-	c.timer += Time(duration)
+	fromTime := c.Timer
+	c.Timer += Time(duration)
 	newlyFinishedJobs := make([]*Job, 0)
-	// TODO use wait group to accelerate
-	for _, q := range c.gpuJobQueues {
-		newlyFinishedJobs = append(newlyFinishedJobs, q.PassDuration(fromTime, duration)...)
+	wg := &sync.WaitGroup{}
+	finishedJobsSlice := make([][]*Job, len(c.GPUJobQueues))
+
+	idx := 0
+	for _, queue := range c.GPUJobQueues {
+		queue := queue
+		util.GoWithWG(wg, idx, func(idx int) {
+			finishedJobsSlice[idx] = queue.PassDuration(fromTime, duration)
+		})
+		idx++
 	}
+	wg.Wait()
+
+	for _, jobs := range finishedJobsSlice {
+		newlyFinishedJobs = append(newlyFinishedJobs, jobs...)
+	}
+
+	//// TODO use wait group to accelerate
+	//for _, q := range c.GPUJobQueues {
+	//	newlyFinishedJobs = append(newlyFinishedJobs, q.PassDuration(fromTime, duration)...)
+	//}
 	return newlyFinishedJobs
 }
 
 func (c *Cluster) ClosestTimeToFinishAnyJob() Time {
 	res := math.Inf(1)
-	for _, q := range c.gpuJobQueues {
-		math.Min(float64(q.FirstJobRemainingDuration()), res)
+	for _, q := range c.GPUJobQueues {
+		res = math.Min(float64(q.FirstJobRemainingDuration()), res)
 	}
 	return Time(res)
+}
+
+func (c *Cluster) Expose() interface{} {
+	gpu2JobQueueLength := make(map[*GPU]int)
+	for _, jobQueue := range c.GPUJobQueues {
+		gpu2JobQueueLength[jobQueue.GPU()] = len(jobQueue.Jobs())
+	}
+	exposed := &struct {
+		Now Time
+		GPU2JobQueueLength map[*GPU]int
+	} {
+		c.Now(), gpu2JobQueueLength,
+	}
+	return exposed
 }

@@ -10,16 +10,16 @@ type TimeRange struct {
 	end   Time
 }
 
-func NewTimeRange(start Time, end Time) *TimeRange {
-	return &TimeRange{start: start, end: end}
-}
-
-func (t TimeRange) Start() Time {
+func (t *TimeRange) Start() Time {
 	return t.start
 }
 
-func (t TimeRange) End() Time {
+func (t *TimeRange) End() Time {
 	return t.end
+}
+
+func NewTimeRange(start Time, end Time) *TimeRange {
+	return &TimeRange{start: start, end: end}
 }
 
 func (t TimeRange) Runtime() Duration {
@@ -30,18 +30,11 @@ type JobExecutionRange struct {
 	gpu       *GPU
 	jobName   JobName
 	timeRange *TimeRange
+	completenessRatio float64
 }
 
 func (jer *JobExecutionRange) Gpu() *GPU {
 	return jer.gpu
-}
-
-func (jer *JobExecutionRange) JobName() JobName {
-	return jer.jobName
-}
-
-func (jer *JobExecutionRange) TimeRange() *TimeRange {
-	return jer.timeRange
 }
 
 func (jer *JobExecutionRange) Clone() *JobExecutionRange {
@@ -52,15 +45,36 @@ func (jer *JobExecutionRange) Clone() *JobExecutionRange {
 			start: jer.timeRange.start,
 			end:   jer.timeRange.end,
 		},
+		completenessRatio: jer.completenessRatio,
 	}
 }
 
-func (jer *JobExecutionRange) CompletenessRatio() float64 {
-	return float64(jer.timeRange.Runtime() / GetDataSource().Duration(jer.jobName, jer.gpu.Type()))
+func NewJobExecutionRange(gpu *GPU, jobName JobName, timeRange *TimeRange) *JobExecutionRange {
+	r := &JobExecutionRange{gpu: gpu, jobName: jobName, timeRange: timeRange}
+	r.resetCompletenessRatio()
+	return r
 }
 
-func NewJobExecutionRange(gpu *GPU, jobName JobName, timeRange *TimeRange) *JobExecutionRange {
-	return &JobExecutionRange{gpu: gpu, jobName: jobName, timeRange: timeRange}
+func (jer *JobExecutionRange) ModifyTimeRange(start *Time, end *Time) {
+	if jer.timeRange == nil {
+		panic("ModifyTimeRange jer.timeRange is nil")
+	}
+	if start != nil {
+		jer.timeRange.start = *start
+	}
+	if end != nil {
+		jer.timeRange.end = *end
+	}
+	jer.resetCompletenessRatio()
+}
+
+func (jer *JobExecutionRange) resetCompletenessRatio() float64 {
+	jer.completenessRatio = float64(jer.timeRange.Runtime() / GetDataSource().Duration(jer.jobName, jer.gpu.Type()))
+	return jer.completenessRatio
+}
+
+func (jer *JobExecutionRange) CompletenessRatio() float64 {
+	return jer.completenessRatio
 }
 
 type JobExecutionDetail struct {
@@ -97,8 +111,9 @@ func (jed *JobExecutionDetail) AddExecutionRange(gpu *GPU, timeRange *TimeRange)
 
 	// In case that the last execution range is closely jointed with new execution range. Combine them.
 	if len(jed.executionRanges[gpu]) > 0 &&
-		math.Abs(float64(jed.executionRanges[gpu][len(jed.executionRanges)-1].timeRange.End()-timeRange.Start())) < 1e-6 {
-		jed.executionRanges[gpu][len(jed.executionRanges)-1].timeRange.end = timeRange.End()
+		math.Abs(float64(jed.executionRanges[gpu][len(jed.executionRanges)-1].timeRange.end-timeRange.start)) < 1e-6 {
+		jed.executionRanges[gpu][len(jed.executionRanges)-1].ModifyTimeRange(nil, &timeRange.end)
+		//jed.executionRanges[gpu][len(jed.executionRanges)-1].timeRange.end = timeRange.end
 		return
 	}
 	jed.executionRanges[gpu] = append(jed.executionRanges[gpu], NewJobExecutionRange(gpu, jed.jobName, timeRange))
@@ -111,7 +126,7 @@ func (jed *JobExecutionDetail) SumRuntimeOnGPUs() Duration {
 	sum := Duration(0.)
 	for _, rs := range jed.executionRanges {
 		for _, r := range rs {
-			sum += r.TimeRange().Runtime()
+			sum += r.timeRange.Runtime()
 		}
 	}
 	return sum
@@ -159,6 +174,10 @@ func (j *Job) IsRunning() bool {
 	return j.isRunning
 }
 
+func (j *Job) setNotRunning() {
+	j.isRunning = false
+}
+
 func (j *Job) ExecutesFor(gpu *GPU, fromTime Time, executesDur Duration) {
 	if j.remainingRatio <= 0. {
 		panic("ExecutesFor j.remainingRatio <= 0.")
@@ -175,7 +194,7 @@ func (j *Job) ExecutesFor(gpu *GPU, fromTime Time, executesDur Duration) {
 		newExecutionTimeRange := NewTimeRange(fromTime, fromTime+Time(remainingDuration))
 		j.executionDetail.AddExecutionRange(gpu, newExecutionTimeRange)
 		j.remainingRatio = 0.
-		j.finishExecutionTime = newExecutionTimeRange.End()
+		j.finishExecutionTime = newExecutionTimeRange.end
 	} else {
 		// current job is not finished
 		// set is_running

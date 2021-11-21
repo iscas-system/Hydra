@@ -10,16 +10,20 @@ type GPUJobQueue struct {
 	jobs []*Job
 }
 
-func (q *GPUJobQueue) SetJobs(jobs []*Job) {
-	q.jobs = jobs
-}
-
-func (q GPUJobQueue) Gpu() *GPU {
+func (q *GPUJobQueue) GPU() *GPU {
 	return q.gpu
 }
 
-func (q GPUJobQueue) Jobs() []*Job {
+func (q *GPUJobQueue) Jobs() []*Job {
 	return q.jobs
+}
+
+func (q *GPUJobQueue) SetJobs(jobs []*Job) {
+	q.jobs = jobs
+	// those jobs not on the first rank cannot have 'running' status
+	for i := 1; i < len(q.jobs); i++ {
+		q.jobs[i].setNotRunning()
+	}
 }
 
 func NewGPUJobQueue(gpu *GPU) *GPUJobQueue {
@@ -35,7 +39,7 @@ func (q *GPUJobQueue) PassDuration(fromTime Time, duration Duration) []*Job {
 	tempTime := fromTime
 	for idx, j := range q.jobs {
 		if j.IsFinished() {
-			panic(fmt.Sprintf("GPUJobQueue %+v PassDuration %+v, j.IsFinished() is true, j = %+v", q, duration, j))
+			panic(fmt.Sprintf("GPUJobQueue %+v passDuration %+v, j.IsFinished() is true, j = %+v", q, duration, j))
 		}
 		j.ExecutesFor(q.gpu, tempTime, Duration(currTime-tempTime))
 		if !j.IsFinished() {

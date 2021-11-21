@@ -1,38 +1,50 @@
 package simulator
 
 import (
+	"DES-go/util"
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
 	"os"
-	"strconv"
+	"path"
 	"strings"
+	"sync"
 	"time"
 )
 
 type Logger struct {
-	ctx     context.Context
-	enabled bool
-	logPath string
+	ctx        context.Context
+	cancel context.CancelFunc
+	enabled    bool
+	logDirPath string
 
 	logMsgChan chan *loggerMsg
+	wg *sync.WaitGroup
 }
 
 type loggerMsg struct {
 	finishedJobs []*Job
-	metrics      string
+	simpleString string
 }
 
-func NewLogger(ctx context.Context, enabled bool, logPath string) *Logger {
+func NewLogger(enabled bool, logPath string) *Logger {
+	ctx, cancel := context.WithCancel(context.Background())
 	logger := &Logger{
-		ctx:     ctx,
-		enabled: enabled,
-		logPath: logPath,
+		ctx:        ctx,
+		cancel: cancel,
+		enabled:    enabled,
+		logDirPath: logPath,
 
-		logMsgChan: make(chan *loggerMsg),
+		logMsgChan: make(chan *loggerMsg, 0),
+		wg: &sync.WaitGroup{},
 	}
 	logger.startLogRoutine()
 	return logger
+}
+
+func (l *Logger) Exit() {
+	l.cancel()
+	l.wg.Wait()
 }
 
 func (l *Logger) ReceiveFinishedJobs(jobs []*Job) {
@@ -41,21 +53,25 @@ func (l *Logger) ReceiveFinishedJobs(jobs []*Job) {
 	}
 }
 
-func (l *Logger) ReceiveMetrics(metrics string) {
+func (l *Logger) ReceiveStringLog(log string) {
 	l.logMsgChan <- &loggerMsg{
 		finishedJobs: nil,
-		metrics:      metrics,
+		simpleString: log,
 	}
 }
 
-func (l *Logger) finishedJobsLogger() func(fp *os.File, finishedJobs []*Job) {
+func (l *Logger) finishedJobsLogger() func(finishedJobs []*Job) {
 	loggedFinishedJobsCount := 0
-	return func(fp *os.File, finishedJobs []*Job) {
+	return func(finishedJobs []*Job) {
+		if len(finishedJobs) == 0 {
+			return
+		}
 		b := &strings.Builder{}
+		b.WriteByte('\n')
 		genFirstLine, genLastLine := func() (func(c int) string, func(firstLine string) string) {
 			sp := strings.Repeat("=", 50)
 			return func(c int) string {
-					return sp + strconv.Itoa(c) + sp + "\n"
+					return fmt.Sprintf("%s%s:%d%s\n", sp, "Finished", c, sp)
 				}, func(firstLine string) string {
 					return strings.Repeat("=", len(firstLine)) + "\n"
 				}
@@ -63,50 +79,47 @@ func (l *Logger) finishedJobsLogger() func(fp *os.File, finishedJobs []*Job) {
 		for _, job := range finishedJobs {
 			fl := genFirstLine(loggedFinishedJobsCount)
 			b.WriteString(fl)
-			strJob, _ := json.Marshal(job)
-			b.Write(strJob)
+			strJob := util.Pretty(job)
+			b.WriteString(strJob)
 			b.WriteString(genLastLine(fl))
 			loggedFinishedJobsCount++
 		}
-		_, err := fp.WriteString(b.String())
-		if err != nil {
-			log.Printf("Logger routine, write finished jobMetas log failed, err=[%v]", err)
-		}
+		log.Printf(b.String())
 	}
 }
 
-func (l *Logger) metricsLogger() func(fp *os.File, metrics string) {
-	return func(fp *os.File, metrics string) {
-		_, err := fp.WriteString(metrics)
-		if err != nil {
-			log.Printf("Logger routine, write metrics failed, err=[%v]", err)
-		}
+func (l *Logger) simpleStringLogger() func(simpleString string) {
+	return func(simpleString string) {
+		log.Printf(simpleString)
 	}
 }
 
 func (l *Logger) startLogRoutine() {
+	l.wg.Add(1)
 	go func() {
-		fp, err := os.OpenFile(l.logPath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+		logFileName := time.Now().Format("2006-01-02_15:04:05.log")
+		logPath := path.Join(l.logDirPath, logFileName)
+		fp, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 		if err != nil {
 			panic(err)
 		}
+		log.SetOutput(fp)
 
 		finishedJobsLogger := l.finishedJobsLogger()
-		metricsLogger := l.metricsLogger()
+		simpleStringLogger := l.simpleStringLogger()
 		for {
 			select {
 			case msg := <-l.logMsgChan:
-				if msg.metrics != "" {
-					metricsLogger(fp, msg.metrics)
+				if msg.simpleString != "" {
+					simpleStringLogger(msg.simpleString)
 				}
 				if msg.finishedJobs != nil {
-					finishedJobsLogger(fp, msg.finishedJobs)
+					finishedJobsLogger(msg.finishedJobs)
 				}
 			case <-l.ctx.Done():
 				log.Printf("Logger exit.")
+				l.wg.Done()
 				return
-			default:
-				time.Sleep(1 * time.Second)
 			}
 		}
 	}()

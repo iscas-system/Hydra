@@ -4,7 +4,6 @@ import (
 	"DES-go/util"
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 )
@@ -28,15 +27,17 @@ func InitDataSource(csvFilePath string) {
 	}
 	defer file.Close()
 
+	fmt.Printf("DataSource reading csv from %s...\n", csvFilePath)
+
 	reader := csv.NewReader(file)
 	reader.FieldsPerRecord = 0
 	csvDataRecords, err := reader.ReadAll()
 	if err != nil {
 		panic(err)
 	}
-	for _, record := range csvDataRecords {
-		log.Printf("read record [%+v]", record)
-	}
+
+	fmt.Printf("DataSource reading %d lines of records from %s...\n", len(csvDataRecords), csvFilePath)
+
 	csvHeaders := csvDataRecords[0]
 	colIndexOf := func(colName string) int {
 		res := util.StringSliceIndexOf(csvHeaders, colName)
@@ -103,19 +104,19 @@ func (ds *DataSource) JobMeta(jobName JobName) *JobMeta {
 }
 
 func (ds *DataSource) Duration(jobName JobName, gpuType GPUType) Duration {
-	return ds.jobMetas[jobName].Durations()[gpuType]
+	return ds.jobMetas[jobName].Durations[gpuType]
 }
 
 func (ds *DataSource) SubmitTime(jobName JobName) Time {
-	return ds.jobMetas[jobName].SubmitTime()
+	return ds.jobMetas[jobName].SubmitTime
 }
 
 func (ds *DataSource) DDL(jobName JobName) Time {
-	return ds.jobMetas[jobName].DDL()
+	return ds.jobMetas[jobName].DDL
 }
 
 func (ds *DataSource) Durations(jobName JobName) map[GPUType]Duration {
-	return ds.jobMetas[jobName].Durations()
+	return ds.jobMetas[jobName].Durations
 }
 
 func (ds *DataSource) IterBySubmitTime(iterFunc func(indices []int, meta []*JobMeta)) {
@@ -127,10 +128,11 @@ func (ds *DataSource) IterBySubmitTime(iterFunc func(indices []int, meta []*JobM
 		indices = append(indices, i)
 		var j int
 		for j = i + 1; j < len(ds.jobNameSortedBySubmit); j++ {
-			if ds.JobMeta(ds.jobNameSortedBySubmit[j]).SubmitTime() == metas[0].SubmitTime() {
+			if ds.JobMeta(ds.jobNameSortedBySubmit[j]).SubmitTime == metas[0].SubmitTime {
 				metas = append(metas, ds.JobMeta(ds.jobNameSortedBySubmit[j]))
 				indices = append(indices, j)
 			} else {
+				j--
 				break
 			}
 		}

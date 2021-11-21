@@ -2,7 +2,8 @@ package simulator
 
 type Scheduler interface {
 	// DoSchedule 每个调度器使用该方法进行调度。
-	// 虽然是公开的方法，但是调度的执行时刻实际上是由调度器自己决定的。
+	// 虽然是public的方法，但是调度的执行时刻实际上是由调度器自己决定的。
+	// 这里由于需要跨package，所以该方法只能定义为public的。
 	DoSchedule()
 
 	// SetCluster
@@ -17,6 +18,7 @@ type Scheduler interface {
 	// 而这个调度器规定每隔五秒，将缓冲区的任务调度到集群上。这时 Simulator 需要知道下一次 Scheduler 想要主动发起调度的时间，
 	// Simulator 知道后，将时间流逝到恰好调度器想要主动发起调度，即可保证 Simulator 没有越过这个时间。
 	// 这样才能恰好让调度器在想要主动进行调度时立即调度。
-	// 如果它返回一个inf值，则表示这个调度器从不主动进行调度，只有在被动接受 Simulator 传来的事件时才进行调度。
+	// 如果它总是返回一个inf值，则表示这个调度器不主动进行调度，只有在被动接受 Simulator 传来的事件时才进行调度。
+	// 同时， Scheduler 需要在全部任务执行完，且没有新任务时返回一个inf值。这样可以保证全部任务都执行结束后，能够正常退出模拟。
 	NextActiveScheduleTime() Time
 }
