@@ -1,5 +1,7 @@
 package simulator
 
+import "DES-go/util"
+
 // AvgJCT 计算一批任务的平均JCT
 func AvgJCT(jobs []*Job) Duration {
 	if len(jobs) == 0 {
@@ -27,4 +29,15 @@ func MetricViolation(jobs []*Job) (int, Duration) {
 		}
 	}
 	return violatedCount, sumViolationDelay / Duration(len(jobs))
+}
+
+func AvgQueuingDelay(jobs []*Job) Duration {
+	is := make([]interface{}, 0, len(jobs))
+	for _, job := range jobs {
+		is = append(is, job)
+	}
+	return Duration(util.AvgFloat64(func(i interface{}) float64 {
+		j := i.(*Job)
+		return float64(j.QueueDelay())
+	}, is...))
 }

@@ -21,4 +21,7 @@ type Scheduler interface {
 	// 如果它总是返回一个inf值，则表示这个调度器不主动进行调度，只有在被动接受 Simulator 传来的事件时才进行调度。
 	// 同时， Scheduler 需要在全部任务执行完，且没有新任务时返回一个inf值。这样可以保证全部任务都执行结束后，能够正常退出模拟。
 	NextActiveScheduleTime() Time
+
+	// Name 取个好听的名字吧
+	Name() string
 }

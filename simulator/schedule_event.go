@@ -20,7 +20,7 @@ func (s *ScheduleEventDurationPassed) Duration() Duration {
 	return s.duration
 }
 
-func NewScheduleEventDurationPassed(duration Duration) *ScheduleEventDurationPassed {
+func newScheduleEventDurationPassed(duration Duration) *ScheduleEventDurationPassed {
 	return &ScheduleEventDurationPassed{duration: duration}
 }
 
@@ -36,7 +36,7 @@ func (s ScheduleEventJobsArrived) JobMetas() []*JobMeta {
 	return s.jobMetas
 }
 
-func NewScheduleEventJobsArrived(jobMetas []*JobMeta) *ScheduleEventJobsArrived {
+func newScheduleEventJobsArrived(jobMetas []*JobMeta) *ScheduleEventJobsArrived {
 	return &ScheduleEventJobsArrived{jobMetas: jobMetas}
 }
 
@@ -52,7 +52,7 @@ func (s ScheduleEventJobsFinished) Jobs() []*Job {
 	return s.jobs
 }
 
-func NewScheduleEventJobsFinished(jobs []*Job) *ScheduleEventJobsFinished {
+func newScheduleEventJobsFinished(jobs []*Job) *ScheduleEventJobsFinished {
 	return &ScheduleEventJobsFinished{jobs: jobs}
 }
 

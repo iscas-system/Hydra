@@ -3,7 +3,7 @@ package util
 import "github.com/kr/pretty"
 
 type PrettyExpose interface {
-	Expose() interface{}
+	PrettyExpose() interface{}
 }
 
 func Pretty(e interface{}) string {
@@ -13,7 +13,7 @@ func Pretty(e interface{}) string {
 func expose(v interface{}) interface{} {
 	switch v := v.(type) {
 	case PrettyExpose:
-		return v.Expose()
+		return v.PrettyExpose()
 	default:
 		return v
 	}

@@ -6,11 +6,11 @@ import (
 )
 
 func TestJobExecutionDetail_AddExecutionRange(t *testing.T) {
-	InitDataSource("/Users/purchaser/go/src/DES-go/cases/case1.csv")
+	initDataSource("/Users/purchaser/go/src/DES-go/cases/case1.csv")
 	j := NewJob("job1")
-	j.executionDetail = NewJobExecutionDetail("job1")
+	j.executionDetail = newJobExecutionDetail("job1")
 	gpu := NewGPU(1, "V100")
-	j.executionDetail.AddExecutionRange(gpu, NewTimeRange(0, 1))
+	j.executionDetail.addExecutionRange(gpu, newTimeRange(0, 1))
 	// t.Logf(util.PrettyPretty(j))
 
 	m := make(map[*GPU]*Job)

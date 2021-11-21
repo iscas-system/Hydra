@@ -10,7 +10,7 @@ type Simulator struct {
 	opts      *Options
 	scheduler Scheduler
 	cluster   *Cluster
-	logger    *Logger
+	logger    *logger
 
 	recordedFinishedJobs []*Job
 }
@@ -21,38 +21,37 @@ func NewSimulator(scheduler Scheduler, setOpts ...SetOption) *Simulator {
 	for _, setOpt := range setOpts {
 		setOpt(opts)
 	}
-	InitDataSource(opts.dataSourceCSVPath)
+	initDataSource(opts.dataSourceCSVPath)
 
 	logger := NewLogger(opts.logEnabled, opts.logDirPath)
 	return &Simulator{
 		scheduler:            scheduler,
 		opts:                 opts,
-		cluster:              NewCluster(opts.gpuType2Count),
+		cluster:              newCluster(opts.gpuType2Count),
 		logger:               logger,
 		recordedFinishedJobs: make([]*Job, 0),
 	}
 }
 
 func (s *Simulator) Start() {
-	s.cluster.StartServe()
+	s.cluster.startServe()
 	s.scheduler.SetCluster(s.cluster)
-	GetDataSource().IterBySubmitTime(func(indices []int, metas []*JobMeta) {
-		fmt.Printf("indices=[%v]", indices)
-		submitTime := metas[0].SubmitTime
+	getDataSource().IterBySubmitTime(func(indices []int, metas []*JobMeta) {
+		submitTime := metas[0].submitTime
 		for _, meta := range metas {
-			if meta.SubmitTime != submitTime {
-				panic("GetDataSource().IterBySubmitTime metas' submit times are different.")
+			if meta.submitTime != submitTime {
+				panic("getDataSource().IterBySubmitTime metas' submit times are different.")
 			}
 		}
 
 		if float64(submitTime-s.cluster.Now()) < -float64(s.opts.minDurationPassInterval) {
-			panic(fmt.Sprintf("meta.SubmitTime() = %v - s.cluster.Now() = %v) >= -float64(s.opts.minDurationPassInterval = %v)", submitTime, s.cluster.Now(), s.opts.minDurationPassInterval))
+			panic(fmt.Sprintf("meta.submitTime() = %v - s.cluster.Now() = %v) >= -float64(s.opts.minDurationPassInterval = %v)", submitTime, s.cluster.Now(), s.opts.minDurationPassInterval))
 		}
 		for s.cluster.Now() < submitTime {
 			passDuration := submitTime - s.cluster.Now()
 			s.passDuration(Duration(passDuration), false)
 		}
-		s.emitEvent(NewScheduleEventJobsArrived(metas))
+		s.emitEvent(newScheduleEventJobsArrived(metas))
 	})
 	s.passDuration(0, true)
 	s.logMetrics()
@@ -80,14 +79,14 @@ func (s *Simulator) passDuration(duration Duration, noMoreNewSubmits bool) {
 		// targetTime - currTime is the upper limit.
 		possibleNextEventTime := math.Min(float64(s.scheduler.NextActiveScheduleTime()), float64(closestTimeToFinishAnyJob))
 		partialDuration := Duration(math.Min(math.Max(possibleNextEventTime, float64(s.opts.minDurationPassInterval)), float64(targetTime-currTime)))
-		finishedJobs := s.cluster.PassDuration(partialDuration)
+		finishedJobs := s.cluster.passDuration(partialDuration)
 		fmt.Printf("finishedJobs len=[%d], all Finished len=[%d]", len(finishedJobs), len(s.recordedFinishedJobs))
 		s.logTimePassed(partialDuration)
 		currTime += Time(partialDuration)
 		s.recordedFinishedJobs = append(s.recordedFinishedJobs, finishedJobs...)
 		s.logger.ReceiveFinishedJobs(finishedJobs)
-		s.emitEvent(NewScheduleEventDurationPassed(partialDuration))
-		s.emitEvent(NewScheduleEventJobsFinished(finishedJobs))
+		s.emitEvent(newScheduleEventDurationPassed(partialDuration))
+		s.emitEvent(newScheduleEventJobsFinished(finishedJobs))
 	}
 }
 
@@ -106,8 +105,15 @@ func (s *Simulator) logTimePassed(duration Duration) {
 
 func (s *Simulator) logMetrics() {
 	violationCount, avgViolationDelay := MetricViolation(s.recordedFinishedJobs)
-	metrics := util.PrettyF("simulation completed, scheduler = [%s], finished job count = [%d], avg jct = [%f], violated job count = [%d], avg violate delay = [%f]\n",
-		s.scheduler, len(s.recordedFinishedJobs), AvgJCT(s.recordedFinishedJobs), violationCount, avgViolationDelay)
+	metrics := util.PrettyF("simulation completed, " +
+		"scheduler = [%s], " +
+		"finished job count = [%d], " +
+		"avg jct = [%f], " +
+		"violated job count = [%d], " +
+		"avg violate delay = [%f] " +
+		"avg queuing delay = [%f] " +
+		"\n",
+		s.scheduler.Name(), len(s.recordedFinishedJobs), AvgJCT(s.recordedFinishedJobs), violationCount, avgViolationDelay, AvgQueuingDelay(s.recordedFinishedJobs))
 
 	fmt.Println(metrics)
 	s.logger.ReceiveStringLog(metrics)

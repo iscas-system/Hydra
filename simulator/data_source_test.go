@@ -5,7 +5,7 @@ import (
 )
 
 func Test_datasource(t *testing.T) {
-	InitDataSource("/Users/purchaser/PycharmProjects/DES/cases/case_200.csv")
+	initDataSource("/Users/purchaser/PycharmProjects/DES/cases/case_200.csv")
 	dataSourceInstance.IterBySubmitTime(func(indices []int, meta []*JobMeta) {
 
 	})

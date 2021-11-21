@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-type Logger struct {
+type logger struct {
 	ctx        context.Context
 	cancel context.CancelFunc
 	enabled    bool
@@ -27,9 +27,9 @@ type loggerMsg struct {
 	simpleString string
 }
 
-func NewLogger(enabled bool, logPath string) *Logger {
+func NewLogger(enabled bool, logPath string) *logger {
 	ctx, cancel := context.WithCancel(context.Background())
-	logger := &Logger{
+	logger := &logger{
 		ctx:        ctx,
 		cancel: cancel,
 		enabled:    enabled,
@@ -42,25 +42,25 @@ func NewLogger(enabled bool, logPath string) *Logger {
 	return logger
 }
 
-func (l *Logger) Exit() {
+func (l *logger) Exit() {
 	l.cancel()
 	l.wg.Wait()
 }
 
-func (l *Logger) ReceiveFinishedJobs(jobs []*Job) {
+func (l *logger) ReceiveFinishedJobs(jobs []*Job) {
 	l.logMsgChan <- &loggerMsg{
 		finishedJobs: jobs,
 	}
 }
 
-func (l *Logger) ReceiveStringLog(log string) {
+func (l *logger) ReceiveStringLog(log string) {
 	l.logMsgChan <- &loggerMsg{
 		finishedJobs: nil,
 		simpleString: log,
 	}
 }
 
-func (l *Logger) finishedJobsLogger() func(finishedJobs []*Job) {
+func (l *logger) finishedJobsLogger() func(finishedJobs []*Job) {
 	loggedFinishedJobsCount := 0
 	return func(finishedJobs []*Job) {
 		if len(finishedJobs) == 0 {
@@ -88,13 +88,13 @@ func (l *Logger) finishedJobsLogger() func(finishedJobs []*Job) {
 	}
 }
 
-func (l *Logger) simpleStringLogger() func(simpleString string) {
+func (l *logger) simpleStringLogger() func(simpleString string) {
 	return func(simpleString string) {
 		log.Printf(simpleString)
 	}
 }
 
-func (l *Logger) startLogRoutine() {
+func (l *logger) startLogRoutine() {
 	l.wg.Add(1)
 	go func() {
 		logFileName := time.Now().Format("2006-01-02_15:04:05.log")
@@ -117,7 +117,7 @@ func (l *Logger) startLogRoutine() {
 					finishedJobsLogger(msg.finishedJobs)
 				}
 			case <-l.ctx.Done():
-				log.Printf("Logger exit.")
+				log.Printf("logger exit.")
 				l.wg.Done()
 				return
 			}

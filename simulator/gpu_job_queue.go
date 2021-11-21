@@ -33,7 +33,7 @@ func NewGPUJobQueue(gpu *GPU) *GPUJobQueue {
 	}
 }
 
-func (q *GPUJobQueue) PassDuration(fromTime Time, duration Duration) []*Job {
+func (q *GPUJobQueue) passDuration(fromTime Time, duration Duration) []*Job {
 	maxFinishedIdx := -1
 	currTime := fromTime + Time(duration)
 	tempTime := fromTime
@@ -41,7 +41,7 @@ func (q *GPUJobQueue) PassDuration(fromTime Time, duration Duration) []*Job {
 		if j.IsFinished() {
 			panic(fmt.Sprintf("GPUJobQueue %+v passDuration %+v, j.IsFinished() is true, j = %+v", q, duration, j))
 		}
-		j.ExecutesFor(q.gpu, tempTime, Duration(currTime-tempTime))
+		j.executesFor(q.gpu, tempTime, Duration(currTime-tempTime))
 		if !j.IsFinished() {
 			break
 		}

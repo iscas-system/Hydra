@@ -33,9 +33,9 @@ func (d *DummyScheduler) DoSchedule() {
 	}
 	jobs := make([]*simulator.Job, 0, len(d.unscheduledJobMetas))
 	for _, job := range d.unscheduledJobMetas {
-		jobs = append(jobs, simulator.NewJob(job.JobName))
+		jobs = append(jobs, simulator.NewJob(job.JobName()))
 	}
-	targetJobQueue := d.cluster.GpuJobQueues()[simulator.GPUID(d.nextScheduleToGPUID)]
+	targetJobQueue := d.cluster.GPUJobQueues()[simulator.GPUID(d.nextScheduleToGPUID)]
 	targetJobQueue.SetJobs(append(targetJobQueue.Jobs(), jobs...))
 
 	d.nextScheduleToGPUID = (d.nextScheduleToGPUID + 1) % d.maxGPUJobQueueID
@@ -81,6 +81,6 @@ func (d *DummyScheduler) NextActiveScheduleTime() simulator.Time {
 	return simulator.Time(math.Inf(1))
 }
 
-func (d *DummyScheduler) String() string {
+func (d *DummyScheduler) Name() string {
 	return "DummyScheduler"
 }
