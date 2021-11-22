@@ -8,8 +8,8 @@ import (
 
 func TestSolver(t *testing.T) {
 	g := NewGraph()
-	source := NewNode("source")
-	sink := NewNode("sink")
+	source := NewNode("source", "source")
+	sink := NewNode("sink", "sink")
 	g.AddSource(source)
 	g.AddSink(sink)
 
@@ -33,13 +33,13 @@ func TestSolver(t *testing.T) {
 	gpuSlotNodes := make([]*Node, jobNum * gpuNum)
 
 	for i := 0; i < jobNum; i++ {
-		jobNodes[i] = NewNode("job" + strconv.Itoa(i))
+		jobNodes[i] = NewNode("job" + strconv.Itoa(i), "job")
 	}
 
 	for i := 0; i < jobNum; i++ {
 		for j := 0; j < gpuNum; j++ {
-			// gpu-1-1, gpu-2-1, gpu-1-2, gpu-2-2,...
-			gpuSlotNodes[i * gpuNum + j] = NewNode("gpu" + strconv.Itoa(j) + "-" + strconv.Itoa(i))
+			// gpu-j 's slot i (the i th job on gpu j)
+			gpuSlotNodes[i * gpuNum + j] = NewNode("gpu" + strconv.Itoa(j) + "-" + "slot" + strconv.Itoa(i), "gpu")
 		}
 	}
 
@@ -67,14 +67,12 @@ func TestSolver(t *testing.T) {
 	for i, job := range jobNodes {
 		for j, gpuSlot := range gpuSlotNodes {
 			g.AddEdge(job, gpuSlot, 1., weights[i][j])
-			fmt.Println(job.name, gpuSlot.name, weights[i][j])
-			fmt.Println()
 		}
 	}
 	solver := NewMCMFSolver(g)
 	solver.Solve()
-	fmt.Println(weights)
-	fmt.Println(solver.minCost)
 
+	fmt.Println("Minimum JCT:", solver.minCost)
+	fmt.Println("Scheduling result:", solver.GetSchedulingResult())
 }
 
