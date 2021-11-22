@@ -5,8 +5,8 @@ import "os"
 type FormatPrintLevel int
 
 const (
-	NoFormatPrint = FormatPrintLevel(0)
-	ShortMsgPrint = FormatPrintLevel(1)
+	NoFormatPrint  = FormatPrintLevel(0)
+	ShortMsgPrint  = FormatPrintLevel(1)
 	AllFormatPrint = FormatPrintLevel(2)
 )
 
@@ -16,7 +16,7 @@ type Options struct {
 	gpuType2Count           map[GPUType]int
 	minDurationPassInterval Duration
 	dataSourceCSVPath       string
-	formatPrintLevel FormatPrintLevel
+	formatPrintLevel        FormatPrintLevel
 }
 
 var defaultOptions = &Options{
@@ -29,7 +29,7 @@ var defaultOptions = &Options{
 	},
 	minDurationPassInterval: 1.,
 	dataSourceCSVPath:       "",
-	formatPrintLevel: ShortMsgPrint,
+	formatPrintLevel:        ShortMsgPrint,
 }
 
 type SetOption func(options *Options)

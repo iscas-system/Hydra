@@ -4,14 +4,16 @@ import (
 	"DES-go/util"
 	"fmt"
 	"math"
+	"sort"
 	"sync"
 )
 
 type Cluster struct {
 	gpuType2CountConfig map[GPUType]int
-	gpus         map[GPUType][]*GPU
-	Timer        Time
-	gpuJobQueues map[GPUID]*GPUJobQueue
+	gpus                map[GPUType][]*GPU
+	gpuTypes			[]GPUType
+	Timer               Time
+	gpuJobQueues        map[GPUID]*GPUJobQueue
 }
 
 func (c *Cluster) GPUJobQueues() map[GPUID]*GPUJobQueue {
@@ -25,7 +27,16 @@ func (c *Cluster) GPU(gpuID GPUID) *GPU {
 func newCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
 	gpus := make(map[GPUType][]*GPU)
 	gpuID := GPUID(0)
-	for gpuType, count := range gpuType2CountConfig {
+	gpuTypeStrings := make([]string, 0, len(gpuType2CountConfig))
+	for gpuType := range gpuType2CountConfig {
+		gpuTypeStrings = append(gpuTypeStrings, string(gpuType))
+	}
+	sort.Strings(gpuTypeStrings)
+	gpuTypes := make([]GPUType, 0, len(gpuTypeStrings))
+	for _, gpuTypeStr := range gpuTypeStrings {
+		gpuType := GPUType(gpuTypeStr)
+		gpuTypes = append(gpuTypes, gpuType)
+		count := gpuType2CountConfig[gpuType]
 		l := make([]*GPU, 0, count)
 		for i := 0; i < count; i++ {
 			l = append(l, NewGPU(gpuID, gpuType))
@@ -46,6 +57,7 @@ func newCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
 
 	return &Cluster{
 		gpuType2CountConfig: gpuType2CountConfig,
+		gpuTypes: 			 gpuTypes,
 		gpus:                gpus,
 		Timer:               Time(-1),
 		gpuJobQueues:        gpuJobQueues,
@@ -54,6 +66,10 @@ func newCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
 
 func (c *Cluster) GPUs() map[GPUType][]*GPU {
 	return c.gpus
+}
+
+func (c *Cluster) GPUTypes() []GPUType {
+	return c.gpuTypes
 }
 
 func (c *Cluster) startServe() {
@@ -109,9 +125,9 @@ func (c *Cluster) PrettyExpose() interface{} {
 		gpu2JobQueueLength[jobQueue.GPU()] = len(jobQueue.Jobs())
 	}
 	exposed := &struct {
-		Now Time
+		Now                Time
 		GPU2JobQueueLength map[*GPU]int
-	} {
+	}{
 		c.Now(), gpu2JobQueueLength,
 	}
 	return exposed

@@ -2,12 +2,23 @@ package schedulers
 
 import (
 	"DES-go/simulator"
-	"container/list"
 	"fmt"
 	"math"
+	"sort"
 )
 
-
+// SJFScheduler
+// 采取了Shortest Job First策略。分别实现了抢占与非抢占。
+// 采取调度器内部做任务缓存队列的思想。将所有未在GPU上运行的任务缓存到sortedWaitingJobs中来。
+// 这就是说集群中的每个GPUJobQueue最多只有一个任务在队列中。
+// 每当有新的任务到来时，将它按照remainingDuration排序的顺序，插入到sortedWaitingJobs中。
+// 当发现有空闲的GPU槽，并且存在任务正在等待队列中时，将进行调度。
+// 一旦当收到有job在GPU上运行结束的消息，能够确定的是那个GPU一定能够空闲下来。
+// SJF具体的算法过程：sortedWaitingJobs是按照GPUType分类的，在迭代中选择下一个要上GPU的任务时，
+// 将所有GPUType中最短的任务，与可能的全部GPUQueue做一一对应，在这些两两组合中，选择一个最短的任务。
+// 将它放置到GPU队列后，再迭代这个过程。
+// 抢占与非抢占的区别就在于，非抢占只遍历那些空闲的GPU，而抢占式，则会先将GPU队列中的全部任务卸下，
+// 让它们全部变为空闲的GPU，再按照非抢占的调度算法执行即可。
 type SJFScheduler struct {
 	// 可指定是否为抢占式的调度。
 	// 如果是可抢占式的，则能够将正在运行的任务卸下，完全地重新排序。
@@ -15,13 +26,9 @@ type SJFScheduler struct {
 	preemptive bool
 
 	cluster *simulator.Cluster
-	// gpu2AliveJobMetasSortedByLength 存储了集群中的当前存活的，已经调度到每个GPU上的任务元信息。
-	// 相当于一份集群GPU任务队列的副本。每当有任务执行结束时更新这个数据结构，维护一致性。
-	// 之所以使用这个数据结构，原因在于Shortest Job First涉及到插入操作，使用Slice相当难受。
-	// 每当有新任务到来时，经过SJF过程，将新任务都先插入到该副本中，随后再通过遍历，将新的任务部署到集群中。
-	gpu2AliveJobMetasSortedByLength map[simulator.GPUID]*list.List
 
-	newlyArrivedJobMetas []*simulator.JobMeta
+	// 等待队列中的所有任务，其分别在每种类型的GPU上，按照RemainingDuration排序。
+	sortedWaitingJobs map[simulator.GPUType][]*simulator.Job
 }
 
 func NewSJFScheduler(preemptive bool) *SJFScheduler {
@@ -31,153 +38,154 @@ func NewSJFScheduler(preemptive bool) *SJFScheduler {
 }
 
 func (s *SJFScheduler) DoSchedule() {
-	if s.newlyArrivedJobMetas == nil {
-		panic("SJFScheduler s.newlyArrivedJobMetas is nil")
+	if s.preemptive {
+		s.doSchedulePreemptive()
+	} else {
+		s.doScheduleNonPreemptive()
 	}
-	newlyArrivedJobMetas := s.newlyArrivedJobMetas
-	s.newlyArrivedJobMetas = nil
+}
 
-	// 以下结构体定义了一个尝试使用SJF顺序插入到某个GPU队列上的结果。
-	// jobStartTimeAfterInsert表示按照如果按照SJF顺序将任务插入到该队列后，该任务的开始时间。
-	// doActualInsertionFunc是一个闭包，它能够真正地完成将该任务插入到队列中的动作。
-	type attemptInsertionInfo struct {
-		onWhichGPU *simulator.GPU
-		jobStartTimeAfterInsert simulator.Time
-		doActualInsertionFunc   func()
-	}
-	// 以下定义一个工具函数，返回结果为：尝试将一个新的任务，按照SJF顺序插入到某GPU队列后的信息。
-	getAttemptInsertionInfo := func(jobMeta *simulator.JobMeta, gpu *simulator.GPU, jobMetaList *list.List) *attemptInsertionInfo {
-		e := jobMetaList.Front()
-		startTime := simulator.Time(0.)
-		if !s.preemptive {
-			// 如果是非抢占式调度，则第一个任务如果是在运行状态，则不能将新的任务调度到它的前面。
-			if e != nil {
-				meta := e.Value.(*simulator.JobMeta)
-				// 由于有可能在调度过程中，将一个新的任务插入到s.gpu2AliveJobMetasSortedByLength中，所以需要检查与集群队列中的第一个是否相同。
-				jobQueue := s.cluster.GPUJobQueues()[gpu.ID()].Jobs()
-				if len(jobQueue) > 0 {
-					firstJobInQueue := jobQueue[0]
-					if firstJobInQueue.JobName() == meta.JobName() && firstJobInQueue.IsRunning() {
-						// 如果第一个任务是在运行状态，则将它的剩余运行时间加到startTime上来。
-						startTime += simulator.Time(firstJobInQueue.RemainingDuration(gpu))
-						// 跳过这个正在运行的任务。
-						e = e.Next()
-					}
+func (s *SJFScheduler) doScheduleNonPreemptive() {
+	for s.hasWaitingJob() && s.hasEmptyGPUQueue() {
+		// 从waitingJobs中，在全部可能的EmptyGPUSlot上，挑选一个速度最快的。
+		emptyQueues := s.getEmptyGPUQueues()
+		var targetJob *simulator.Job = nil
+		var targetQueue *simulator.GPUJobQueue = nil
+		leastRemainingDuration := simulator.Duration(math.Inf(1))
+		// 遍历全部的waiting job，按照gpu type进行分类，在每个waitingJobs上找首个job（即在这个类型上剩余执行时间最短的任务）
+		// 遍历结束后，找到一个速度最快的任务。
+		for gpuType, waitingJobs := range s.sortedWaitingJobs {
+			if len(waitingJobs) == 0 {
+				continue
+			}
+			firstWaitingJob := waitingJobs[0]
+			var candidateQueue *simulator.GPUJobQueue = nil
+			for _, queue := range emptyQueues {
+				if queue.GPU().Type() != gpuType {
+					continue
+				}
+				if candidateQueue == nil {
+					candidateQueue = queue
+					break
 				}
 			}
-		}
-		for e != nil {
-			next := e.Next()
-			currJobMeta := e.Value.(*simulator.JobMeta)
-			if currJobMeta.Durations()[gpu.Type()] > jobMeta.Durations()[gpu.Type()] {
-				return &attemptInsertionInfo{
-					onWhichGPU: gpu,
-					jobStartTimeAfterInsert:  startTime,
-					doActualInsertionFunc:      func() {
-						jobMetaList.InsertBefore(jobMeta, e)
-					},
-				}
+			if candidateQueue == nil {
+				continue
 			}
-			startTime += simulator.Time(currJobMeta.Durations()[gpu.Type()])
-			e = next
-		}
-		// 如果队列为空，或者为该队列运行时间最长的任务时，直接插入到队列尾部。
-		return &attemptInsertionInfo{
-			onWhichGPU: gpu,
-			jobStartTimeAfterInsert:  startTime,
-			doActualInsertionFunc:      func() {
-				jobMetaList.PushBack(jobMeta)
-			},
-		}
-	}
-
-	// 接下来将每个新来到的任务，插入到s.gpu2AliveJobMetasSortedByLength中。
-	// 插入的位置通过SJF得到，随后比较这个任务按照SJF顺序插入到每个队列上的任务开始时间，挑选那个最早能够开始执行的队列进行插入。
-	// 如果有一些开始时间相同的队列，则选取那个执行时间最短的任务。（待确认，是否需要计算后续任务的JCT增长大小？异构的SFJ没有想象中的trivial，需要再确认）
-	for _, jobMeta := range newlyArrivedJobMetas {
-		minStartTimeInfo := &attemptInsertionInfo{
-			jobStartTimeAfterInsert: simulator.Time(math.Inf(1)),
-		}
-		for gpuID, jobMetaList := range s.gpu2AliveJobMetasSortedByLength {
-			gpu := s.cluster.GPU(gpuID)
-			currInfo := getAttemptInsertionInfo(jobMeta, gpu, jobMetaList)
-			if currInfo.jobStartTimeAfterInsert < minStartTimeInfo.jobStartTimeAfterInsert {
-				minStartTimeInfo = currInfo
-			}
-			if currInfo.jobStartTimeAfterInsert == minStartTimeInfo.jobStartTimeAfterInsert {
-				// 如果开始时间相同，就选择那个执行时间最短的。
-				if jobMeta.Duration(gpu) < jobMeta.Duration(minStartTimeInfo.onWhichGPU) {
-					minStartTimeInfo = currInfo
-				}
+			if targetJob == nil {
+				targetJob, targetQueue = firstWaitingJob, candidateQueue
+				leastRemainingDuration = targetJob.RemainingDuration(gpuType)
+			} else if rd := firstWaitingJob.RemainingDuration(gpuType); rd < leastRemainingDuration {
+				targetJob, targetQueue = firstWaitingJob, candidateQueue
+				leastRemainingDuration = rd
 			}
 		}
-		minStartTimeInfo.doActualInsertionFunc()
+		if targetJob == nil || targetQueue == nil {
+			panic("SJFScheduler targetJob == nil || targetQueue == nil")
+		}
+		s.removeFromSortedWaitingJobs(targetJob)
+		targetQueue.SetJobs([]*simulator.Job{targetJob})
 	}
+}
 
-
-	// 定义工具函数，用于插入一个新的任务到某个已有任务队列中。
-	insertNewJob := func(jobMeta *simulator.JobMeta, idx int, jobs []*simulator.Job) []*simulator.Job {
-		back := append([]*simulator.Job{}, jobs[idx:]...)
-		res := append(jobs[:idx], simulator.NewJob(jobMeta.JobName()))
-		res = append(res, back...)
-		return res
+func (s *SJFScheduler) doSchedulePreemptive() {
+	// 如果做抢占式的调度，就将所有正在运行的任务都撤下来，放入到sortedWaitingJobs中。
+	for _, queue := range s.cluster.GPUJobQueues() {
+		jobs := queue.ClearQueue()
+		for _, job := range jobs {
+			s.insertJob2SortedWaitingJobs(job)
+		}
 	}
+	// 之后再按照非抢占式的调度来做就ok了。
+	s.doScheduleNonPreemptive()
+}
 
-	// s.gpu2AliveJobMetasSortedByLength中已经有了新的任务信息，分别在每个GPU队列上，
-	// 联合地按照顺序遍历每个任务，找到那些在集群中还没有的任务，即就是要插入的新的任务。
-	for gpuID, queue := range s.cluster.GPUJobQueues() {
-		jobsInQueue := queue.Jobs()
-		jobMetaList := s.gpu2AliveJobMetasSortedByLength[gpuID]
-		idx := 0
-		metaElem := jobMetaList.Front()
-		for metaElem != nil && idx < len(jobsInQueue) {
-			meta := metaElem.Value.(*simulator.JobMeta)
-			if meta.JobName() != jobsInQueue[idx].JobName() {
-				// jobMeta的JobName与在集群中当前任务的JobName不相同，则需要将新的jobMeta作为新任务插入到当前位置。
-				jobsInQueue = insertNewJob(meta, idx, jobsInQueue)
+func (s *SJFScheduler) hasWaitingJob() bool {
+	for _, l := range s.sortedWaitingJobs {
+		if len(l) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *SJFScheduler) insertJob2SortedWaitingJobs(job *simulator.Job) {
+	for _, gpuType := range s.cluster.GPUTypes() {
+		ls := s.sortedWaitingJobs[gpuType]
+		target := job.RemainingDuration(gpuType)
+		i := sort.Search(len(ls), func(i int) bool {
+			return ls[i].RemainingDuration(gpuType) >= target
+		})
+		s.sortedWaitingJobs[gpuType] = s.insertJobsSlice(job, i, ls)
+	}
+}
+
+func (s *SJFScheduler) removeFromSortedWaitingJobs(job *simulator.Job) {
+	for _, gpuType := range s.cluster.GPUTypes() {
+		ls := s.sortedWaitingJobs[gpuType]
+		target := job.RemainingDuration(gpuType)
+		i := sort.Search(len(ls), func(i int) bool {
+			return ls[i].RemainingDuration(gpuType) >= target
+		})
+		if ls[i].RemainingDuration(gpuType) != target {
+			panic("SJFScheduler removeFromSortedWaitingJobs ls[i].RemainingDuration(gpuType) != target")
+		}
+		var targetIdx = -1
+		for ls[i].RemainingDuration(gpuType) == target {
+			if ls[i].JobName() == job.JobName() {
+				targetIdx = i
+				break
 			}
-			metaElem = metaElem.Next()
-			idx++
+			i++
 		}
-		if idx != len(jobsInQueue) {
-			panic("SJFScheduler idx != len(jobsInQueue)")
+		if targetIdx == -1 {
+			panic("SJFScheduler removeFromSortedWaitingJobs targetIdx == -1")
 		}
-		// 如果jobMetaList还有剩余，则说明这部分任务都要插入到当前任务队列的最末尾。
-		for metaElem != nil {
-			meta := metaElem.Value.(*simulator.JobMeta)
-			jobsInQueue = insertNewJob(meta, len(jobsInQueue), jobsInQueue)
-			metaElem = metaElem.Next()
-		}
-		// 最后，将最新的jobs队列设置到集群队列中。
-		queue.SetJobs(jobsInQueue)
-	}
-
-	// 正确性检查，用于debug
-	for gpuID, queue := range s.cluster.GPUJobQueues() {
-		jobsInQueue := queue.Jobs()
-		jobMetaList := s.gpu2AliveJobMetasSortedByLength[gpuID]
-		idx := 0
-		metaElem := jobMetaList.Front()
-		for metaElem != nil && idx < len(jobsInQueue) {
-			meta := metaElem.Value.(*simulator.JobMeta)
-			if meta.JobName() != jobsInQueue[idx].JobName() {
-				panic("SJFScheduler Correctness check failed, meta.JobName() != jobsInQueue[idx].JobName()")
-			}
-			metaElem = metaElem.Next()
-			idx++
-		}
-		if idx != len(jobsInQueue) {
-			panic("SJFScheduler Correctness check failed, idx != len(jobsInQueue)")
+		var removed *simulator.Job
+		removed, s.sortedWaitingJobs[gpuType] = s.removeJobsSlice(targetIdx, ls)
+		if removed != job {
+			panic("SJFScheduler removeFromSortedWaitingJobs removed != job")
 		}
 	}
+}
 
+func (s *SJFScheduler) insertJobsSlice(job *simulator.Job, idx int, jobs []*simulator.Job) []*simulator.Job {
+	back := append([]*simulator.Job{}, jobs[idx:]...)
+	res := append(jobs[:idx], job)
+	res = append(res, back...)
+	return res
+}
+
+func (s *SJFScheduler) removeJobsSlice(idx int, jobs []*simulator.Job) (*simulator.Job, []*simulator.Job) {
+	removed := jobs[idx]
+	jobs = append(jobs[:idx], jobs[idx+1:]...)
+	return removed, jobs
+}
+
+func (s *SJFScheduler) hasEmptyGPUQueue() bool {
+	for _, queue := range s.cluster.GPUJobQueues() {
+		if len(queue.Jobs()) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *SJFScheduler) getEmptyGPUQueues() []*simulator.GPUJobQueue {
+	queues := make([]*simulator.GPUJobQueue, 0, len(s.cluster.GPUJobQueues()))
+	for _, queue := range s.cluster.GPUJobQueues() {
+		if len(queue.Jobs()) == 0 {
+			queues = append(queues, queue)
+		}
+	}
+	return queues
 }
 
 func (s *SJFScheduler) SetCluster(cluster *simulator.Cluster) {
 	s.cluster = cluster
-	s.gpu2AliveJobMetasSortedByLength = make(map[simulator.GPUID]*list.List)
-	for gpuID := range cluster.GPUJobQueues() {
-		s.gpu2AliveJobMetasSortedByLength[gpuID] = list.New()
+	s.sortedWaitingJobs = make(map[simulator.GPUType][]*simulator.Job)
+	for _, gpuType := range s.cluster.GPUTypes() {
+		s.sortedWaitingJobs[gpuType] = make([]*simulator.Job, 0)
 	}
 }
 
@@ -185,30 +193,17 @@ func (s *SJFScheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
 	switch e := event.(type) {
 	case *simulator.ScheduleEventJobsArrived:
 		{
-			s.newlyArrivedJobMetas = e.JobMetas()
+			for _, jobMeta := range e.JobMetas() {
+				s.insertJob2SortedWaitingJobs(simulator.NewJob(jobMeta.JobName()))
+			}
 			s.DoSchedule()
 		}
 	case *simulator.ScheduleEventJobsFinished:
 		{
-			s.onJobsExit(e.Jobs())
-		}
-	}
-}
-
-func (s *SJFScheduler) onJobsExit(jobs []*simulator.Job) {
-	finishedJobNames := make(map[simulator.JobName]bool)
-	for _, job := range jobs {
-		finishedJobNames[job.JobName()] = true
-	}
-	for _, jobMetas := range s.gpu2AliveJobMetasSortedByLength {
-		e := jobMetas.Front()
-		for e != nil {
-			next := e.Next()
-			curr := e.Value.(*simulator.JobMeta)
-			if _, ok := finishedJobNames[curr.JobName()]; ok {
-				jobMetas.Remove(e)
+			if !s.hasEmptyGPUQueue() {
+				panic("!s.hasEmptyGPUQueue() when some jobs finished.")
 			}
-			e = next
+			s.DoSchedule()
 		}
 	}
 }

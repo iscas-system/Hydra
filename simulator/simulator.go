@@ -86,7 +86,9 @@ func (s *Simulator) passDuration(duration Duration, noMoreNewSubmits bool) {
 		s.recordedFinishedJobs = append(s.recordedFinishedJobs, finishedJobs...)
 		s.logger.ReceiveFinishedJobs(finishedJobs)
 		s.emitEvent(newScheduleEventDurationPassed(partialDuration))
-		s.emitEvent(newScheduleEventJobsFinished(finishedJobs))
+		if len(finishedJobs) > 0 {
+			s.emitEvent(newScheduleEventJobsFinished(finishedJobs))
+		}
 	}
 }
 
@@ -105,13 +107,13 @@ func (s *Simulator) logTimePassed(duration Duration) {
 
 func (s *Simulator) logMetrics() {
 	violationCount, avgViolationDelay := MetricViolation(s.recordedFinishedJobs)
-	metrics := util.PrettyF("simulation completed, " +
-		"scheduler = [%s], " +
-		"finished job count = [%d], " +
-		"avg jct = [%f], " +
-		"violated job count = [%d], " +
-		"avg violate delay = [%f] " +
-		"avg queuing delay = [%f] " +
+	metrics := util.PrettyF("simulation completed, "+
+		"scheduler = [%s], "+
+		"finished job count = [%d], "+
+		"avg jct = [%f], "+
+		"violated job count = [%d], "+
+		"avg violate delay = [%f] "+
+		"avg queuing delay = [%f] "+
 		"\n",
 		s.scheduler.Name(), len(s.recordedFinishedJobs), AvgJCT(s.recordedFinishedJobs), violationCount, avgViolationDelay, AvgQueuingDelay(s.recordedFinishedJobs))
 

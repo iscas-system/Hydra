@@ -27,9 +27,9 @@ func (t TimeRange) Runtime() Duration {
 }
 
 type JobExecutionRange struct {
-	gpu       *GPU
-	jobName   JobName
-	timeRange *TimeRange
+	gpu               *GPU
+	jobName           JobName
+	timeRange         *TimeRange
 	completenessRatio float64
 }
 
@@ -110,11 +110,12 @@ func (jed *JobExecutionDetail) addExecutionRange(gpu *GPU, timeRange *TimeRange)
 	}
 
 	// In case that the last execution range is closely jointed with new execution range. Combine them.
-	if len(jed.executionRanges[gpu]) > 0 &&
-		math.Abs(float64(jed.executionRanges[gpu][len(jed.executionRanges)-1].timeRange.end-timeRange.start)) < 1e-6 {
-		jed.executionRanges[gpu][len(jed.executionRanges)-1].modifyTimeRange(nil, &timeRange.end)
-		//jed.executionRanges[gpu][len(jed.executionRanges)-1].timeRange.end = timeRange.end
-		return
+	if len(jed.executionRanges[gpu]) > 0 {
+		lastExecutionRange := jed.executionRanges[gpu][len(jed.executionRanges[gpu])-1]
+		if math.Abs(float64(lastExecutionRange.timeRange.end-timeRange.start)) < 1e-6 {
+			lastExecutionRange.modifyTimeRange(nil, &timeRange.end)
+			return
+		}
 	}
 	jed.executionRanges[gpu] = append(jed.executionRanges[gpu], newJobExecutionRange(gpu, jed.jobName, timeRange))
 }
@@ -165,6 +166,19 @@ func (j *Job) QueueDelay() Duration {
 	return j.JCT() - j.ActualRuntimeOnGPUs()
 }
 
+func (j *Job) JobMeta() *JobMeta {
+	return getDataSource().JobMeta(j.JobName())
+}
+
+func (j *Job) PrettyExpose() interface{} {
+	return struct {
+		*Job
+		*JobMeta
+	}{
+		j, j.JobMeta(),
+	}
+}
+
 func NewJob(jobName JobName) *Job {
 	return &Job{
 		jobName:             jobName,
@@ -212,8 +226,8 @@ func (j *Job) executesFor(gpu *GPU, fromTime Time, executesDur Duration) {
 	}
 }
 
-func (j *Job) RemainingDuration(gpu *GPU) Duration {
-	fullDurOnGPU := getDataSource().Duration(j.jobName, gpu.Type())
+func (j *Job) RemainingDuration(gpuType GPUType) Duration {
+	fullDurOnGPU := getDataSource().Duration(j.jobName, gpuType)
 	return Duration(j.remainingRatio * float64(fullDurOnGPU))
 }
 
