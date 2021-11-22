@@ -51,7 +51,7 @@ func (d *DummyScheduler) SetCluster(cluster *simulator.Cluster) {
 	d.maxGPUJobQueueID = math.MinInt64
 	for _, gpuList := range d.cluster.GPUs() {
 		for _, gpu := range gpuList {
-			d.maxGPUJobQueueID = int(math.Max(float64(gpu.ID()) + 1, float64(d.maxGPUJobQueueID)))
+			d.maxGPUJobQueueID = int(math.Max(float64(gpu.ID())+1, float64(d.maxGPUJobQueueID)))
 		}
 	}
 }

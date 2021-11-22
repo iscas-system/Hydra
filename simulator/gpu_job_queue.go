@@ -26,6 +26,15 @@ func (q *GPUJobQueue) SetJobs(jobs []*Job) {
 	}
 }
 
+func (q *GPUJobQueue) ClearQueue() []*Job {
+	for _, job := range q.jobs {
+		job.setNotRunning()
+	}
+	res := q.jobs
+	q.jobs = []*Job{}
+	return res
+}
+
 func NewGPUJobQueue(gpu *GPU) *GPUJobQueue {
 	return &GPUJobQueue{
 		gpu:  gpu,
@@ -57,7 +66,7 @@ func (q *GPUJobQueue) FirstJobRemainingDuration() Duration {
 	if len(q.jobs) == 0 {
 		return Duration(math.Inf(1))
 	}
-	return q.jobs[0].RemainingDuration(q.gpu)
+	return q.jobs[0].RemainingDuration(q.gpu.Type())
 }
 
 func (q *GPUJobQueue) Clone() *GPUJobQueue {

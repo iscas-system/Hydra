@@ -19,7 +19,7 @@ func expose(v interface{}) interface{} {
 	}
 }
 
-func PrettyF(format string, vs... interface{}) string {
+func PrettyF(format string, vs ...interface{}) string {
 	r := make([]interface{}, 0, len(vs))
 	for _, v := range vs {
 		r = append(r, expose(v))

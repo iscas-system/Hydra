@@ -14,12 +14,12 @@ import (
 
 type logger struct {
 	ctx        context.Context
-	cancel context.CancelFunc
+	cancel     context.CancelFunc
 	enabled    bool
 	logDirPath string
 
 	logMsgChan chan *loggerMsg
-	wg *sync.WaitGroup
+	wg         *sync.WaitGroup
 }
 
 type loggerMsg struct {
@@ -31,12 +31,12 @@ func NewLogger(enabled bool, logPath string) *logger {
 	ctx, cancel := context.WithCancel(context.Background())
 	logger := &logger{
 		ctx:        ctx,
-		cancel: cancel,
+		cancel:     cancel,
 		enabled:    enabled,
 		logDirPath: logPath,
 
 		logMsgChan: make(chan *loggerMsg, 0),
-		wg: &sync.WaitGroup{},
+		wg:         &sync.WaitGroup{},
 	}
 	logger.startLogRoutine()
 	return logger

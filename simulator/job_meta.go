@@ -5,8 +5,8 @@ type JobName string
 type JobMeta struct {
 	jobName    JobName
 	submitTime Time
-	ddl       Time
-	durations map[GPUType]Duration
+	ddl        Time
+	durations  map[GPUType]Duration
 }
 
 func (m *JobMeta) JobName() JobName {
@@ -37,4 +37,3 @@ func newJobMeta(jobName JobName, submitTime Time, ddl Time, durations map[GPUTyp
 func (m *JobMeta) SubmitTime() Time {
 	return m.submitTime
 }
-
