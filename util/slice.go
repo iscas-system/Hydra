@@ -9,7 +9,7 @@ func StringSliceIndexOf(slice []string, target string) int {
 	return -1
 }
 
-func SumFloat64(f func(i interface{}) float64, vs ...interface{}) float64 {
+func SumFloat64(f func(item interface{}) float64, vs ...interface{}) float64 {
 	s := 0.
 	for _, v := range vs {
 		s += f(v)

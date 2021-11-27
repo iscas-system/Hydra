@@ -163,7 +163,7 @@ func (j *Job) RemainingRatio() float64 {
 }
 
 func (j *Job) QueueDelay() Duration {
-	return j.JCT() - j.ActualRuntimeOnGPUs()
+	return Duration(j.JCT()) - j.ActualRuntimeOnGPUs()
 }
 
 func (j *Job) JobMeta() *JobMeta {
@@ -235,11 +235,11 @@ func (j *Job) ActualRuntimeOnGPUs() Duration {
 	return j.executionDetail.SumRuntimeOnGPUs()
 }
 
-func (j *Job) JCT() Duration {
+func (j *Job) JCT() Time {
 	if j.finishExecutionTime == -1 {
 		return -1
 	}
-	return Duration(j.finishExecutionTime - getDataSource().SubmitTime(j.jobName))
+	return j.finishExecutionTime - getDataSource().SubmitTime(j.jobName)
 }
 
 func (j *Job) Violation() (bool, Duration) {

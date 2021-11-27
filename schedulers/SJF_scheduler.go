@@ -23,6 +23,8 @@ type SJFScheduler struct {
 	// 可指定是否为抢占式的调度。
 	// 如果是可抢占式的，则能够将正在运行的任务卸下，完全地重新排序。
 	// 如果是非抢占式的，则集群队列中的正在运行的任务无法被调度开。
+	// 抢占式的SJF（SRTF）是一个理想化的调度，因为在实际中，如果每次有新的任务到来都会造成当前运行的任务被调度开，
+	// 则会造成超大的overhead。这只存在于理论当中。
 	preemptive bool
 
 	cluster *simulator.Cluster

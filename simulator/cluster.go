@@ -84,6 +84,14 @@ func (c *Cluster) Now() Time {
 	return c.Timer
 }
 
+func (c *Cluster) CurrRunningJob(gpuID GPUID) *Job {
+	jobs := c.GPUJobQueues()[gpuID].Jobs()
+	if len(jobs) > 0 && jobs[0].IsRunning() {
+		return jobs[0]
+	}
+	return nil
+}
+
 func (c *Cluster) passDuration(duration Duration) []*Job {
 	if !c.IsServing() {
 		panic("Cluster passDuration called when is not serving")

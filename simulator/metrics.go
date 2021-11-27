@@ -3,15 +3,15 @@ package simulator
 import "DES-go/util"
 
 // AvgJCT 计算一批任务的平均JCT
-func AvgJCT(jobs []*Job) Duration {
+func AvgJCT(jobs []*Job) Time {
 	if len(jobs) == 0 {
 		return 0
 	}
-	sumJCT := Duration(0.)
+	sumJCT := Time(0.)
 	for _, job := range jobs {
 		sumJCT += job.JCT()
 	}
-	return sumJCT / Duration(len(jobs))
+	return sumJCT / Time(len(jobs))
 }
 
 // MetricViolation 计算一批任务的违约个数，以及平均DDL违约时间
