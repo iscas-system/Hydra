@@ -21,13 +21,15 @@ func NewSimulator(scheduler Scheduler, setOpts ...SetOption) *Simulator {
 	for _, setOpt := range setOpts {
 		setOpt(opts)
 	}
-	initDataSource(opts.dataSourceCSVPath)
+	if opts.dataSourceCSVPath != "" {
+		initDataSource(opts.dataSourceCSVPath)
+	}
 
 	logger := NewLogger(opts.logEnabled, opts.logDirPath)
 	return &Simulator{
 		scheduler:            scheduler,
 		opts:                 opts,
-		cluster:              newCluster(opts.gpuType2Count),
+		cluster:              NewCluster(opts.gpuType2Count),
 		logger:               logger,
 		recordedFinishedJobs: make([]*Job, 0),
 	}

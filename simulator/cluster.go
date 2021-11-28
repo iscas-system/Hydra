@@ -11,20 +11,30 @@ import (
 type Cluster struct {
 	gpuType2CountConfig map[GPUType]int
 	gpus                map[GPUType][]*GPU
-	gpuTypes			[]GPUType
-	Timer               Time
-	gpuJobQueues        map[GPUID]*GPUJobQueue
+	gpuTypes     []GPUType
+	timer        Time
+	gpuJobQueues map[GPUID]*GPUJobQueue
 }
 
 func (c *Cluster) GPUJobQueues() map[GPUID]*GPUJobQueue {
 	return c.gpuJobQueues
 }
 
+func (c *Cluster) EmptyGPUJobQueues() []*GPUJobQueue {
+	emptyJobQueues := make([]*GPUJobQueue, 0, len(c.gpuJobQueues))
+	for _, jobQueue := range c.gpuJobQueues {
+		if len(jobQueue.Jobs()) == 0 {
+			emptyJobQueues = append(emptyJobQueues, jobQueue)
+		}
+	}
+	return emptyJobQueues
+}
+
 func (c *Cluster) GPU(gpuID GPUID) *GPU {
 	return c.gpuJobQueues[gpuID].GPU()
 }
 
-func newCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
+func NewCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
 	gpus := make(map[GPUType][]*GPU)
 	gpuID := GPUID(0)
 	gpuTypeStrings := make([]string, 0, len(gpuType2CountConfig))
@@ -57,9 +67,9 @@ func newCluster(gpuType2CountConfig map[GPUType]int) *Cluster {
 
 	return &Cluster{
 		gpuType2CountConfig: gpuType2CountConfig,
-		gpuTypes: 			 gpuTypes,
+		gpuTypes:            gpuTypes,
 		gpus:                gpus,
-		Timer:               Time(-1),
+		timer:               Time(-1),
 		gpuJobQueues:        gpuJobQueues,
 	}
 }
@@ -73,15 +83,15 @@ func (c *Cluster) GPUTypes() []GPUType {
 }
 
 func (c *Cluster) startServe() {
-	c.Timer = 0
+	c.timer = 0
 }
 
 func (c *Cluster) IsServing() bool {
-	return c.Timer != -1
+	return c.timer != -1
 }
 
 func (c *Cluster) Now() Time {
-	return c.Timer
+	return c.timer
 }
 
 func (c *Cluster) CurrRunningJob(gpuID GPUID) *Job {
@@ -96,8 +106,8 @@ func (c *Cluster) passDuration(duration Duration) []*Job {
 	if !c.IsServing() {
 		panic("Cluster passDuration called when is not serving")
 	}
-	fromTime := c.Timer
-	c.Timer += Time(duration)
+	fromTime := c.timer
+	c.timer += Time(duration)
 	newlyFinishedJobs := make([]*Job, 0)
 	wg := &sync.WaitGroup{}
 	finishedJobsSlice := make([][]*Job, len(c.gpuJobQueues))

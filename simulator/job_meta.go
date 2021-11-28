@@ -25,7 +25,7 @@ func (m *JobMeta) Duration(gpu *GPU) Duration {
 	return m.durations[gpu.Type()]
 }
 
-func newJobMeta(jobName JobName, submitTime Time, ddl Time, durations map[GPUType]Duration) *JobMeta {
+func NewJobMeta(jobName JobName, submitTime Time, ddl Time, durations map[GPUType]Duration) *JobMeta {
 	return &JobMeta{
 		jobName:    jobName,
 		submitTime: submitTime,

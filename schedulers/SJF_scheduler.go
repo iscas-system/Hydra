@@ -1,6 +1,7 @@
 package schedulers
 
 import (
+	"DES-go/schedulers/jobs_util"
 	"DES-go/simulator"
 	"fmt"
 	"math"
@@ -118,7 +119,7 @@ func (s *SJFScheduler) insertJob2SortedWaitingJobs(job *simulator.Job) {
 		i := sort.Search(len(ls), func(i int) bool {
 			return ls[i].RemainingDuration(gpuType) >= target
 		})
-		s.sortedWaitingJobs[gpuType] = s.insertJobsSlice(job, i, ls)
+		s.sortedWaitingJobs[gpuType] = jobs_util.GetJobsSliceUtil().InsertJobsSlice(job, i, ls)
 	}
 }
 
@@ -144,24 +145,11 @@ func (s *SJFScheduler) removeFromSortedWaitingJobs(job *simulator.Job) {
 			panic("SJFScheduler removeFromSortedWaitingJobs targetIdx == -1")
 		}
 		var removed *simulator.Job
-		removed, s.sortedWaitingJobs[gpuType] = s.removeJobsSlice(targetIdx, ls)
+		removed, s.sortedWaitingJobs[gpuType] = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(targetIdx, ls)
 		if removed != job {
 			panic("SJFScheduler removeFromSortedWaitingJobs removed != job")
 		}
 	}
-}
-
-func (s *SJFScheduler) insertJobsSlice(job *simulator.Job, idx int, jobs []*simulator.Job) []*simulator.Job {
-	back := append([]*simulator.Job{}, jobs[idx:]...)
-	res := append(jobs[:idx], job)
-	res = append(res, back...)
-	return res
-}
-
-func (s *SJFScheduler) removeJobsSlice(idx int, jobs []*simulator.Job) (*simulator.Job, []*simulator.Job) {
-	removed := jobs[idx]
-	jobs = append(jobs[:idx], jobs[idx+1:]...)
-	return removed, jobs
 }
 
 func (s *SJFScheduler) hasEmptyGPUQueue() bool {
