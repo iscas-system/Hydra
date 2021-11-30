@@ -5,6 +5,7 @@ import (
 	"DES-go/simulator"
 	"DES-go/util"
 	"container/heap"
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -36,7 +37,7 @@ type Scheduler struct {
 // 选项模式。动态指定调度器的参数。
 type Options struct {
 	Scheme           Scheme
-	DistanceAlgoArgs AlgoArgs
+	DistanceAlgoArgs DistanceAlgoArgs
 	DDLCostType      DDLCostType
 }
 
@@ -46,8 +47,8 @@ var defaultOptions = &Options{
 		Preemptive:      false,
 		PreemptiveCycle: -1,
 	},
-	DistanceAlgoArgs: &AlgoBranchAndBoundArgs{
-		LCStandard: BranchAndBoundLCStandardPartialCost,
+	DistanceAlgoArgs: &DistanceAlgoMinCostArgs{
+		MinCostAlgoArgs: &MinCostByBranchAndBoundArgs{LCStandard: BranchAndBoundLCStandardPartialCost},
 	},
 	DDLCostType: DDLCostTypeStrict,
 }
@@ -63,7 +64,7 @@ func WithScheme(scheme Scheme) SetOptions {
 }
 
 // WithDistanceAlgoArgs 指定KMeans用于测定距离的算法参数
-func WithDistanceAlgoArgs(algoArgs AlgoArgs) SetOptions {
+func WithDistanceAlgoArgs(algoArgs DistanceAlgoArgs) SetOptions {
 	return func(options *Options) {
 		options.DistanceAlgoArgs = algoArgs
 	}
@@ -165,7 +166,7 @@ func (k *Scheduler) NextActiveScheduleTime() simulator.Time {
 }
 
 func (k *Scheduler) Name() string {
-	return "Scheduler"
+	return fmt.Sprintf("KMeansScheduler[opts=%s]", util.Pretty(k.opts))
 }
 
 // --- 接下来定义调度的Scheme ---------------------------------------------------------------------------------------------
@@ -205,13 +206,13 @@ func (k *Scheduler) doSimpleOneShotSchedule(scheme *SimpleOneShotScheme) {
 					util.GoWithWG(innerWg, 0, func(_ int) {
 						distanceResp := distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
 						mu.Lock()
+						defer mu.Unlock()
 						if distanceResp.distance < minDis {
 							minDis = distanceResp.distance
 							bestJobsSeq = distanceResp.jobsSeq
 							bestGPU = gpu
 							bestJobIdx = idx
 						}
-						mu.Unlock()
 					})
 				}
 				innerWg.Wait()
@@ -242,16 +243,16 @@ func (k *Scheduler) doSimpleOneShotSchedule(scheme *SimpleOneShotScheme) {
 // ---------------------------------------------------------------------------------------------------------------------
 // --- 以下部分定义了算法的核心内容，即如何确定一个簇和一个点之间的距离。
 
-type AlgoType int
+type DistanceAlgoType int
 type DDLCostType int
 
-type AlgoArgs interface {
-	GetType() AlgoType
+type DistanceAlgoArgs interface {
+	GetDistanceAlgoType() DistanceAlgoType
 }
 
 const (
-	AlgoTypeBranchAndBound        AlgoType = 0 // 分支限界法，求最优解。在选取活节点时使用部分jobs的成本排序。
-	AlgoTypeSimpleHeuristicGreedy AlgoType = 2 // 贪心算法，求快速近似解。
+	DistanceAlgoTypeMinCost               DistanceAlgoType = 0 // 分支限界法，求最优解。
+	DistanceAlgoTypeSimpleHeuristicGreedy DistanceAlgoType = 2 // 贪心算法，求快速近似解。
 
 	DDLCostTypeStrict DDLCostType = 0 // Strict，表示严格的DDL要求，即只要违约了DDL一点点，就认为非常严重。
 	DDLCostTypeSoft   DDLCostType = 1 // Soft，表示较为宽松的DDL要求。
@@ -265,7 +266,7 @@ const (
 // 如果速度较慢可以使用启发式的贪心算法。
 type jobDistanceSolver struct {
 	gpuCluster  *simulator.Cluster
-	algoArgs    AlgoArgs
+	algoArgs    DistanceAlgoArgs
 	ddlCostType DDLCostType
 
 	// 避免重复计算，使用memo记录重复参数的调用。
@@ -275,7 +276,7 @@ type jobDistanceSolver struct {
 
 func newJobDistanceSolver(
 	cluster *simulator.Cluster,
-	algoArgs AlgoArgs,
+	algoArgs DistanceAlgoArgs,
 	ddlCostType DDLCostType) *jobDistanceSolver {
 	return &jobDistanceSolver{
 		gpuCluster:   cluster,
@@ -352,8 +353,8 @@ func (s *jobDistanceSolver) Distance(kMeansCenterGPU *simulator.GPU, kMeansPoint
 	}
 	var distanceResp *distanceResp = nil
 	switch args := s.algoArgs.(type) {
-	case *AlgoBranchAndBoundArgs:
-		distanceResp = s.distanceBranchAndBound(kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster, args)
+	case *DistanceAlgoMinCostArgs:
+		distanceResp = s.distanceMinCost(kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster, args)
 	case *AlgoSimpleHeuristicGreedyArgs:
 		distanceResp = s.distanceSimpleHeuristicGreedy(kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster, args)
 	default:
@@ -446,14 +447,29 @@ func (s *jobDistanceSolver) cost(gpu *simulator.GPU, jobs []*simulator.Job) *cos
 	return costResp
 }
 
-// ------------------------------------------------ 分支限界法 -----------------------------------------------------------
+// ------------------------------------------------ 最小成本搜索 ---------------------------------------------------------
 
-type AlgoBranchAndBoundArgs struct {
+// MinCostAlgoArgs 定义最小成本搜索的算法类型，以及其需要的参数。
+type MinCostAlgoArgs interface {
+	GetMinCostAlgoType() string
+}
+
+// MinCostByBranchAndBoundArgs 通过分支限界搜索方法所需要的参数。
+type MinCostByBranchAndBoundArgs struct {
 	LCStandard BranchAndBoundLCStandard
 }
 
-func (k *AlgoBranchAndBoundArgs) GetType() AlgoType {
-	return AlgoTypeBranchAndBound
+func (MinCostByBranchAndBoundArgs) GetMinCostAlgoType() string {
+	return "MinCostByBranchAndBound"
+}
+
+// MinCostByBacktraceArgs 通过回溯搜索方法所需要的参数。
+type MinCostByBacktraceArgs struct {
+
+}
+
+func (MinCostByBacktraceArgs) GetMinCostAlgoType() string {
+	return "MinCostByBacktrace"
 }
 
 type BranchAndBoundLCStandard int
@@ -463,31 +479,12 @@ const (
 	BranchAndBoundLCStandardPredictCost BranchAndBoundLCStandard = 1
 )
 
-// distanceBranchAndBound
-// 首先，将任务经过SJF排序，如果没有任何job违反ddl，则这个放置就会是最优的，不需要经过后续过程。
-// 如果，有任务违反了ddl，则进行分支限界法搜索。
-// 使用MinCost顺序选择开节点，每个节点的估计成本为：将所有未放置到搜索路径的任务按照SJF排序后，该队列的代价值。
-func (s *jobDistanceSolver) distanceBranchAndBound(
-	kMeansCenterGPU *simulator.GPU,
-	kMeansPointJobs []*simulator.Job,
-	jobNotInKMeansCluster *simulator.Job,
-	args *AlgoBranchAndBoundArgs) *distanceResp {
+// minCostByBranchAndBound 利用Branch搜索一个minCost的排布。
+func (s *jobDistanceSolver) minCostByBranchAndBound(
+	gpu *simulator.GPU,
+	jobs []*simulator.Job,
+	LCStandard BranchAndBoundLCStandard) (float64, []*simulator.Job) {
 
-	// 不关心一个簇中任务的顺序。
-	jobs := append(kMeansPointJobs, jobNotInKMeansCluster)
-	// 首先尝试将jobs使用SRTF排序，并计算一次cost。如果发现ddl没有被违反，则使用这个排序即可。
-	//（实际上，算法之所以在总体上不是最优的（由于NP-hard，且不知道任务的到来，所以算不出最优），
-	// 也是由于在不违反ddl时，只能使用SJF去思考，无法预测将来的任务到来是否会打散当前的SJF排序。
-	// 这是一种贪心的思想。不过只要无法预测将来任务的到来，就不可能做出最优解。）
-	// 不过是否可以再用一个度量指标，用于描述这个job有多么容易违反ddl？（离违反ddl有多近）这可以作为之后的改进思路。
-	jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), jobs)
-	costResp := s.cost(kMeansCenterGPU, jobs)
-	if !costResp.ddlViolated {
-		return &distanceResp{
-			jobsSeq:  jobs,
-			distance: costResp.cost,
-		}
-	}
 	// 如果ddl被违反了，则使用分支限界法进行搜索具有最优cost的解。
 	// branch and bound，顺带复习了算法，很不戳。
 	// Node 表示分支限界法中的一个节点。
@@ -517,7 +514,7 @@ func (s *jobDistanceSolver) distanceBranchAndBound(
 		},
 		LessFunc: func(i, j int) bool {
 			// 这里指定了LC的节点选取规则。
-			switch args.LCStandard {
+			switch LCStandard {
 			case BranchAndBoundLCStandardPartialCost:
 				return nodes[i].cost < nodes[j].cost
 			case BranchAndBoundLCStandardPredictCost:
@@ -570,7 +567,7 @@ func (s *jobDistanceSolver) distanceBranchAndBound(
 			newJobs := make([]*simulator.Job, len(expandingNode.jobs))
 			copy(newJobs, expandingNode.jobs)
 			newJobs = append(newJobs, newJob)
-			costResp := s.cost(kMeansCenterGPU, newJobs)
+			costResp := s.cost(gpu, newJobs)
 			if costResp.cost > minCost {
 				// 当前不完全的jobs队列的cost已经大于minCost了，
 				// 那么它在后续继续添加任务，cost只可能增加。所以剪枝。
@@ -591,12 +588,12 @@ func (s *jobDistanceSolver) distanceBranchAndBound(
 					}
 				}
 				// 将他们按照SRTF排序。
-				jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), otherJobs)
+				jobs_util.GetJobsSliceUtil().ReorderToSRTF(gpu.Type(), otherJobs)
 				// 构建新的预测的完整jobs队列。
 				predictJobList := make([]*simulator.Job, len(newJobs))
 				copy(predictJobList, newJobs)
 				predictJobList = append(predictJobList, otherJobs...)
-				predictCostResp := s.cost(kMeansCenterGPU, predictJobList)
+				predictCostResp := s.cost(gpu, predictJobList)
 				return predictCostResp.cost
 			}()
 
@@ -612,7 +609,64 @@ func (s *jobDistanceSolver) distanceBranchAndBound(
 			heap.Push(minHeap, newNode)
 		}
 	}
+	return minCost, optimus
+}
 
+// minCostByBacktrace 利用Backtrace搜索一个minCost的排布。
+func (s *jobDistanceSolver) minCostByBacktrace(
+	gpu *simulator.GPU,
+	jobs []*simulator.Job) (float64, []*simulator.Job) {
+	// TODO
+	return 0, nil
+}
+
+// ------------------------------------------------ Distance具体算法 ----------------------------------------------------
+
+// DistanceAlgoMinCostArgs 使用最小cost作为距离的算法参数
+type DistanceAlgoMinCostArgs struct {
+	MinCostAlgoArgs MinCostAlgoArgs
+}
+
+func (k *DistanceAlgoMinCostArgs) GetDistanceAlgoType() DistanceAlgoType {
+	return DistanceAlgoTypeMinCost
+}
+
+// distanceMinCost 使用将新的任务放置到该簇后的minCost作为距离。
+// 首先，将任务经过SJF排序，如果没有任何job违反ddl，则这个放置的cost就会是最优的，不需要经过后续过程。
+// 如果，有任务违反了ddl，则进行分支限界法搜索。
+// 使用MinCost顺序选择开节点，每个节点的估计成本为：将所有未放置到搜索路径的任务按照SJF排序后，该队列的代价值。
+func (s *jobDistanceSolver) distanceMinCost(
+	kMeansCenterGPU *simulator.GPU,
+	kMeansPointJobs []*simulator.Job,
+	jobNotInKMeansCluster *simulator.Job,
+	args *DistanceAlgoMinCostArgs) *distanceResp {
+
+	// 不关心一个簇中任务的顺序。
+	jobs := append(kMeansPointJobs, jobNotInKMeansCluster)
+	// 首先尝试将jobs使用SRTF排序，并计算一次cost。如果发现ddl没有被违反，则使用这个排序即可。
+	//（实际上，算法之所以在总体上不是最优的（由于NP-hard，且不知道任务的到来，所以算不出最优），
+	// 也是由于在不违反ddl时，只能使用SJF去思考，无法预测将来的任务到来是否会打散当前的SJF排序。
+	// 这是一种贪心的思想。不过只要无法预测将来任务的到来，就不可能做出最优解。）
+	// 不过是否可以再用一个度量指标，用于描述这个job有多么容易违反ddl？（离违反ddl有多近）这可以作为之后的改进思路。
+	jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), jobs)
+	costResp := s.cost(kMeansCenterGPU, jobs)
+	if !costResp.ddlViolated {
+		return &distanceResp{
+			jobsSeq:  jobs,
+			distance: costResp.cost,
+		}
+	}
+	var minCost float64
+	var optimus []*simulator.Job
+	// 随后选择一个搜索minCost的算法。
+	switch a := args.MinCostAlgoArgs.(type) {
+	case *MinCostByBranchAndBoundArgs:
+		minCost, optimus = s.minCostByBranchAndBound(kMeansCenterGPU, jobs, a.LCStandard)
+	case *MinCostByBacktraceArgs:
+		minCost, optimus = s.minCostByBacktrace(kMeansCenterGPU, jobs)
+	default:
+		panic("Unsupported Min Cost Algo")
+	}
 	// 当minHeap为空时，分支限界法结束。
 	return &distanceResp{
 		jobsSeq:  optimus,
@@ -625,8 +679,8 @@ func (s *jobDistanceSolver) distanceBranchAndBound(
 type AlgoSimpleHeuristicGreedyArgs struct {
 }
 
-func (k *AlgoSimpleHeuristicGreedyArgs) GetType() AlgoType {
-	return AlgoTypeSimpleHeuristicGreedy
+func (k *AlgoSimpleHeuristicGreedyArgs) GetDistanceAlgoType() DistanceAlgoType {
+	return DistanceAlgoTypeSimpleHeuristicGreedy
 }
 
 func (s *jobDistanceSolver) distanceSimpleHeuristicGreedy(

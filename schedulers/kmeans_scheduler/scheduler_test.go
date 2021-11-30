@@ -10,7 +10,9 @@ func Test1(t *testing.T) {
 		&SimpleOneShotScheme{
 			Preemptive: false,
 		}),
-		WithDistanceAlgoArgs(&AlgoBranchAndBoundArgs{LCStandard: BranchAndBoundLCStandardPartialCost}),
+		WithDistanceAlgoArgs(&DistanceAlgoMinCostArgs{
+		 MinCostByBranchAndBoundArgs{LCStandard: BranchAndBoundLCStandardPartialCost},
+		}),
 		WithDDLCostType(DDLCostTypeStrict),
 	)
 	simu := simulator.NewSimulator(scheduler,

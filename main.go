@@ -36,7 +36,10 @@ func initKMeansScheduler() simulator.Scheduler {
 		kmeans_scheduler.WithScheme(&kmeans_scheduler.SimpleOneShotScheme{
 			Preemptive: false,
 		}),
-		kmeans_scheduler.WithDistanceAlgoArgs(&kmeans_scheduler.AlgoBranchAndBoundArgs{LCStandard: kmeans_scheduler.BranchAndBoundLCStandardPredictCost}),
+		kmeans_scheduler.WithDistanceAlgoArgs(&kmeans_scheduler.DistanceAlgoMinCostArgs{
+			MinCostAlgoArgs: &kmeans_scheduler.MinCostByBranchAndBoundArgs{
+				LCStandard: kmeans_scheduler.BranchAndBoundLCStandardPredictCost,
+			}}),
 		kmeans_scheduler.WithDDLCostType(kmeans_scheduler.DDLCostTypeStrict),
 	)
 }
