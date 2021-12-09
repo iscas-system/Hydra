@@ -5,15 +5,19 @@ import (
 	"testing"
 )
 
+func Test_closure(t *testing.T) {
+	a := 0
+	f := func() {
+		a = 1
+	}
+	f()
+	t.Log(a)
+}
+
 func Test1(t *testing.T) {
 	scheduler := New(WithScheme(
-		&SimpleOneShotScheme{
-			Preemptive: false,
-		}),
-		WithDistanceAlgoArgs(&DistanceAlgoMinCostArgs{
-		 MinCostByBranchAndBoundArgs{LCStandard: BranchAndBoundLCStandardPartialCost},
-		}),
-		WithDDLCostType(DDLCostTypeStrict),
+		NewSimpleOneShotScheduleScheme(false, -1)),
+		WithDistanceAlgo(NewMinCostDistanceAlgo(NewMinCostByBranchAndBoundAlgo(MinCostBranchAndBoundLCStandardPartialCost), NewSimpleAddCostSolverMaker(DDLCostTypeStrict, 1e20))),
 	)
 	simu := simulator.NewSimulator(scheduler,
 		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),

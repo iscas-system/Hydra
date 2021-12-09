@@ -8,17 +8,17 @@ import (
 
 func main() {
 	// scheduler := initDummyScheduler()
-	// scheduler := initSJFScheduler()
-	scheduler := initKMeansScheduler()
+	scheduler := initSJFScheduler()
+	// scheduler := initKMeansScheduler()
 	simu := simulator.NewSimulator(scheduler,
 		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),
-		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_200.csv"),
+		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_2000.csv"),
 		simulator.WithOptionLogEnabled(true),
 		simulator.WithOptionLogPath("/Users/purchaser/go/src/DES-go/logs"),
 		simulator.WithOptionGPUType2Count(map[simulator.GPUType]int{
-			"V100": 12,
-			"P100": 8,
-			"T4":   6,
+			"V100": 32,
+			"P100": 24,
+			"T4":   8,
 		}))
 	simu.Start()
 }
@@ -33,13 +33,10 @@ func initSJFScheduler() simulator.Scheduler {
 
 func initKMeansScheduler() simulator.Scheduler {
 	return kmeans_scheduler.New(
-		kmeans_scheduler.WithScheme(&kmeans_scheduler.SimpleOneShotScheme{
-			Preemptive: false,
-		}),
-		kmeans_scheduler.WithDistanceAlgoArgs(&kmeans_scheduler.DistanceAlgoMinCostArgs{
-			MinCostAlgoArgs: &kmeans_scheduler.MinCostByBranchAndBoundArgs{
-				LCStandard: kmeans_scheduler.BranchAndBoundLCStandardPredictCost,
-			}}),
-		kmeans_scheduler.WithDDLCostType(kmeans_scheduler.DDLCostTypeStrict),
+		kmeans_scheduler.WithScheme(kmeans_scheduler.NewSimpleOneShotScheduleScheme(false, -1)),
+		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
+			kmeans_scheduler.NewMinCostByBranchAndBoundAlgo(
+				kmeans_scheduler.MinCostBranchAndBoundLCStandardPredictCost),
+				kmeans_scheduler.NewSimpleAddCostSolverMaker(kmeans_scheduler.DDLCostTypeStrict, 1e20))),
 	)
 }
