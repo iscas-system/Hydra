@@ -1,0 +1,1719 @@
+2021/12/12 17:27:25 
+TimePassed for 1.000000 seconds, finished jobs count: 0. 
+cluster info: 
+&struct { Now simulator.Time; GPU2JobQueueLength map[*simulator.GPU]int }{
+    Now:                1,
+    GPU2JobQueueLength: {&simulator.GPU{gpuID:0, gpuType:"P100"}:0, &simulator.GPU{gpuID:1, gpuType:"P100"}:0, &simulator.GPU{gpuID:2, gpuType:"P100"}:0, &simulator.GPU{gpuID:3, gpuType:"P100"}:0, &simulator.GPU{gpuID:4, gpuType:"P100"}:0, &simulator.GPU{gpuID:5, gpuType:"P100"}:0, &simulator.GPU{gpuID:6, gpuType:"P100"}:0, &simulator.GPU{gpuID:7, gpuType:"P100"}:0, &simulator.GPU{gpuID:8, gpuType:"P100"}:0, &simulator.GPU{gpuID:9, gpuType:"P100"}:0, &simulator.GPU{gpuID:10, gpuType:"P100"}:0, &simulator.GPU{gpuID:11, gpuType:"P100"}:0, &simulator.GPU{gpuID:12, gpuType:"P100"}:0, &simulator.GPU{gpuID:13, gpuType:"P100"}:0, &simulator.GPU{gpuID:14, gpuType:"P100"}:0, &simulator.GPU{gpuID:15, gpuType:"P100"}:0, &simulator.GPU{gpuID:16, gpuType:"P100"}:0, &simulator.GPU{gpuID:17, gpuType:"P100"}:0, &simulator.GPU{gpuID:18, gpuType:"P100"}:0, &simulator.GPU{gpuID:19, gpuType:"P100"}:0, &simulator.GPU{gpuID:20, gpuType:"T4"}:0, &simulator.GPU{gpuID:21, gpuType:"T4"}:0, &simulator.GPU{gpuID:22, gpuType:"T4"}:0, &simulator.GPU{gpuID:23, gpuType:"T4"}:0, &simulator.GPU{gpuID:24, gpuType:"T4"}:0, &simulator.GPU{gpuID:25, gpuType:"T4"}:0, &simulator.GPU{gpuID:26, gpuType:"T4"}:0, &simulator.GPU{gpuID:27, gpuType:"T4"}:0, &simulator.GPU{gpuID:28, gpuType:"T4"}:0, &simulator.GPU{gpuID:29, gpuType:"T4"}:0, &simulator.GPU{gpuID:30, gpuType:"T4"}:0, &simulator.GPU{gpuID:31, gpuType:"T4"}:0, &simulator.GPU{gpuID:32, gpuType:"T4"}:0, &simulator.GPU{gpuID:33, gpuType:"T4"}:0, &simulator.GPU{gpuID:34, gpuType:"T4"}:0, &simulator.GPU{gpuID:35, gpuType:"T4"}:0, &simulator.GPU{gpuID:36, gpuType:"T4"}:0, &simulator.GPU{gpuID:37, gpuType:"T4"}:0, &simulator.GPU{gpuID:38, gpuType:"T4"}:0, &simulator.GPU{gpuID:39, gpuType:"T4"}:0, &simulator.GPU{gpuID:40, gpuType:"V100"}:0, &simulator.GPU{gpuID:41, gpuType:"V100"}:0, &simulator.GPU{gpuID:42, gpuType:"V100"}:0, &simulator.GPU{gpuID:43, gpuType:"V100"}:0, &simulator.GPU{gpuID:44, gpuType:"V100"}:0, &simulator.GPU{gpuID:45, gpuType:"V100"}:0, &simulator.GPU{gpuID:46, gpuType:"V100"}:0, &simulator.GPU{gpuID:47, gpuType:"V100"}:0, &simulator.GPU{gpuID:48, gpuType:"V100"}:0, &simulator.GPU{gpuID:49, gpuType:"V100"}:0, &simulator.GPU{gpuID:50, gpuType:"V100"}:0, &simulator.GPU{gpuID:51, gpuType:"V100"}:0, &simulator.GPU{gpuID:52, gpuType:"V100"}:0, &simulator.GPU{gpuID:53, gpuType:"V100"}:0, &simulator.GPU{gpuID:54, gpuType:"V100"}:0, &simulator.GPU{gpuID:55, gpuType:"V100"}:0, &simulator.GPU{gpuID:56, gpuType:"V100"}:0, &simulator.GPU{gpuID:57, gpuType:"V100"}:0, &simulator.GPU{gpuID:58, gpuType:"V100"}:0, &simulator.GPU{gpuID:59, gpuType:"V100"}:0},
+}.
+2021/12/12 17:27:25 
+==================================================Finished:0==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "a59b9243c5c5bf14b7895ded",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "a59b9243c5c5bf14b7895ded",
+            executionRanges: {
+                &simulator.GPU{gpuID:6, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "a59b9243c5c5bf14b7895ded",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "a59b9243c5c5bf14b7895ded",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":552, "p100":14, "t4":23, "v100":7},
+    },
+}===============================================================================================================
+==================================================Finished:1==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "b559e586b9327c031ab1bf4b",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "b559e586b9327c031ab1bf4b",
+            executionRanges: {
+                &simulator.GPU{gpuID:20, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "b559e586b9327c031ab1bf4b",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "b559e586b9327c031ab1bf4b",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":230, "p100":109, "t4":216, "v100":84},
+    },
+}===============================================================================================================
+==================================================Finished:2==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "3e7845cba80b61fac96d9a31",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "3e7845cba80b61fac96d9a31",
+            executionRanges: {
+                &simulator.GPU{gpuID:41, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "3e7845cba80b61fac96d9a31",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "3e7845cba80b61fac96d9a31",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":588, "p100":16, "t4":24, "v100":9},
+    },
+}===============================================================================================================
+==================================================Finished:3==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "497ea371b471de96cf0875eb",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "497ea371b471de96cf0875eb",
+            executionRanges: {
+                &simulator.GPU{gpuID:46, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "497ea371b471de96cf0875eb",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "497ea371b471de96cf0875eb",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":420, "p100":376, "t4":519, "v100":205},
+    },
+}===============================================================================================================
+==================================================Finished:4==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "99cab7c609b20c659412325b",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "99cab7c609b20c659412325b",
+            executionRanges: {
+                &simulator.GPU{gpuID:51, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "99cab7c609b20c659412325b",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "99cab7c609b20c659412325b",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":558, "p100":17, "t4":33, "v100":10},
+    },
+}===============================================================================================================
+==================================================Finished:5==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "97e58ae0cee5544e8f38e103",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "97e58ae0cee5544e8f38e103",
+            executionRanges: {
+                &simulator.GPU{gpuID:22, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "97e58ae0cee5544e8f38e103",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "97e58ae0cee5544e8f38e103",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":518, "p100":12, "t4":23, "v100":7},
+    },
+}===============================================================================================================
+==================================================Finished:6==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "d60e2008966df759029da2b9",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "d60e2008966df759029da2b9",
+            executionRanges: {
+                &simulator.GPU{gpuID:14, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "d60e2008966df759029da2b9",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "d60e2008966df759029da2b9",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":436, "p100":42, "t4":83, "v100":25},
+    },
+}===============================================================================================================
+==================================================Finished:7==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "f85c9a849228749d1c05160c",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "f85c9a849228749d1c05160c",
+            executionRanges: {
+                &simulator.GPU{gpuID:19, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "f85c9a849228749d1c05160c",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "f85c9a849228749d1c05160c",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":583, "p100":63, "t4":121, "v100":41},
+    },
+}===============================================================================================================
+==================================================Finished:8==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "49e8d7c4bcce37f2e4b56fc4",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "49e8d7c4bcce37f2e4b56fc4",
+            executionRanges: {
+                &simulator.GPU{gpuID:7, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "49e8d7c4bcce37f2e4b56fc4",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "49e8d7c4bcce37f2e4b56fc4",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":450, "p100":19, "t4":33, "v100":10},
+    },
+}===============================================================================================================
+==================================================Finished:9==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "2bf052a96aad9058b510c7d6",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "2bf052a96aad9058b510c7d6",
+            executionRanges: {
+                &simulator.GPU{gpuID:28, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "2bf052a96aad9058b510c7d6",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "2bf052a96aad9058b510c7d6",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":408, "p100":21, "t4":34, "v100":13},
+    },
+}===============================================================================================================
+==================================================Finished:10==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "e673dd44668e3901a1db315d",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "e673dd44668e3901a1db315d",
+            executionRanges: {
+                &simulator.GPU{gpuID:45, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "e673dd44668e3901a1db315d",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "e673dd44668e3901a1db315d",
+        submitTime: 0,
+        ddl:        93,
+        durations:  {"Unnamed: 0":590, "p100":30, "t4":59, "v100":20},
+    },
+}================================================================================================================
+==================================================Finished:11==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "a8381a33aabdfaa1ae5137f2",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "a8381a33aabdfaa1ae5137f2",
+            executionRanges: {
+                &simulator.GPU{gpuID:48, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "a8381a33aabdfaa1ae5137f2",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "a8381a33aabdfaa1ae5137f2",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":179, "p100":13, "t4":23, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:12==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "ce8626759193e2dbd0e3f42f",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "ce8626759193e2dbd0e3f42f",
+            executionRanges: {
+                &simulator.GPU{gpuID:2, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "ce8626759193e2dbd0e3f42f",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "ce8626759193e2dbd0e3f42f",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":597, "p100":13, "t4":24, "v100":10},
+    },
+}================================================================================================================
+==================================================Finished:13==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "3e62c982a41027f7e9b2c587",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "3e62c982a41027f7e9b2c587",
+            executionRanges: {
+                &simulator.GPU{gpuID:40, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "3e62c982a41027f7e9b2c587",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "3e62c982a41027f7e9b2c587",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":432, "p100":13, "t4":23, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:14==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "3890faf907e8b0b2089a3f93",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "3890faf907e8b0b2089a3f93",
+            executionRanges: {
+                &simulator.GPU{gpuID:53, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "3890faf907e8b0b2089a3f93",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "3890faf907e8b0b2089a3f93",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":589, "p100":13, "t4":24, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:15==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "d7bd997548eabd2f86fced0b",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "d7bd997548eabd2f86fced0b",
+            executionRanges: {
+                &simulator.GPU{gpuID:12, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "d7bd997548eabd2f86fced0b",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "d7bd997548eabd2f86fced0b",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":2, "p100":13, "t4":24, "v100":7},
+    },
+}================================================================================================================
+==================================================Finished:16==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "247a8eace6cd35344afb87e7",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "247a8eace6cd35344afb87e7",
+            executionRanges: {
+                &simulator.GPU{gpuID:33, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "247a8eace6cd35344afb87e7",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "247a8eace6cd35344afb87e7",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":0, "p100":23, "t4":34, "v100":10},
+    },
+}================================================================================================================
+==================================================Finished:17==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "adc534aa2f61be77651237de",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "adc534aa2f61be77651237de",
+            executionRanges: {
+                &simulator.GPU{gpuID:36, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "adc534aa2f61be77651237de",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "adc534aa2f61be77651237de",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":560, "p100":14, "t4":23, "v100":7},
+    },
+}================================================================================================================
+==================================================Finished:18==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "cee4dbef6fe1bc9975d4021f",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "cee4dbef6fe1bc9975d4021f",
+            executionRanges: {
+                &simulator.GPU{gpuID:56, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "cee4dbef6fe1bc9975d4021f",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "cee4dbef6fe1bc9975d4021f",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":547, "p100":24, "t4":46, "v100":14},
+    },
+}================================================================================================================
+==================================================Finished:19==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "100167b7c4af9f0c274b456d",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "100167b7c4af9f0c274b456d",
+            executionRanges: {
+                &simulator.GPU{gpuID:17, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "100167b7c4af9f0c274b456d",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "100167b7c4af9f0c274b456d",
+        submitTime: 0,
+        ddl:        12,
+        durations:  {"Unnamed: 0":598, "p100":16, "t4":24, "v100":7},
+    },
+}================================================================================================================
+==================================================Finished:20==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "504fd4bc7d401a6059188077",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "504fd4bc7d401a6059188077",
+            executionRanges: {
+                &simulator.GPU{gpuID:26, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "504fd4bc7d401a6059188077",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "504fd4bc7d401a6059188077",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":505, "p100":39, "t4":65, "v100":24},
+    },
+}================================================================================================================
+==================================================Finished:21==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "3e84444864f000a747b560e0",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "3e84444864f000a747b560e0",
+            executionRanges: {
+                &simulator.GPU{gpuID:11, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "3e84444864f000a747b560e0",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "3e84444864f000a747b560e0",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":493, "p100":56, "t4":103, "v100":31},
+    },
+}================================================================================================================
+==================================================Finished:22==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "0c3f532c3cc4fb59341646b9",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "0c3f532c3cc4fb59341646b9",
+            executionRanges: {
+                &simulator.GPU{gpuID:18, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "0c3f532c3cc4fb59341646b9",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "0c3f532c3cc4fb59341646b9",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":594, "p100":18, "t4":33, "v100":10},
+    },
+}================================================================================================================
+==================================================Finished:23==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "658fa2370839066e817fad2d",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "658fa2370839066e817fad2d",
+            executionRanges: {
+                &simulator.GPU{gpuID:23, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "658fa2370839066e817fad2d",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "658fa2370839066e817fad2d",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":548, "p100":82, "t4":146, "v100":48},
+    },
+}================================================================================================================
+==================================================Finished:24==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "fd2cf63e2d14293aa336b8fb",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "fd2cf63e2d14293aa336b8fb",
+            executionRanges: {
+                &simulator.GPU{gpuID:15, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "fd2cf63e2d14293aa336b8fb",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "fd2cf63e2d14293aa336b8fb",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":567, "p100":20, "t4":33, "v100":10},
+    },
+}================================================================================================================
+==================================================Finished:25==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "4f3cffba25c901f501393794",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "4f3cffba25c901f501393794",
+            executionRanges: {
+                &simulator.GPU{gpuID:27, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "4f3cffba25c901f501393794",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "4f3cffba25c901f501393794",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":559, "p100":16, "t4":24, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:26==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "4d967474f0b80d79e3516dd5",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "4d967474f0b80d79e3516dd5",
+            executionRanges: {
+                &simulator.GPU{gpuID:29, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "4d967474f0b80d79e3516dd5",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "4d967474f0b80d79e3516dd5",
+        submitTime: 0,
+        ddl:        18,
+        durations:  {"Unnamed: 0":462, "p100":15, "t4":24, "v100":7},
+    },
+}================================================================================================================
+==================================================Finished:27==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "833f411d46a13fe3ca1c2a80",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "833f411d46a13fe3ca1c2a80",
+            executionRanges: {
+                &simulator.GPU{gpuID:37, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "833f411d46a13fe3ca1c2a80",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "833f411d46a13fe3ca1c2a80",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":356, "p100":22, "t4":44, "v100":17},
+    },
+}================================================================================================================
+==================================================Finished:28==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "cfb2af50e83ae526db5ee1b6",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "cfb2af50e83ae526db5ee1b6",
+            executionRanges: {
+                &simulator.GPU{gpuID:38, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "cfb2af50e83ae526db5ee1b6",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "cfb2af50e83ae526db5ee1b6",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":582, "p100":21, "t4":33, "v100":12},
+    },
+}================================================================================================================
+==================================================Finished:29==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "05316781cb922beb94874c53",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "05316781cb922beb94874c53",
+            executionRanges: {
+                &simulator.GPU{gpuID:47, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "05316781cb922beb94874c53",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "05316781cb922beb94874c53",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":532, "p100":503, "t4":1063, "v100":339},
+    },
+}================================================================================================================
+==================================================Finished:30==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "8ae60e1ee79302ea197eba9c",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "8ae60e1ee79302ea197eba9c",
+            executionRanges: {
+                &simulator.GPU{gpuID:3, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "8ae60e1ee79302ea197eba9c",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "8ae60e1ee79302ea197eba9c",
+        submitTime: 0,
+        ddl:        24,
+        durations:  {"Unnamed: 0":579, "p100":12, "t4":23, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:31==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "8a6d7edc77e7ff3941ba9a8d",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "8a6d7edc77e7ff3941ba9a8d",
+            executionRanges: {
+                &simulator.GPU{gpuID:9, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "8a6d7edc77e7ff3941ba9a8d",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "8a6d7edc77e7ff3941ba9a8d",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":580, "p100":12, "t4":23, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:32==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "d904fedf90e27ca5ad4d1f0e",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "d904fedf90e27ca5ad4d1f0e",
+            executionRanges: {
+                &simulator.GPU{gpuID:32, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "d904fedf90e27ca5ad4d1f0e",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "d904fedf90e27ca5ad4d1f0e",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":534, "p100":13, "t4":23, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:33==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "7225dfb53d34cb881443804b",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "7225dfb53d34cb881443804b",
+            executionRanges: {
+                &simulator.GPU{gpuID:39, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "7225dfb53d34cb881443804b",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "7225dfb53d34cb881443804b",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":410, "p100":16, "t4":29, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:34==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "43648e6fd59e0d9b8fe4d801",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "43648e6fd59e0d9b8fe4d801",
+            executionRanges: {
+                &simulator.GPU{gpuID:42, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "43648e6fd59e0d9b8fe4d801",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "43648e6fd59e0d9b8fe4d801",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":472, "p100":21, "t4":35, "v100":12},
+    },
+}================================================================================================================
+==================================================Finished:35==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "96bcedafec2e656a05202ad6",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "96bcedafec2e656a05202ad6",
+            executionRanges: {
+                &simulator.GPU{gpuID:44, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "96bcedafec2e656a05202ad6",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "96bcedafec2e656a05202ad6",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":520, "p100":14, "t4":24, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:36==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "3dfb97e5c0bc3da303fcd2ee",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "3dfb97e5c0bc3da303fcd2ee",
+            executionRanges: {
+                &simulator.GPU{gpuID:24, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "3dfb97e5c0bc3da303fcd2ee",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "3dfb97e5c0bc3da303fcd2ee",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":557, "p100":20, "t4":34, "v100":13},
+    },
+}================================================================================================================
+==================================================Finished:37==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "ce6e91f7c643d074c29c8f89",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "ce6e91f7c643d074c29c8f89",
+            executionRanges: {
+                &simulator.GPU{gpuID:25, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "ce6e91f7c643d074c29c8f89",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "ce6e91f7c643d074c29c8f89",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":549, "p100":13, "t4":23, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:38==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "d2eee14c76430a526bf6c60a",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "d2eee14c76430a526bf6c60a",
+            executionRanges: {
+                &simulator.GPU{gpuID:35, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "d2eee14c76430a526bf6c60a",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "d2eee14c76430a526bf6c60a",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":459, "p100":56, "t4":123, "v100":37},
+    },
+}================================================================================================================
+==================================================Finished:39==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "a7b58cc9dda0f4cb582de248",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "a7b58cc9dda0f4cb582de248",
+            executionRanges: {
+                &simulator.GPU{gpuID:1, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "a7b58cc9dda0f4cb582de248",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "a7b58cc9dda0f4cb582de248",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":507, "p100":1870, "t4":3061, "v100":1164},
+    },
+}================================================================================================================
+==================================================Finished:40==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "ff272145c85a77992a997871",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "ff272145c85a77992a997871",
+            executionRanges: {
+                &simulator.GPU{gpuID:21, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "ff272145c85a77992a997871",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "ff272145c85a77992a997871",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":592, "p100":19, "t4":34, "v100":12},
+    },
+}================================================================================================================
+==================================================Finished:41==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "eaa91425d7932cb19082c6ed",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "eaa91425d7932cb19082c6ed",
+            executionRanges: {
+                &simulator.GPU{gpuID:31, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "eaa91425d7932cb19082c6ed",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "eaa91425d7932cb19082c6ed",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":569, "p100":200, "t4":315, "v100":111},
+    },
+}================================================================================================================
+==================================================Finished:42==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "6aabbfceec9650f21f73a181",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "6aabbfceec9650f21f73a181",
+            executionRanges: {
+                &simulator.GPU{gpuID:58, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "6aabbfceec9650f21f73a181",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "6aabbfceec9650f21f73a181",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":90, "p100":14, "t4":25, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:43==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "d125799d6f5a5a54debd9629",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "d125799d6f5a5a54debd9629",
+            executionRanges: {
+                &simulator.GPU{gpuID:43, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "d125799d6f5a5a54debd9629",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "d125799d6f5a5a54debd9629",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":578, "p100":40, "t4":63, "v100":26},
+    },
+}================================================================================================================
+==================================================Finished:44==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "bc3c67bdd7ea3c9e5b3e39ed",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "bc3c67bdd7ea3c9e5b3e39ed",
+            executionRanges: {
+                &simulator.GPU{gpuID:52, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "bc3c67bdd7ea3c9e5b3e39ed",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "bc3c67bdd7ea3c9e5b3e39ed",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":543, "p100":53, "t4":102, "v100":25},
+    },
+}================================================================================================================
+==================================================Finished:45==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "ba2f190f82af76ecc59dbb35",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "ba2f190f82af76ecc59dbb35",
+            executionRanges: {
+                &simulator.GPU{gpuID:54, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "ba2f190f82af76ecc59dbb35",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "ba2f190f82af76ecc59dbb35",
+        submitTime: 0,
+        ddl:        73,
+        durations:  {"Unnamed: 0":542, "p100":21, "t4":34, "v100":13},
+    },
+}================================================================================================================
+==================================================Finished:46==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "d9de921e32a0b4edb97aee71",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "d9de921e32a0b4edb97aee71",
+            executionRanges: {
+                &simulator.GPU{gpuID:0, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "d9de921e32a0b4edb97aee71",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "d9de921e32a0b4edb97aee71",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":7, "p100":47, "t4":80, "v100":34},
+    },
+}================================================================================================================
+==================================================Finished:47==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "14499d4fe14a9ed6aba25991",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "14499d4fe14a9ed6aba25991",
+            executionRanges: {
+                &simulator.GPU{gpuID:59, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "14499d4fe14a9ed6aba25991",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "14499d4fe14a9ed6aba25991",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":550, "p100":15, "t4":24, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:48==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "5fb36beffcc3d7626c5cce33",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "5fb36beffcc3d7626c5cce33",
+            executionRanges: {
+                &simulator.GPU{gpuID:8, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "5fb36beffcc3d7626c5cce33",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "5fb36beffcc3d7626c5cce33",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":515, "p100":85838, "t4":151194, "v100":45735},
+    },
+}================================================================================================================
+==================================================Finished:49==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "f6c6c539c67cf58e2c76bdf3",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "f6c6c539c67cf58e2c76bdf3",
+            executionRanges: {
+                &simulator.GPU{gpuID:10, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "f6c6c539c67cf58e2c76bdf3",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "f6c6c539c67cf58e2c76bdf3",
+        submitTime: 0,
+        ddl:        49,
+        durations:  {"Unnamed: 0":497, "p100":14, "t4":23, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:50==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "92d8304c2e7684ec3ed967b9",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "92d8304c2e7684ec3ed967b9",
+            executionRanges: {
+                &simulator.GPU{gpuID:30, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "92d8304c2e7684ec3ed967b9",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "92d8304c2e7684ec3ed967b9",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":575, "p100":102, "t4":139, "v100":51},
+    },
+}================================================================================================================
+==================================================Finished:51==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "18763a7aa30ccca6d8a416a7",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "18763a7aa30ccca6d8a416a7",
+            executionRanges: {
+                &simulator.GPU{gpuID:50, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "18763a7aa30ccca6d8a416a7",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "18763a7aa30ccca6d8a416a7",
+        submitTime: 0,
+        ddl:        25,
+        durations:  {"Unnamed: 0":585, "p100":13, "t4":23, "v100":8},
+    },
+}================================================================================================================
+==================================================Finished:52==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "c384e53f05394d77199e6011",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "c384e53f05394d77199e6011",
+            executionRanges: {
+                &simulator.GPU{gpuID:55, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "c384e53f05394d77199e6011",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "c384e53f05394d77199e6011",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":28, "p100":22, "t4":43, "v100":15},
+    },
+}================================================================================================================
+==================================================Finished:53==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "a99cd58305fad7a7d68b5359",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "a99cd58305fad7a7d68b5359",
+            executionRanges: {
+                &simulator.GPU{gpuID:57, gpuType:"V100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "a99cd58305fad7a7d68b5359",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "a99cd58305fad7a7d68b5359",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":514, "p100":726, "t4":1280, "v100":452},
+    },
+}================================================================================================================
+==================================================Finished:54==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "b498f5b4dd5833cecc98b875",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "b498f5b4dd5833cecc98b875",
+            executionRanges: {
+                &simulator.GPU{gpuID:16, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "b498f5b4dd5833cecc98b875",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "b498f5b4dd5833cecc98b875",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":566, "p100":15, "t4":23, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:55==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "fe8b209d2ed3622f435ed711",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "fe8b209d2ed3622f435ed711",
+            executionRanges: {
+                &simulator.GPU{gpuID:34, gpuType:"T4"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "fe8b209d2ed3622f435ed711",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "fe8b209d2ed3622f435ed711",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":599, "p100":36, "t4":70, "v100":18},
+    },
+}================================================================================================================
+==================================================Finished:56==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "62af592a152e7f6ba9727f50",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "62af592a152e7f6ba9727f50",
+            executionRanges: {
+                &simulator.GPU{gpuID:4, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "62af592a152e7f6ba9727f50",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "62af592a152e7f6ba9727f50",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":516, "p100":394, "t4":584, "v100":187},
+    },
+}================================================================================================================
+==================================================Finished:57==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "17aa83261914f66c8226b86e",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "17aa83261914f66c8226b86e",
+            executionRanges: {
+                &simulator.GPU{gpuID:5, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "17aa83261914f66c8226b86e",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "17aa83261914f66c8226b86e",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":504, "p100":14, "t4":24, "v100":9},
+    },
+}================================================================================================================
+==================================================Finished:58==================================================
+struct { *simulator.Job; *simulator.JobMeta }{
+    Job: &simulator.Job{
+        jobName:         "ee40f4cc7f7f120028e446ae",
+        executionDetail: &simulator.JobExecutionDetail{
+            jobName:         "ee40f4cc7f7f120028e446ae",
+            executionRanges: {
+                &simulator.GPU{gpuID:13, gpuType:"P100"}: {
+                    &simulator.JobExecutionRange{
+                        gpu:               &simulator.GPU{(CYCLIC REFERENCE)},
+                        jobName:           "ee40f4cc7f7f120028e446ae",
+                        timeRange:         &simulator.TimeRange{},
+                        completenessRatio: NaN,
+                    },
+                },
+            },
+        },
+        firstExecutionTime:  0,
+        finishExecutionTime: 0,
+        remainingRatio:      0,
+        isRunning:           false,
+    },
+    JobMeta: &simulator.JobMeta{
+        jobName:    "ee40f4cc7f7f120028e446ae",
+        submitTime: 0,
+        ddl:        +Inf,
+        durations:  {"Unnamed: 0":496, "p100":30, "t4":45, "v100":22},
+    },
+}================================================================================================================
