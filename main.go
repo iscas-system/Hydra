@@ -12,13 +12,13 @@ func main() {
 	// scheduler := initKMeansScheduler()
 	simu := simulator.NewSimulator(scheduler,
 		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),
-		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_2000.csv"),
+		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_200_start.csv"),
 		simulator.WithOptionLogEnabled(true),
 		simulator.WithOptionLogPath("/Users/purchaser/go/src/DES-go/logs"),
 		simulator.WithOptionGPUType2Count(map[simulator.GPUType]int{
-			"V100": 32,
-			"P100": 24,
-			"T4":   8,
+			"V100": 10,
+			"P100": 5,
+			"T4":   5,
 		}))
 	simu.Start()
 }
