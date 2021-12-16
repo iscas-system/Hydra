@@ -37,6 +37,6 @@ func initKMeansScheduler() simulator.Scheduler {
 		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
 			kmeans_scheduler.NewMinCostByBranchAndBoundAlgo(
 				kmeans_scheduler.MinCostBranchAndBoundLCStandardPredictCost),
-				kmeans_scheduler.NewSimpleAddCostSolverMaker(kmeans_scheduler.DDLCostTypeStrict, 1e20))),
+			kmeans_scheduler.NewSimpleAddCostSolverMaker(kmeans_scheduler.DDLCostTypeStrict, 1e20))),
 	)
 }

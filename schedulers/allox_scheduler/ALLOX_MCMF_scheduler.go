@@ -1,4 +1,4 @@
-package schedulers
+package allox_scheduler
 
 import (
 	"DES-go/simulator"

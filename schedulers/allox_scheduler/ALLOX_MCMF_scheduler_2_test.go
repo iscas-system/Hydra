@@ -1,20 +1,29 @@
-package schedulers
+package allox_scheduler
 
 import (
+	"encoding/csv"
 	"fmt"
+	"os"
 	"strconv"
 	"testing"
 )
 
-func TestSolver(t *testing.T) {
+func TestSolver2(t *testing.T) {
+	file, _ := os.Open("/Users/yangchen/Projects/Graduate/DES-go/cases/case_3600.csv")
+	reader := csv.NewReader(file)
+	records, _ := reader.ReadAll()
+	records = records[1:]
+	records = records[:600]
+	//fmt.Println(records[len(records) - 1])
+
 	g := NewGraph()
 	source := NewNode("source", "source")
 	sink := NewNode("sink", "sink")
 	g.AddSource(source)
 	g.AddSink(sink)
 
-	jobNum := 3
-	gpuNum := 2
+	jobNum := 600
+	gpuNum := 60
 
 
 	// Matrix P in the paper
@@ -22,13 +31,21 @@ func TestSolver(t *testing.T) {
 	for i := 0; i < jobNum; i++ {
 		timeMatrix[i] = make([]float64, gpuNum)
 	}
-	timeMatrix[0][0] = 3
-	timeMatrix[0][1] = 4
-	timeMatrix[1][0] = 4
-	timeMatrix[1][1] = 6
-	timeMatrix[2][0] = 5
-	timeMatrix[2][1] = 10
+	for i := 0; i < jobNum; i++ {
+		for j := 0; j < gpuNum; j++ {
+			if j < 10 {
+				t, _ := strconv.Atoi(records[i][2])
+				timeMatrix[i][j] = float64(t)
+			} else if j >= 10 && j < 30 {
+				t, _ := strconv.Atoi(records[i][3])
+				timeMatrix[i][j] = float64(t)
+			} else {
+				t, _ := strconv.Atoi(records[i][4])
+				timeMatrix[i][j] = float64(t)
 
+			}
+		}
+	}
 	jobNodes := make([]*Node, jobNum)
 	gpuSlotNodes := make([]*Node, jobNum * gpuNum)
 
@@ -42,8 +59,6 @@ func TestSolver(t *testing.T) {
 			gpuSlotNodes[i * gpuNum + j] = NewNode("gpu" + strconv.Itoa(j) + "-" + "slot" + strconv.Itoa(i), "gpu")
 		}
 	}
-
-
 	weights := make([][]float64, jobNum)
 	for i := 0; i < jobNum; i++ {
 		weights[i] = make([]float64, jobNum * gpuNum)
@@ -74,5 +89,6 @@ func TestSolver(t *testing.T) {
 
 	fmt.Println("Minimum JCT:", solver.minCost)
 	fmt.Println("Scheduling result:", solver.GetSchedulingResult())
+
 }
 
