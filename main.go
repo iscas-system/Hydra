@@ -12,7 +12,7 @@ func main() {
 	scheduler := initKMeansScheduler()
 	simu := simulator.NewSimulator(scheduler,
 		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),
-		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_200_start.csv"),
+		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_200_all.csv"),
 		simulator.WithOptionLogEnabled(true),
 		simulator.WithOptionLogPath("/Users/purchaser/go/src/DES-go/logs"),
 		simulator.WithOptionGPUType2Count(map[simulator.GPUType]int{

@@ -13,22 +13,26 @@ import (
 
 // costSolverCommon 定义了成本计算的公用类型。
 type costSolverCommon struct {
-	gpuCluster *simulator.Cluster
-	costMemo   *sync.Map // map[string]*costResp
+	costMemo        *sync.Map // map[string]*costResp
+	jctOffsetGetter jctOffsetGetter
 }
 
-func newCostSolverCommon(gpuCluster *simulator.Cluster) *costSolverCommon {
+func newCostSolverCommon(defaultJCTOffsetGetter jctOffsetGetter) *costSolverCommon {
 	return &costSolverCommon{
-		gpuCluster: gpuCluster,
-		costMemo:   &sync.Map{},
+		costMemo:        &sync.Map{},
+		jctOffsetGetter: defaultJCTOffsetGetter,
 	}
 }
 
-func (c *costSolverCommon) costMemoKey(gpu *simulator.GPU, jobs []*simulator.Job) string {
+type jctOffsetGetter func(gpu *simulator.GPU) simulator.Time
+
+func (c *costSolverCommon) costMemoKey(gpu *simulator.GPU, jobs []*simulator.Job, jctOffset simulator.Time) string {
 	builder := &strings.Builder{}
 	// gpu info
 	builder.WriteString("GPU:")
 	builder.WriteString(gpu.String())
+	builder.WriteString("JCTOffset:")
+	builder.WriteString(strconv.FormatFloat(float64(jctOffset), 'f', 6, 64))
 	writeJob := func(job *simulator.Job) {
 		builder.WriteString(string(job.JobName()))
 		builder.WriteString(strconv.FormatFloat(job.RemainingRatio(), 'f', 6, 64))
@@ -41,12 +45,35 @@ func (c *costSolverCommon) costMemoKey(gpu *simulator.GPU, jobs []*simulator.Job
 	return builder.String()
 }
 
+func (c *costSolverCommon) CalJCTAndDDLViolations(jctOffset simulator.Time, gpu *simulator.GPU, jobs []*simulator.Job) ([]simulator.Time, []simulator.Duration, []*simulator.Job) {
+	JCTs := make([]simulator.Time, 0, len(jobs))
+	ddlViolations := make([]simulator.Duration, 0, len(jobs))
+	ddlViolatedJobs := make([]*simulator.Job, 0)
+	for _, job := range jobs {
+		// 此处是预测job的JCT，不是计算已经完成的任务的JCT，所以不可以调用job.JCT()，因为job.JCT()只有当任务实际已经完成时才能返回结果。
+		currJobJCT := jctOffset + simulator.Time(job.RemainingDuration(gpu.Type())) - job.JobMeta().SubmitTime()
+		jctOffset = currJobJCT
+		JCTs = append(JCTs, currJobJCT)
+		if currJobJCT > job.JobMeta().DDL() {
+			ddlViolations = append(ddlViolations, simulator.Duration(currJobJCT-job.JobMeta().DDL()))
+			ddlViolatedJobs = append(ddlViolatedJobs, job)
+		} else {
+			ddlViolations = append(ddlViolations, 0)
+		}
+	}
+	return JCTs, ddlViolations, ddlViolatedJobs
+}
+
 // CostSolver 定义成本计算方式。
 type CostSolver interface {
 	Cost(gpu *simulator.GPU, jobs []*simulator.Job) *costResp
+
+	// Clone SetJCTOffsetGetter 添加CostSolver的复用可能性。
+	Clone(withMemo bool) CostSolver
+	SetJCTOffsetGetter(getter jctOffsetGetter)
 }
 
-type CostSolverMaker func(gpuCluster *simulator.Cluster) CostSolver
+type CostSolverMaker func(jctOffsetGetter jctOffsetGetter) CostSolver
 
 type DDLCostType int
 
@@ -73,9 +100,9 @@ type SimpleAddCostSolver struct {
 }
 
 func NewSimpleAddCostSolverMaker(ddlCostType DDLCostType, ddlStrictCostCoefficient float64) CostSolverMaker {
-	return func(gpuCluster *simulator.Cluster) CostSolver {
+	return func(defaultJCTOffsetGetter jctOffsetGetter) CostSolver {
 		return &SimpleAddCostSolver{
-			costSolverCommon:         newCostSolverCommon(gpuCluster),
+			costSolverCommon:         newCostSolverCommon(defaultJCTOffsetGetter),
 			ddlCostType:              ddlCostType,
 			ddlStrictCostCoefficient: ddlStrictCostCoefficient,
 		}
@@ -87,40 +114,16 @@ func NewSimpleAddCostSolverMaker(ddlCostType DDLCostType, ddlStrictCostCoefficie
 // 那么JCT就按照累加求和即可，而DDL作为更为首要的要求，可以使用一个高倍的系数，乘以每个违约job的违约时长，使得它比JCT更重要。
 // 那么这里也可以加入soft DDL的模式，即当job只违反了一点点DDL时，不认为它非常严重。
 // 返回值: 分别返回，代价的大小（float64），以及是否存在DDL违反（bool）。
-func (c *SimpleAddCostSolver) Cost(gpu *simulator.GPU, jobs []*simulator.Job) *costResp {
+func (s *SimpleAddCostSolver) Cost(gpu *simulator.GPU, jobs []*simulator.Job) *costResp {
 	// 如果有过相同调用，则直接返回记录的结果。
-	memoKey := c.costMemoKey(gpu, jobs)
-	if memorized, ok := c.costMemo.Load(memoKey); ok {
+	jctOffset := s.jctOffsetGetter(gpu)
+	memoKey := s.costMemoKey(gpu, jobs, jctOffset)
+	if memorized, ok := s.costMemo.Load(memoKey); ok {
 		return memorized.(*costResp)
 	}
 
-	jctOffset := c.gpuCluster.Now()
-	// 考虑到非抢占式调度，要将当前正在运行的任务剩余运行时间考虑进来。
-	runningJob := c.gpuCluster.CurrRunningJob(gpu.ID())
-	if runningJob != nil {
-		jctOffset += simulator.Time(runningJob.RemainingDuration(gpu.Type()))
-	}
-	ddlViolatedJobs := make([]*simulator.Job, 0)
-
 	// 第一步，计算每个任务的jct，以及每个任务违反ddl的时长。
-	JCTs, ddlViolations := func() ([]simulator.Time, []simulator.Duration) {
-		JCTs := make([]simulator.Time, 0, len(jobs))
-		ddlViolations := make([]simulator.Duration, 0, len(jobs))
-		jctOffset := jctOffset
-		for _, job := range jobs {
-			// 此处是预测job的JCT，不是计算已经完成的任务的JCT，所以不可以调用job.JCT()，因为job.JCT()只有当任务实际已经完成时才能返回结果。
-			currJobJCT := jctOffset + simulator.Time(job.RemainingDuration(gpu.Type())) - job.JobMeta().SubmitTime()
-			jctOffset = currJobJCT
-			JCTs = append(JCTs, currJobJCT)
-			if currJobJCT > job.JobMeta().DDL() {
-				ddlViolations = append(ddlViolations, simulator.Duration(currJobJCT-job.JobMeta().DDL()))
-				ddlViolatedJobs = append(ddlViolatedJobs, job)
-			} else {
-				ddlViolations = append(ddlViolations, 0)
-			}
-		}
-		return JCTs, ddlViolations
-	}()
+	JCTs, ddlViolations, ddlViolatedJobs := s.CalJCTAndDDLViolations(jctOffset, gpu, jobs)
 
 	// 第二步，计算jct带来的cost。
 	JCTCost := func() float64 {
@@ -142,9 +145,9 @@ func (c *SimpleAddCostSolver) Cost(gpu *simulator.GPU, jobs []*simulator.Job) *c
 			if violation <= 0 {
 				continue
 			}
-			switch c.ddlCostType {
+			switch s.ddlCostType {
 			case DDLCostTypeStrict:
-				ddlViolationCosts = append(ddlViolationCosts, c.ddlStrictCostCoefficient*float64(violation))
+				ddlViolationCosts = append(ddlViolationCosts, s.ddlStrictCostCoefficient*float64(violation))
 			case DDLCostTypeSoft:
 				// TODO
 			default:
@@ -164,8 +167,34 @@ func (c *SimpleAddCostSolver) Cost(gpu *simulator.GPU, jobs []*simulator.Job) *c
 		ddlViolated:     DDLCost > 0,
 		ddlViolatedJobs: ddlViolatedJobs,
 	}
-	c.costMemo.Store(memoKey, costResp)
+	s.costMemo.Store(memoKey, costResp)
 	return costResp
+}
+
+func (s *SimpleAddCostSolver) Clone(withMemo bool) CostSolver {
+	copiedMemo := func() *sync.Map {
+		if !withMemo {
+			return nil
+		}
+		copied := &sync.Map{}
+		s.costSolverCommon.costMemo.Range(func(key, value interface{}) bool {
+			copied.Store(key, value)
+			return true
+		})
+		return copied
+	}()
+	return &SimpleAddCostSolver{
+		costSolverCommon: &costSolverCommon{
+			jctOffsetGetter: s.jctOffsetGetter,
+			costMemo:        copiedMemo,
+		},
+		ddlCostType:              s.ddlCostType,
+		ddlStrictCostCoefficient: s.ddlStrictCostCoefficient,
+	}
+}
+
+func (s *SimpleAddCostSolver) SetJCTOffsetGetter(getter jctOffsetGetter) {
+	s.jctOffsetGetter = getter
 }
 
 type MinCostAlgo func(costSolver CostSolver, gpu *simulator.GPU, jobs []*simulator.Job) (float64, []*simulator.Job)
@@ -364,6 +393,16 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 			panic("optimus == nil")
 		}
 		return minCost, optimus
+	}
+}
+
+// NewMinCostByInsertNonDDL 一个分支限界搜索方法，但是将所有不具有ddl的任务直接按照SRJF的顺序固定住，
+// 将其他具有ddl的任务插入到他们之间。使用多层的分支限界方法进行搜索，从而大量减少搜索空间。
+// 似乎可以证明这种方法可以取得最优解。设具有ddl的任务有i个，不具有ddl的任务为j个，则全部的搜索空间约为 (i!) * (j - 1)。
+// 当有20%的任务具有ddl时，可以支持队列长度达到50个左右的任务的快速计算。（40 * 10!这个数量级还算是比较容易计算，毕竟还可以剪枝）
+func NewMinCostByInsertNonDDL() MinCostAlgo {
+	return func(costSolver CostSolver, gpu *simulator.GPU, jobs []*simulator.Job) (float64, []*simulator.Job) {
+		panic("Implement me. 考完试实现。")
 	}
 }
 

@@ -152,8 +152,8 @@ type SimpleOneShotScheduleScheme struct {
 
 func NewSimpleOneShotScheduleScheme(Preemptive bool, PreemptiveCycle simulator.Duration) ScheduleScheme {
 	return &SimpleOneShotScheduleScheme{
-		Preemptive:      Preemptive,
-		PreemptiveCycle: PreemptiveCycle,
+		Preemptive:       Preemptive,
+		PreemptiveCycle:  PreemptiveCycle,
 		ScheduleJobCount: 0,
 	}
 }
@@ -323,7 +323,15 @@ func NewMinCostDistanceAlgo(algo MinCostAlgo, costSolverMaker CostSolverMaker) D
 		// 这是一种贪心的思想。不过只要无法预测将来任务的到来，就不可能做出最优解。）
 		// 不过是否可以再用一个度量指标，用于描述这个job有多么容易违反ddl？（离违反ddl有多近）这可以作为之后的改进思路。
 		jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), jobs)
-		costSolver := costSolverMaker(gpuCluster)
+		costSolver := costSolverMaker(func(gpu *simulator.GPU) simulator.Time {
+			jctOffset := gpuCluster.Now()
+			// 考虑到非抢占式调度，要将当前正在运行的任务剩余运行时间考虑进来。
+			runningJob := gpuCluster.CurrRunningJob(gpu.ID())
+			if runningJob != nil {
+				jctOffset += simulator.Time(runningJob.RemainingDuration(gpu.Type()))
+			}
+			return jctOffset
+		})
 		costResp := costSolver.Cost(kMeansCenterGPU, jobs)
 		if !costResp.ddlViolated {
 			return &distanceResp{
