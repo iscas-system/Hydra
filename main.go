@@ -8,8 +8,8 @@ import (
 
 func main() {
 	// scheduler := initDummyScheduler()
-	scheduler := initSJFScheduler()
-	// scheduler := initKMeansScheduler()
+	// scheduler := initSJFScheduler()
+	scheduler := initKMeansScheduler()
 	simu := simulator.NewSimulator(scheduler,
 		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),
 		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_200_start.csv"),
@@ -18,7 +18,7 @@ func main() {
 		simulator.WithOptionGPUType2Count(map[simulator.GPUType]int{
 			"V100": 10,
 			"P100": 5,
-			"T4":   5,
+			"T4":   10,
 		}))
 	simu.Start()
 }

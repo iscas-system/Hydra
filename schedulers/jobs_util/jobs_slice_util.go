@@ -28,6 +28,26 @@ func (u JobsSliceUtil) ReorderToSRTF(gpuType simulator.GPUType, jobs []*simulato
 	sort.Sort(SRTFSorter)
 }
 
+func (u JobsSliceUtil) Intersects(jobs1 []*simulator.Job, jobs2 []*simulator.Job) []*simulator.Job {
+	less := jobs1
+	more := jobs2
+	if len(jobs2) < len(jobs1) {
+		less = jobs2
+		more = jobs1
+	}
+	intersects := make([]*simulator.Job, 0)
+	moreMap := make(map[simulator.JobName]*simulator.Job)
+	for _, j := range more {
+		moreMap[j.JobName()] = j
+	}
+	for _, j := range less {
+		if _, ok := moreMap[j.JobName()]; ok {
+			intersects = append(intersects, j)
+		}
+	}
+	return intersects
+}
+
 func (u JobsSliceUtil) ReorderByJobName(jobs []*simulator.Job) {
 	jobNameSorter := util.Sorter{
 		LenFunc:  func() int { return len(jobs) },

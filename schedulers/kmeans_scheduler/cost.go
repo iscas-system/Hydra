@@ -295,11 +295,9 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 					defer delete(jobNamesInNode, newJob.JobName())
 					// 找出剩余的不在该扩展后节点的job，组成otherJobs
 					otherJobs := make([]*simulator.Job, 0, len(copiedJobs)-len(jobNamesInNode))
-					otherJobsMap := make(map[simulator.JobName]*simulator.Job)
 					for _, otherJob := range copiedJobs {
 						if _, ok := jobNamesInNode[otherJob.JobName()]; !ok {
 							otherJobs = append(otherJobs, otherJob)
-							otherJobsMap[otherJob.JobName()] = otherJob
 						}
 					}
 
@@ -312,6 +310,7 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 					predictJobList = append(predictJobList, otherJobs...)
 					predictCostResp := costSolver.Cost(gpu, predictJobList)
 
+					// 计算这条分支的成本下界
 					cHat := func() float64 {
 						// 目前cHat的计算方法：将剩余任务按照SRTF排序后，计算cost，但是不考虑ddl违反带来的cost。
 						// 这里可以直接利用predictJobList，因为他们的排序方案是一样的。
@@ -321,19 +320,19 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 					}()
 
 					// 如果otherJobs这部分任务没有ddl违反，则该predict的job list就是当前分支的最优解
-					otherJobsContainsViolated := func() bool {
-						for _, violatedJob := range predictCostResp.ddlViolatedJobs {
-							if _, ok := otherJobsMap[violatedJob.JobName()]; ok {
-								return true
-							}
-						}
-						return false
-					}()
+					// 这是一般剪枝函数无法做到的，因为在我们的问题中，如果ddl没有违反，则SRTF就一定是一个最优的解。
+					// 所以，这种方法能够快速将一个分支的最优解求出，比剪枝函数还要牛。
+					otherJobsContainsViolated := len(jobs_util.GetJobsSliceUtil().Intersects(otherJobs, predictCostResp.ddlViolatedJobs)) > 0
 					if otherJobsContainsViolated {
 						return cHat, predictCostResp.cost, predictJobList
 					}
 
-					return cHat, predictCostResp.cost, nil
+					// TODO 目前将otherJobs经过SRTF排序后的cost直接作为最小成本上界。
+					// TODO 但实际上，也可以通过其他算法，如启发式的贪心算法，获得一个更好的最小成本上界。
+					// TODO 后续添加其他算法在这个位置，
+					U := predictCostResp.cost
+
+					return cHat, U, nil
 				}()
 
 				// 尝试更新minCost
