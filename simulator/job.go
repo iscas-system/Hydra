@@ -1,61 +1,50 @@
 package simulator
 
 import (
+	"DES-go/schedulers/types"
 	"fmt"
 	"math"
 )
 
 type TimeRange struct {
-	start Time
-	end   Time
+	start types.Time
+	end   types.Time
 }
 
-func (t *TimeRange) Start() Time {
+func (t *TimeRange) Start() types.Time {
 	return t.start
 }
 
-func (t *TimeRange) End() Time {
+func (t *TimeRange) End() types.Time {
 	return t.end
 }
 
-func newTimeRange(start Time, end Time) *TimeRange {
+func newTimeRange(start types.Time, end types.Time) *TimeRange {
 	return &TimeRange{start: start, end: end}
 }
 
-func (t TimeRange) Runtime() Duration {
-	return Duration(t.end - t.start)
+func (t TimeRange) Runtime() types.Duration {
+	return types.Duration(t.end - t.start)
 }
 
 type JobExecutionRange struct {
-	gpu               *GPU
-	jobName           JobName
+	gpu               types.GPU
+	jobName           types.JobName
 	timeRange         *TimeRange
 	completenessRatio float64
 }
 
-func (jer *JobExecutionRange) Gpu() *GPU {
+func (jer *JobExecutionRange) Gpu() types.GPU {
 	return jer.gpu
 }
 
-func (jer *JobExecutionRange) Clone() *JobExecutionRange {
-	return &JobExecutionRange{
-		gpu:     jer.gpu,
-		jobName: jer.jobName,
-		timeRange: &TimeRange{
-			start: jer.timeRange.start,
-			end:   jer.timeRange.end,
-		},
-		completenessRatio: jer.completenessRatio,
-	}
-}
-
-func newJobExecutionRange(gpu *GPU, jobName JobName, timeRange *TimeRange) *JobExecutionRange {
+func newJobExecutionRange(gpu types.GPU, jobName types.JobName, timeRange *TimeRange) *JobExecutionRange {
 	r := &JobExecutionRange{gpu: gpu, jobName: jobName, timeRange: timeRange}
 	r.resetCompletenessRatio()
 	return r
 }
 
-func (jer *JobExecutionRange) modifyTimeRange(start *Time, end *Time) {
+func (jer *JobExecutionRange) modifyTimeRange(start *types.Time, end *types.Time) {
 	if jer.timeRange == nil {
 		panic("modifyTimeRange jer.timeRange is nil")
 	}
@@ -78,32 +67,17 @@ func (jer *JobExecutionRange) CompletenessRatio() float64 {
 }
 
 type JobExecutionDetail struct {
-	jobName         JobName
-	executionRanges map[*GPU][]*JobExecutionRange
+	jobName         types.JobName
+	executionRanges map[types.GPU][]*JobExecutionRange
 }
 
-func newJobExecutionDetail(jobName JobName) *JobExecutionDetail {
+func newJobExecutionDetail(jobName types.JobName) *JobExecutionDetail {
 	return &JobExecutionDetail{jobName: jobName}
 }
 
-func (jed *JobExecutionDetail) Clone() *JobExecutionDetail {
-	rs := make(map[*GPU][]*JobExecutionRange)
-	for k, v := range jed.executionRanges {
-		cv := make([]*JobExecutionRange, 0, len(v))
-		for _, e := range v {
-			cv = append(cv, e.Clone())
-		}
-		rs[k] = cv
-	}
-	return &JobExecutionDetail{
-		jobName:         jed.jobName,
-		executionRanges: rs,
-	}
-}
-
-func (jed *JobExecutionDetail) addExecutionRange(gpu *GPU, timeRange *TimeRange) {
+func (jed *JobExecutionDetail) addExecutionRange(gpu types.GPU, timeRange *TimeRange) {
 	if jed.executionRanges == nil {
-		jed.executionRanges = make(map[*GPU][]*JobExecutionRange)
+		jed.executionRanges = make(map[types.GPU][]*JobExecutionRange)
 	}
 	if _, ok := jed.executionRanges[gpu]; !ok {
 		jed.executionRanges[gpu] = make([]*JobExecutionRange, 0)
@@ -120,11 +94,11 @@ func (jed *JobExecutionDetail) addExecutionRange(gpu *GPU, timeRange *TimeRange)
 	jed.executionRanges[gpu] = append(jed.executionRanges[gpu], newJobExecutionRange(gpu, jed.jobName, timeRange))
 }
 
-func (jed *JobExecutionDetail) SumRuntimeOnGPUs() Duration {
+func (jed *JobExecutionDetail) SumRuntimeOnGPUs() types.Duration {
 	if jed.executionRanges == nil {
 		return 0
 	}
-	sum := Duration(0.)
+	sum := types.Duration(0.)
 	for _, rs := range jed.executionRanges {
 		for _, r := range rs {
 			sum += r.timeRange.Runtime()
@@ -134,27 +108,27 @@ func (jed *JobExecutionDetail) SumRuntimeOnGPUs() Duration {
 }
 
 type Job struct {
-	jobName             JobName
+	jobName             types.JobName
 	executionDetail     *JobExecutionDetail
-	firstExecutionTime  Time
-	finishExecutionTime Time
+	firstExecutionTime  types.Time
+	finishExecutionTime types.Time
 	remainingRatio      float64
 	isRunning           bool
 }
 
-func (j *Job) JobName() JobName {
+func (j *Job) JobName() types.JobName {
 	return j.jobName
 }
 
-func (j *Job) ExecutionDetail() *JobExecutionDetail {
+func (j *Job) ExecutionDetail() types.JobExecutionDetail {
 	return j.executionDetail
 }
 
-func (j *Job) FirstExecutionTime() Time {
+func (j *Job) FirstExecutionTime() types.Time {
 	return j.firstExecutionTime
 }
 
-func (j *Job) FinishExecutionTime() Time {
+func (j *Job) FinishExecutionTime() types.Time {
 	return j.finishExecutionTime
 }
 
@@ -162,28 +136,28 @@ func (j *Job) RemainingRatio() float64 {
 	return j.remainingRatio
 }
 
-func (j *Job) QueueDelay() Duration {
-	return Duration(j.JCT()) - j.ActualRuntimeOnGPUs()
+func (j *Job) QueueDelay() types.Duration {
+	return types.Duration(j.JCT()) - j.ActualRuntimeOnGPUs()
 }
 
-func (j *Job) JobMeta() *JobMeta {
+func (j *Job) JobMeta() types.JobMeta {
 	return getDataSource().JobMeta(j.JobName())
 }
 
 func (j *Job) PrettyExpose() interface{} {
 	return struct {
-		*Job
-		*JobMeta
+		types.Job
+		types.JobMeta
 	}{
 		j, j.JobMeta(),
 	}
 }
 
-func NewJob(jobName JobName) *Job {
+func NewJob(jobName types.JobName) *Job {
 	return &Job{
 		jobName:             jobName,
-		firstExecutionTime:  Time(-1),
-		finishExecutionTime: Time(-1),
+		firstExecutionTime:  types.Time(-1),
+		finishExecutionTime: types.Time(-1),
 		remainingRatio:      1.,
 	}
 }
@@ -196,12 +170,12 @@ func (j *Job) setNotRunning() {
 	j.isRunning = false
 }
 
-func (j *Job) executesFor(gpu *GPU, fromTime Time, executesDur Duration) {
+func (j *Job) executesFor(gpu types.GPU, fromTime types.Time, executesDur types.Duration) {
 	if j.remainingRatio <= 0. {
 		panic("executesFor j.remainingRatio <= 0.")
 	}
 	fullDurOnGPU := getDataSource().Duration(j.jobName, gpu.Type())
-	remainingDuration := Duration(j.remainingRatio * float64(fullDurOnGPU))
+	remainingDuration := types.Duration(j.remainingRatio * float64(fullDurOnGPU))
 	if j.firstExecutionTime == -1 {
 		j.firstExecutionTime = fromTime
 		j.executionDetail = newJobExecutionDetail(j.jobName)
@@ -209,7 +183,7 @@ func (j *Job) executesFor(gpu *GPU, fromTime Time, executesDur Duration) {
 	if j.remainingRatio-float64(executesDur/fullDurOnGPU) <= 0. {
 		// finished this job
 		j.isRunning = false
-		newExecutionTimeRange := newTimeRange(fromTime, fromTime+Time(remainingDuration))
+		newExecutionTimeRange := newTimeRange(fromTime, fromTime+types.Time(remainingDuration))
 		j.executionDetail.addExecutionRange(gpu, newExecutionTimeRange)
 		j.remainingRatio = 0.
 		j.finishExecutionTime = newExecutionTimeRange.end
@@ -217,7 +191,7 @@ func (j *Job) executesFor(gpu *GPU, fromTime Time, executesDur Duration) {
 		// current job is not finished
 		// set is_running
 		j.isRunning = true
-		newExecutionTimeRange := newTimeRange(fromTime, fromTime+Time(executesDur))
+		newExecutionTimeRange := newTimeRange(fromTime, fromTime+types.Time(executesDur))
 		j.executionDetail.addExecutionRange(gpu, newExecutionTimeRange)
 		j.remainingRatio -= float64(executesDur / fullDurOnGPU)
 		if j.remainingRatio <= 0. {
@@ -226,40 +200,28 @@ func (j *Job) executesFor(gpu *GPU, fromTime Time, executesDur Duration) {
 	}
 }
 
-func (j *Job) RemainingDuration(gpuType GPUType) Duration {
+func (j *Job) RemainingDuration(gpuType types.GPUType) types.Duration {
 	fullDurOnGPU := getDataSource().Duration(j.jobName, gpuType)
-	return Duration(j.remainingRatio * float64(fullDurOnGPU))
+	return types.Duration(j.remainingRatio * float64(fullDurOnGPU))
 }
 
-func (j *Job) ActualRuntimeOnGPUs() Duration {
+func (j *Job) ActualRuntimeOnGPUs() types.Duration {
 	return j.executionDetail.SumRuntimeOnGPUs()
 }
 
-func (j *Job) JCT() Time {
+func (j *Job) JCT() types.Time {
 	if j.finishExecutionTime == -1 {
 		return -1
 	}
 	return j.finishExecutionTime - getDataSource().SubmitTime(j.jobName)
 }
 
-func (j *Job) Violation() (bool, Duration) {
+func (j *Job) Violation() (bool, types.Duration) {
 	if j.finishExecutionTime == -1 {
 		return false, -1
 	}
 	violatesDuration := math.Max(float64(j.finishExecutionTime-getDataSource().DDL(j.jobName)), 0.)
-	return violatesDuration > 0., Duration(violatesDuration)
-}
-
-func (j *Job) Clone() *Job {
-	cloned := &Job{
-		jobName:             j.jobName,
-		executionDetail:     j.executionDetail.Clone(),
-		firstExecutionTime:  j.firstExecutionTime,
-		finishExecutionTime: j.finishExecutionTime,
-		remainingRatio:      j.remainingRatio,
-		isRunning:           j.isRunning,
-	}
-	return cloned
+	return violatesDuration > 0., types.Duration(violatesDuration)
 }
 
 func (j *Job) IsFinished() bool {

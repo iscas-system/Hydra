@@ -1,6 +1,7 @@
 package simulator
 
 import (
+	"DES-go/schedulers/types"
 	"DES-go/util"
 	"encoding/csv"
 	"fmt"
@@ -10,8 +11,8 @@ import (
 )
 
 type DataSource struct {
-	JobMetas              map[JobName]*JobMeta // index by job name
-	JobNameSortedBySubmit []JobName
+	JobMetas              map[types.JobName]types.JobMeta // index by job name
+	JobNameSortedBySubmit []types.JobName
 }
 
 var dataSourceInstance *DataSource
@@ -54,18 +55,18 @@ func initDataSource(csvFilePath string) {
 	colSubmitTimeIdx := colIndexOf(colSubmitTime)
 	colDDLIdx := colIndexOf(colDDL)
 
-	colGPUTypes2Idx := make(map[GPUType]int)
+	colGPUTypes2Idx := make(map[types.GPUType]int)
 
 	for idx, header := range csvHeaders {
 		if len(header) > 0 && util.StringSliceIndexOf([]string{colJobName, colSubmitTime, colDDL}, header) == -1 {
-			colGPUTypes2Idx[GPUType(header)] = idx
+			colGPUTypes2Idx[types.GPUType(header)] = idx
 		}
 	}
 
-	jobMetas := make(map[JobName]*JobMeta)
-	jobNamesSortedBySubmitTime := make([]JobName, 0, len(csvDataRecords)-1)
+	jobMetas := make(map[types.JobName]types.JobMeta)
+	jobNamesSortedBySubmitTime := make([]types.JobName, 0, len(csvDataRecords)-1)
 	for _, record := range csvDataRecords[1:] {
-		jobName := JobName(record[colJobNameIdx])
+		jobName := types.JobName(record[colJobNameIdx])
 		submitTime, err := strconv.ParseFloat(record[colSubmitTimeIdx], 64)
 		if err != nil {
 			panic(err)
@@ -74,15 +75,15 @@ func initDataSource(csvFilePath string) {
 		if err != nil {
 			panic(err)
 		}
-		durations := make(map[GPUType]Duration)
+		durations := make(map[types.GPUType]types.Duration)
 		for gpuType, idx := range colGPUTypes2Idx {
 			dur, err := strconv.ParseFloat(record[idx], 64)
 			if err != nil {
 				panic(err)
 			}
-			durations[gpuType] = Duration(dur)
+			durations[gpuType] = types.Duration(dur)
 		}
-		jobMetas[jobName] = NewJobMeta(jobName, Time(submitTime), Time(ddl), durations)
+		jobMetas[jobName] = NewJobMeta(jobName, types.Time(submitTime), types.Time(ddl), durations)
 		jobNamesSortedBySubmitTime = append(jobNamesSortedBySubmitTime, jobName)
 	}
 	dataSourceInstance = &DataSource{
@@ -91,12 +92,12 @@ func initDataSource(csvFilePath string) {
 	}
 }
 
-func SetDataSource(jobMetas []*JobMeta, ) {
-	metasMap := make(map[JobName]*JobMeta)
+func SetDataSource(jobMetas []types.JobMeta, ) {
+	metasMap := make(map[types.JobName]types.JobMeta)
 	for _, meta := range jobMetas {
 		metasMap[meta.JobName()] = meta
 	}
-	jobNames := make([]JobName, 0, len(jobMetas))
+	jobNames := make([]types.JobName, 0, len(jobMetas))
 	for _, meta := range jobMetas {
 		jobNames = append(jobNames, meta.JobName())
 	}
@@ -122,36 +123,40 @@ func SetDataSource(jobMetas []*JobMeta, ) {
 	dataSourceInstance = ds
 }
 
-func (ds *DataSource) JobMeta(jobName JobName) *JobMeta {
+func (ds *DataSource) Transform(jobMeta types.JobMeta) *JobMeta {
+	return jobMeta.(*JobMeta)
+}
+
+func (ds *DataSource) JobMeta(jobName types.JobName) types.JobMeta {
 	return ds.JobMetas[jobName]
 }
 
-func (ds *DataSource) Duration(jobName JobName, gpuType GPUType) Duration {
-	return ds.JobMetas[jobName].durations[gpuType]
+func (ds *DataSource) Duration(jobName types.JobName, gpuType types.GPUType) types.Duration {
+	return ds.Transform(ds.JobMetas[jobName]).durations[gpuType]
 }
 
-func (ds *DataSource) SubmitTime(jobName JobName) Time {
-	return ds.JobMetas[jobName].submitTime
+func (ds *DataSource) SubmitTime(jobName types.JobName) types.Time {
+	return ds.Transform(ds.JobMetas[jobName]).submitTime
 }
 
-func (ds *DataSource) DDL(jobName JobName) Time {
-	return ds.JobMetas[jobName].ddl
+func (ds *DataSource) DDL(jobName types.JobName) types.Time {
+	return ds.Transform(ds.JobMetas[jobName]).ddl
 }
 
-func (ds *DataSource) Durations(jobName JobName) map[GPUType]Duration {
-	return ds.JobMetas[jobName].durations
+func (ds *DataSource) Durations(jobName types.JobName) map[types.GPUType]types.Duration {
+	return ds.Transform(ds.JobMetas[jobName]).durations
 }
 
-func (ds *DataSource) IterBySubmitTime(iterFunc func(indices []int, meta []*JobMeta)) {
+func (ds *DataSource) IterBySubmitTime(iterFunc func(indices []int, meta []types.JobMeta)) {
 	for i := 0; i < len(ds.JobNameSortedBySubmit); i++ {
-		metas := make([]*JobMeta, 0, 1)
+		metas := make([]types.JobMeta, 0, 1)
 		indices := make([]int, 0, 1)
 		l := ds.JobMeta(ds.JobNameSortedBySubmit[i])
 		metas = append(metas, l)
 		indices = append(indices, i)
 		var j int
 		for j = i + 1; j < len(ds.JobNameSortedBySubmit); j++ {
-			if ds.JobMeta(ds.JobNameSortedBySubmit[j]).submitTime == metas[0].submitTime {
+			if ds.Transform(ds.JobMeta(ds.JobNameSortedBySubmit[j])).submitTime == ds.Transform(metas[0]).submitTime {
 				metas = append(metas, ds.JobMeta(ds.JobNameSortedBySubmit[j]))
 				indices = append(indices, j)
 			} else {

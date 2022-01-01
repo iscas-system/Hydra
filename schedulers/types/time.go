@@ -1,4 +1,4 @@
-package simulator
+package types
 
 // Duration Time 时间单位都是秒
 type Duration float64

@@ -1,6 +1,9 @@
 package simulator
 
-import "os"
+import (
+	"DES-go/schedulers/types"
+	"os"
+)
 
 type FormatPrintLevel int
 
@@ -13,8 +16,8 @@ const (
 type Options struct {
 	logEnabled              bool
 	logDirPath              string
-	gpuType2Count           map[GPUType]int
-	minDurationPassInterval Duration
+	gpuType2Count           map[types.GPUType]int
+	minDurationPassInterval types.Duration
 	dataSourceCSVPath       string
 	formatPrintLevel        FormatPrintLevel
 }
@@ -22,7 +25,7 @@ type Options struct {
 var defaultOptions = &Options{
 	logEnabled: true,
 	logDirPath: os.TempDir(),
-	gpuType2Count: map[GPUType]int{
+	gpuType2Count: map[types.GPUType]int{
 		"V100": 1,
 		"T4":   1,
 		"P100": 1,
@@ -46,7 +49,7 @@ func WithOptionLogPath(logPath string) SetOption {
 	}
 }
 
-func WithOptionGPUType2Count(gpuType2Count map[GPUType]int) SetOption {
+func WithOptionGPUType2Count(gpuType2Count map[types.GPUType]int) SetOption {
 	return func(options *Options) {
 		options.gpuType2Count = gpuType2Count
 	}
@@ -64,7 +67,7 @@ func WithOptionFmtPrintLevel(formatPrintLevel FormatPrintLevel) SetOption {
 	}
 }
 
-func WithOptionMinDurationPassInterval(minDurationPassInterval Duration) SetOption {
+func WithOptionMinDurationPassInterval(minDurationPassInterval types.Duration) SetOption {
 	return func(options *Options) {
 		options.minDurationPassInterval = minDurationPassInterval
 	}

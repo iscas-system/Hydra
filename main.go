@@ -3,6 +3,7 @@ package main
 import (
 	"DES-go/schedulers"
 	"DES-go/schedulers/kmeans_scheduler"
+	"DES-go/schedulers/types"
 	"DES-go/simulator"
 )
 
@@ -15,7 +16,7 @@ func main() {
 		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_200_all.csv"),
 		simulator.WithOptionLogEnabled(true),
 		simulator.WithOptionLogPath("/Users/purchaser/go/src/DES-go/logs"),
-		simulator.WithOptionGPUType2Count(map[simulator.GPUType]int{
+		simulator.WithOptionGPUType2Count(map[types.GPUType]int{
 			"V100": 10,
 			"P100": 5,
 			"T4":   10,
@@ -23,15 +24,15 @@ func main() {
 	simu.Start()
 }
 
-func initDummyScheduler() simulator.Scheduler {
+func initDummyScheduler() types.Scheduler {
 	return schedulers.NewDummyScheduler()
 }
 
-func initSJFScheduler() simulator.Scheduler {
+func initSJFScheduler() types.Scheduler {
 	return schedulers.NewSJFScheduler(false)
 }
 
-func initKMeansScheduler() simulator.Scheduler {
+func initKMeansScheduler() types.Scheduler {
 	return kmeans_scheduler.New(
 		kmeans_scheduler.WithScheme(kmeans_scheduler.NewSimpleOneShotScheduleScheme(false, -1)),
 		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(

@@ -1,7 +1,7 @@
 package allox_scheduler
 
 import (
-	"DES-go/simulator"
+	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
 	"math"
@@ -19,10 +19,10 @@ import (
 
 type AlloxScheduler struct {
 	online bool
-	cluster *simulator.Cluster
+	cluster types.Cluster
 	graph *Graph
 
-	allWaitingJobs []*simulator.JobMeta
+	allWaitingJobs []types.JobMeta
 
 }
 
@@ -30,26 +30,26 @@ func (a *AlloxScheduler) DoSchedule() {
 
 }
 
-func (a *AlloxScheduler) SetCluster(cluster *simulator.Cluster) {
+func (a *AlloxScheduler) SetCluster(cluster types.Cluster) {
 	a.cluster = cluster
 }
 
-func (a *AlloxScheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
+func (a *AlloxScheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	switch e := event.(type) {
-	case *simulator.ScheduleEventJobsArrived:
+	case *types.ScheduleEventJobsArrived:
 		{
 			a.allWaitingJobs = e.JobMetas()
 			a.DoSchedule()
 		}
 
-	case *simulator.ScheduleEventJobsFinished:
+	case *types.ScheduleEventJobsFinished:
 		{
 		}
 	}
 }
 
-func (a *AlloxScheduler) NextActiveScheduleTime() simulator.Time {
-	return simulator.Time(math.Inf(1))
+func (a *AlloxScheduler) NextActiveScheduleTime() types.Time {
+	return types.Time(math.Inf(1))
 }
 
 func (a *AlloxScheduler) Name() string {

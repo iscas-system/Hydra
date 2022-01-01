@@ -2,7 +2,7 @@ package kmeans_scheduler
 
 import (
 	"DES-go/schedulers/jobs_util"
-	"DES-go/simulator"
+	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
 	"log"
@@ -25,9 +25,9 @@ import (
 // 迭代完成后，就得到了针对每个GPU的，一个job的划分。
 // ------------------------------------------------------------------------------------------------------------------------
 type Scheduler struct {
-	gpuCluster *simulator.Cluster
+	gpuCluster types.Cluster
 	// waitingJobs 按照任意一个GPU上的速度排序，它的顺序决定了进行算法时的迭代（KMeans聚类时算法）的顺序。（这个顺序会造成怎样的影响，有待商榷）
-	waitingJobs []*simulator.Job
+	waitingJobs []types.Job
 	opts        *Options
 
 	allArrivedJobsCount int
@@ -82,12 +82,12 @@ func (k *Scheduler) DoSchedule() {
 	k.opts.ScheduleScheme.DoSchedule(k)
 }
 
-func (k *Scheduler) SetCluster(cluster *simulator.Cluster) {
+func (k *Scheduler) SetCluster(cluster types.Cluster) {
 	k.gpuCluster = cluster
-	k.waitingJobs = make([]*simulator.Job, 0, 1)
+	k.waitingJobs = make([]types.Job, 0, 1)
 }
 
-func (k *Scheduler) insertJobs2Waiting(jobs ...*simulator.Job) {
+func (k *Scheduler) insertJobs2Waiting(jobs ...types.Job) {
 	// 这里将jobs插入到waitingJobs当中
 	// 在这里指定了waitingJobs的排序顺序，也就决定了将来指定层次聚类算法的迭代顺序。
 	// 使用随意选择的GPU，按照任务在它上面执行的剩余时间进行排序。（替代方案，可以选用最快的GPU进行排序，毕竟某些任务在慢的GPU上可能差距很小）
@@ -101,34 +101,34 @@ func (k *Scheduler) insertJobs2Waiting(jobs ...*simulator.Job) {
 	}
 }
 
-func (k *Scheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
+func (k *Scheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	switch e := event.(type) {
-	case *simulator.ScheduleEventJobsArrived:
+	case *types.ScheduleEventJobsArrived:
 		{
 			k.allArrivedJobsCount += len(e.JobMetas())
 			fmt.Printf("allArrivedJobsCount = [%d]\n", k.allArrivedJobsCount)
-			newJobs := make([]*simulator.Job, 0, len(e.JobMetas()))
+			newJobs := make([]types.Job, 0, len(e.JobMetas()))
 			for _, jobMeta := range e.JobMetas() {
-				newJobs = append(newJobs, simulator.NewJob(jobMeta.JobName()))
+				newJobs = append(newJobs, k.gpuCluster.InitJob(jobMeta.JobName()))
 			}
 			k.insertJobs2Waiting(newJobs...)
 			if len(k.gpuCluster.EmptyGPUJobQueues()) > 0 {
 				k.DoSchedule()
 			}
 		}
-	case *simulator.ScheduleEventDurationPassed:
+	case *types.ScheduleEventDurationPassed:
 		{
 			// ignore
 		}
-	case *simulator.ScheduleEventJobsFinished:
+	case *types.ScheduleEventJobsFinished:
 		{
 			k.DoSchedule()
 		}
 	}
 }
 
-func (k *Scheduler) NextActiveScheduleTime() simulator.Time {
-	return simulator.Time(math.Inf(1))
+func (k *Scheduler) NextActiveScheduleTime() types.Time {
+	return types.Time(math.Inf(1))
 }
 
 func (k *Scheduler) Name() string {
@@ -145,12 +145,12 @@ type SimpleOneShotScheduleScheme struct {
 	// 指定是否可抢占，如果在实际中是可抢占的，那么需要指定一个调度的周期（否则会造成每次调度时造成大量的任务启停开销）
 	// 如果不指定周期，则为一个理想化的调度（现实中无法实现）
 	Preemptive      bool
-	PreemptiveCycle simulator.Duration
+	PreemptiveCycle types.Duration
 
 	ScheduleJobCount int
 }
 
-func NewSimpleOneShotScheduleScheme(Preemptive bool, PreemptiveCycle simulator.Duration) ScheduleScheme {
+func NewSimpleOneShotScheduleScheme(Preemptive bool, PreemptiveCycle types.Duration) ScheduleScheme {
 	return &SimpleOneShotScheduleScheme{
 		Preemptive:       Preemptive,
 		PreemptiveCycle:  PreemptiveCycle,
@@ -168,16 +168,16 @@ func (s *SimpleOneShotScheduleScheme) DoSchedule(scheduler *Scheduler) {
 	// 每个簇中的jobs使用slice存储，但是一般时刻不关心它的顺序。
 	// 只有最优解的顺序是我们关心的。所以每次将最优解的job sequence赋值到簇中。
 	distanceSolver := newJobDistanceSolver(scheduler.gpuCluster, scheduler.opts.DistanceAlgo)
-	kMeansCluster := make(map[*simulator.GPU][]*simulator.Job)
+	kMeansCluster := make(map[types.GPU][]types.Job)
 	for gpuID := range scheduler.gpuCluster.GPUJobQueues() {
 		gpu := scheduler.gpuCluster.GPU(gpuID)
-		kMeansCluster[gpu] = make([]*simulator.Job, 0)
+		kMeansCluster[gpu] = make([]types.Job, 0)
 	}
 	for len(scheduler.waitingJobs) > 0 {
 		// 计算每个点到每个簇的距离，选择一个最小的。
 		minDis := math.Inf(1)
-		var bestJobsSeq []*simulator.Job = nil
-		var bestGPU *simulator.GPU = nil
+		var bestJobsSeq []types.Job = nil
+		var bestGPU types.GPU = nil
 		var bestJobIdx int
 		wg := &sync.WaitGroup{}
 		mu := &sync.Mutex{}
@@ -218,9 +218,9 @@ func (s *SimpleOneShotScheduleScheme) DoSchedule(scheduler *Scheduler) {
 		if len(queue.Jobs()) == 0 {
 			if len(kMeansCluster[gpu]) > 0 {
 				// 将该GPU簇对应的最优序列的第一个任务放置到空闲位置上。
-				var removed *simulator.Job
+				var removed types.Job
 				removed, kMeansCluster[gpu] = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(0, kMeansCluster[gpu])
-				queue.SetJobs([]*simulator.Job{removed})
+				queue.SetJobs(removed)
 				s.ScheduleJobCount += 1
 			}
 		}
@@ -241,19 +241,19 @@ func (s *SimpleOneShotScheduleScheme) DoSchedule(scheduler *Scheduler) {
 // 可以实现为包含多种算法，比如最优的放置可以使用分支限界搜索方法。
 // 如果速度较慢可以使用启发式的贪心算法。
 type jobDistanceSolver struct {
-	gpuCluster *simulator.Cluster
+	gpuCluster types.Cluster
 	// 避免重复计算，使用memo记录重复参数的调用。
 	distanceMemo *sync.Map // map[string]*distanceResp
 	distanceAlgo DistanceAlgo
 }
 
-type DistanceAlgo func(gpuCluster *simulator.Cluster,
-	kMeansCenterGPU *simulator.GPU,
-	kMeansPointJobs []*simulator.Job,
-	jobNotInKMeansCluster *simulator.Job) *distanceResp
+type DistanceAlgo func(gpuCluster types.Cluster,
+	kMeansCenterGPU types.GPU,
+	kMeansPointJobs []types.Job,
+	jobNotInKMeansCluster types.Job) *distanceResp
 
 func newJobDistanceSolver(
-	cluster *simulator.Cluster,
+	cluster types.Cluster,
 	algo DistanceAlgo) *jobDistanceSolver {
 	return &jobDistanceSolver{
 		gpuCluster:   cluster,
@@ -263,14 +263,14 @@ func newJobDistanceSolver(
 }
 
 // distanceMemoKey 为Distance调用生成一个key。用于区分相同的调用。
-func (s *jobDistanceSolver) distanceMemoKey(kMeansCenterGPU *simulator.GPU, kMeansPointJobs []*simulator.Job, jobNotInKMeansCluster *simulator.Job) string {
+func (s *jobDistanceSolver) distanceMemoKey(kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) string {
 	// 计算距离时，不关心已经在簇里的jobs的顺序，所以需要先按照固定顺序排序。
 	jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), kMeansPointJobs)
 	builder := &strings.Builder{}
 	// gpu info
 	builder.WriteString("GPU:")
 	builder.WriteString(kMeansCenterGPU.String())
-	writeJob := func(job *simulator.Job) {
+	writeJob := func(job types.Job) {
 		builder.WriteString(string(job.JobName()))
 		builder.WriteString(strconv.FormatFloat(job.RemainingRatio(), 'f', 6, 64))
 		builder.WriteByte('-')
@@ -289,13 +289,13 @@ func (s *jobDistanceSolver) distanceMemoKey(kMeansCenterGPU *simulator.GPU, kMea
 }
 
 type distanceResp struct {
-	jobsSeq  []*simulator.Job
+	jobsSeq  []types.Job
 	distance float64
 }
 
 // Distance 定义算法入口
 // Scheduler 通过使用该方法，获得某个job到某簇的距离
-func (s *jobDistanceSolver) Distance(kMeansCenterGPU *simulator.GPU, kMeansPointJobs []*simulator.Job, jobNotInKMeansCluster *simulator.Job) *distanceResp {
+func (s *jobDistanceSolver) Distance(kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
 	copiedSlice := jobs_util.GetJobsSliceUtil().Copy(kMeansPointJobs)
 	memoKey := s.distanceMemoKey(kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster)
 	if memorized, ok := s.distanceMemo.Load(memoKey); ok {
@@ -314,7 +314,7 @@ func (s *jobDistanceSolver) Distance(kMeansCenterGPU *simulator.GPU, kMeansPoint
 // 如果，有任务违反了ddl，则进行分支限界法搜索。
 // 使用MinCost顺序选择开节点，每个节点的估计成本为：将所有未放置到搜索路径的任务按照SJF排序后，该队列的代价值。
 func NewMinCostDistanceAlgo(algo MinCostAlgo, costSolverMaker CostSolverMaker) DistanceAlgo {
-	return func(gpuCluster *simulator.Cluster, kMeansCenterGPU *simulator.GPU, kMeansPointJobs []*simulator.Job, jobNotInKMeansCluster *simulator.Job) *distanceResp {
+	return func(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
 		// 不关心一个簇中任务的顺序。
 		jobs := append(kMeansPointJobs, jobNotInKMeansCluster)
 		// 首先尝试将jobs使用SRTF排序，并计算一次cost。如果发现ddl没有被违反，则使用这个排序即可。
@@ -323,12 +323,12 @@ func NewMinCostDistanceAlgo(algo MinCostAlgo, costSolverMaker CostSolverMaker) D
 		// 这是一种贪心的思想。不过只要无法预测将来任务的到来，就不可能做出最优解。）
 		// 不过是否可以再用一个度量指标，用于描述这个job有多么容易违反ddl？（离违反ddl有多近）这可以作为之后的改进思路。
 		jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), jobs)
-		costSolver := costSolverMaker(func(gpu *simulator.GPU) simulator.Time {
+		costSolver := costSolverMaker(func(gpu types.GPU) types.Time {
 			jctOffset := gpuCluster.Now()
 			// 考虑到非抢占式调度，要将当前正在运行的任务剩余运行时间考虑进来。
 			runningJob := gpuCluster.CurrRunningJob(gpu.ID())
 			if runningJob != nil {
-				jctOffset += simulator.Time(runningJob.RemainingDuration(gpu.Type()))
+				jctOffset += types.Time(runningJob.RemainingDuration(gpu.Type()))
 			}
 			return jctOffset
 		})
@@ -350,7 +350,7 @@ func NewMinCostDistanceAlgo(algo MinCostAlgo, costSolverMaker CostSolverMaker) D
 // ------------------------------------------------ 贪心算法 ------------------------------------------------------------
 
 func NewSimpleHeuristicGreedyDistanceAlgo() DistanceAlgo {
-	return func(gpuCluster *simulator.Cluster, kMeansCenterGPU *simulator.GPU, kMeansPointJobs []*simulator.Job, jobNotInKMeansCluster *simulator.Job) *distanceResp {
+	return func(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
 		panic("Implement Me.")
 	}
 }

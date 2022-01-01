@@ -2,7 +2,7 @@ package kmeans_scheduler
 
 import (
 	"DES-go/schedulers/jobs_util"
-	"DES-go/simulator"
+	"DES-go/schedulers/types"
 	"DES-go/util"
 	"container/heap"
 	"math"
@@ -24,16 +24,16 @@ func newCostSolverCommon(defaultJCTOffsetGetter jctOffsetGetter) *costSolverComm
 	}
 }
 
-type jctOffsetGetter func(gpu *simulator.GPU) simulator.Time
+type jctOffsetGetter func(gpu types.GPU) types.Time
 
-func (c *costSolverCommon) costMemoKey(gpu *simulator.GPU, jobs []*simulator.Job, jctOffset simulator.Time) string {
+func (c *costSolverCommon) costMemoKey(gpu types.GPU, jobs []types.Job, jctOffset types.Time) string {
 	builder := &strings.Builder{}
 	// gpu info
 	builder.WriteString("GPU:")
 	builder.WriteString(gpu.String())
 	builder.WriteString("JCTOffset:")
 	builder.WriteString(strconv.FormatFloat(float64(jctOffset), 'f', 6, 64))
-	writeJob := func(job *simulator.Job) {
+	writeJob := func(job types.Job) {
 		builder.WriteString(string(job.JobName()))
 		builder.WriteString(strconv.FormatFloat(job.RemainingRatio(), 'f', 6, 64))
 		builder.WriteByte('-')
@@ -45,17 +45,17 @@ func (c *costSolverCommon) costMemoKey(gpu *simulator.GPU, jobs []*simulator.Job
 	return builder.String()
 }
 
-func (c *costSolverCommon) CalJCTAndDDLViolations(jctOffset simulator.Time, gpu *simulator.GPU, jobs []*simulator.Job) ([]simulator.Time, []simulator.Duration, []*simulator.Job) {
-	JCTs := make([]simulator.Time, 0, len(jobs))
-	ddlViolations := make([]simulator.Duration, 0, len(jobs))
-	ddlViolatedJobs := make([]*simulator.Job, 0)
+func (c *costSolverCommon) CalJCTAndDDLViolations(jctOffset types.Time, gpu types.GPU, jobs []types.Job) ([]types.Time, []types.Duration, []types.Job) {
+	JCTs := make([]types.Time, 0, len(jobs))
+	ddlViolations := make([]types.Duration, 0, len(jobs))
+	ddlViolatedJobs := make([]types.Job, 0)
 	for _, job := range jobs {
 		// 此处是预测job的JCT，不是计算已经完成的任务的JCT，所以不可以调用job.JCT()，因为job.JCT()只有当任务实际已经完成时才能返回结果。
-		currJobJCT := jctOffset + simulator.Time(job.RemainingDuration(gpu.Type())) - job.JobMeta().SubmitTime()
+		currJobJCT := jctOffset + types.Time(job.RemainingDuration(gpu.Type())) - job.JobMeta().SubmitTime()
 		jctOffset = currJobJCT
 		JCTs = append(JCTs, currJobJCT)
 		if currJobJCT > job.JobMeta().DDL() {
-			ddlViolations = append(ddlViolations, simulator.Duration(currJobJCT-job.JobMeta().DDL()))
+			ddlViolations = append(ddlViolations, types.Duration(currJobJCT-job.JobMeta().DDL()))
 			ddlViolatedJobs = append(ddlViolatedJobs, job)
 		} else {
 			ddlViolations = append(ddlViolations, 0)
@@ -66,7 +66,7 @@ func (c *costSolverCommon) CalJCTAndDDLViolations(jctOffset simulator.Time, gpu 
 
 // CostSolver 定义成本计算方式。
 type CostSolver interface {
-	Cost(gpu *simulator.GPU, jobs []*simulator.Job) *costResp
+	Cost(gpu types.GPU, jobs []types.Job) *costResp
 
 	// Clone SetJCTOffsetGetter 添加CostSolver的复用可能性。
 	Clone(withMemo bool) CostSolver
@@ -86,7 +86,7 @@ type costResp struct {
 	cost            float64
 	jctCost         float64
 	ddlCost         float64
-	ddlViolatedJobs []*simulator.Job
+	ddlViolatedJobs []types.Job
 	ddlViolated     bool
 }
 
@@ -114,7 +114,7 @@ func NewSimpleAddCostSolverMaker(ddlCostType DDLCostType, ddlStrictCostCoefficie
 // 那么JCT就按照累加求和即可，而DDL作为更为首要的要求，可以使用一个高倍的系数，乘以每个违约job的违约时长，使得它比JCT更重要。
 // 那么这里也可以加入soft DDL的模式，即当job只违反了一点点DDL时，不认为它非常严重。
 // 返回值: 分别返回，代价的大小（float64），以及是否存在DDL违反（bool）。
-func (s *SimpleAddCostSolver) Cost(gpu *simulator.GPU, jobs []*simulator.Job) *costResp {
+func (s *SimpleAddCostSolver) Cost(gpu types.GPU, jobs []types.Job) *costResp {
 	// 如果有过相同调用，则直接返回记录的结果。
 	jctOffset := s.jctOffsetGetter(gpu)
 	memoKey := s.costMemoKey(gpu, jobs, jctOffset)
@@ -133,7 +133,7 @@ func (s *SimpleAddCostSolver) Cost(gpu *simulator.GPU, jobs []*simulator.Job) *c
 			interfaceJCTs[idx] = jct
 		}
 		return util.SumFloat64(func(item interface{}) float64 {
-			return float64(item.(simulator.Time))
+			return float64(item.(types.Time))
 		}, interfaceJCTs...)
 	}()
 
@@ -197,7 +197,7 @@ func (s *SimpleAddCostSolver) SetJCTOffsetGetter(getter jctOffsetGetter) {
 	s.jctOffsetGetter = getter
 }
 
-type MinCostAlgo func(costSolver CostSolver, gpu *simulator.GPU, jobs []*simulator.Job) (float64, []*simulator.Job)
+type MinCostAlgo func(costSolver CostSolver, gpu types.GPU, jobs []types.Job) (float64, []types.Job)
 
 type MinCostBranchAndBoundLCStandard int
 
@@ -207,13 +207,13 @@ const (
 )
 
 func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) MinCostAlgo {
-	return func(costSolver CostSolver, gpu *simulator.GPU, originalJobs []*simulator.Job) (float64, []*simulator.Job) {
+	return func(costSolver CostSolver, gpu types.GPU, originalJobs []types.Job) (float64, []types.Job) {
 		copiedJobs := jobs_util.GetJobsSliceUtil().Copy(originalJobs)
 		// 如果ddl被违反了，则使用分支限界法进行搜索具有最优cost的解。
 		// branch and bound，顺带复习了算法，很不戳。
 		// Node 表示分支限界法中的一个节点。
 		type Node struct {
-			jobs []*simulator.Job
+			jobs []types.Job
 			// cost 这个节点存储的部分jobs的成本。它是不完全的，必定小于将完整的job都加入后的cost。
 			cost float64
 			// predictCost 如果将不在这个节点的jobs都加入进来，并按照SJF进行排序，给出一个预测的Cost。
@@ -226,12 +226,12 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 		nodes := make([]*Node, 0, 1)
 		// 初始节点，没有任何元素的一个节点。
 		nodes = append(nodes, &Node{
-			[]*simulator.Job{}, math.Inf(1), math.Inf(1), math.Inf(1),
+			[]types.Job{}, math.Inf(1), math.Inf(1), math.Inf(1),
 		})
 		// 记录当前的一个cost上界。记录了当前最优的cost（可能是估计的）。如果在搜索节点时，发现当前节点的cost已经>=该上界，则放弃当前节点（剪枝）
 		minCost := math.Inf(1)
 		// optimus 记录最优解的jobs slice。
-		var optimus []*simulator.Job = nil
+		var optimus []types.Job = nil
 		// 构建最小堆，用于LC的分支限界搜索方法，每次选取成本最小的节点，但是在估计成本上，有两种策略。
 		// 目前的策略是使用，每个队列包含的部分任务的cost作为LC节点的选取标准。
 		// 实际上，还可以采取使用每个节点的预估完整cost作为标准。实际哪个效率更高，需要测试。
@@ -293,7 +293,7 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 
 			// 如果是非答案节点，则首先建立一个minCostNode当前包含的job的集合，
 			// 用于查询当前有哪些任务还没在这个队列里。
-			jobNamesInNode := make(map[simulator.JobName]bool)
+			jobNamesInNode := make(map[types.JobName]bool)
 			for _, job := range expandingNode.jobs {
 				jobNamesInNode[job.JobName()] = true
 			}
@@ -304,7 +304,7 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 				}
 				// 找到了，则尝试对它扩展。
 				newJob := job
-				newJobs := make([]*simulator.Job, len(expandingNode.jobs))
+				newJobs := make([]types.Job, len(expandingNode.jobs))
 				copy(newJobs, expandingNode.jobs)
 				newJobs = append(newJobs, newJob)
 				costResp := costSolver.Cost(gpu, newJobs)
@@ -317,13 +317,13 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 				// 如果预测的cost小于minCost，则将minCost更新为predictCost，这样能够任意一个答案节点计算出来之前，获得一个cost上界。
 				// 这个predictValidCost是一个可行解，但不一定是最优解，所以为了在扩展节点时高效剪枝，还需要计算一个成本下界cHat，用来做限界函数。
 				// cHat为当前这个分支上，成本的下界，即这个序列的成本不可能 <= cHat。如果cHat都比minCost大，那么这条分支就不可能取最优解。
-				cHat, predictValidCost, predictValidOptimus := func() (float64, float64, []*simulator.Job) {
+				cHat, predictValidCost, predictValidOptimus := func() (float64, float64, []types.Job) {
 					// 这里重复利用下jobNamesInNode，避免重复劳动。
 					jobNamesInNode[newJob.JobName()] = true
 					// defer 千万别忘了将该jobName从该set中删除。
 					defer delete(jobNamesInNode, newJob.JobName())
 					// 找出剩余的不在该扩展后节点的job，组成otherJobs
-					otherJobs := make([]*simulator.Job, 0, len(copiedJobs)-len(jobNamesInNode))
+					otherJobs := make([]types.Job, 0, len(copiedJobs)-len(jobNamesInNode))
 					for _, otherJob := range copiedJobs {
 						if _, ok := jobNamesInNode[otherJob.JobName()]; !ok {
 							otherJobs = append(otherJobs, otherJob)
@@ -334,7 +334,7 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 					jobs_util.GetJobsSliceUtil().ReorderToSRTF(gpu.Type(), otherJobs)
 					// 构建新预测的完整jobs队列。这个队列的前面是当前已经扩展的部分节点包含的jobs
 					// 后半部分是还未加入到当前解中的，其他的jobs。这些jobs按照SRTF排序了。
-					predictJobList := make([]*simulator.Job, len(newJobs))
+					predictJobList := make([]types.Job, len(newJobs))
 					copy(predictJobList, newJobs)
 					predictJobList = append(predictJobList, otherJobs...)
 					predictCostResp := costSolver.Cost(gpu, predictJobList)
@@ -401,14 +401,14 @@ func NewMinCostByBranchAndBoundAlgo(LCStandard MinCostBranchAndBoundLCStandard) 
 // 似乎可以证明这种方法可以取得最优解。设具有ddl的任务有i个，不具有ddl的任务为j个，则全部的搜索空间约为 (i!) * (j - 1)。
 // 当有20%的任务具有ddl时，可以支持队列长度达到50个左右的任务的快速计算。（40 * 10!这个数量级还算是比较容易计算，毕竟还可以剪枝）
 func NewMinCostByInsertNonDDL() MinCostAlgo {
-	return func(costSolver CostSolver, gpu *simulator.GPU, jobs []*simulator.Job) (float64, []*simulator.Job) {
+	return func(costSolver CostSolver, gpu types.GPU, jobs []types.Job) (float64, []types.Job) {
 		panic("Implement me. 考完试实现。")
 	}
 }
 
 // NewMinCostByBacktrace 通过回溯计算MinCost。TODO
 func NewMinCostByBacktrace() MinCostAlgo {
-	return func(costSolver CostSolver, gpu *simulator.GPU, jobs []*simulator.Job) (float64, []*simulator.Job) {
+	return func(costSolver CostSolver, gpu types.GPU, jobs []types.Job) (float64, []types.Job) {
 		panic("Implement Me")
 	}
 }
