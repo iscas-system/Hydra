@@ -408,7 +408,6 @@ func (m *MinCostByBranchAndBound) MinCost(costSolver CostSolver, gpu types.GPU, 
 type MinCostByInsertNonDDL struct {
 }
 
-
 // NewMinCostByBacktrace 通过回溯计算MinCost。TODO
 func NewMinCostByBacktrace() MinCostAlgo {
 	return &MinCostByInsertNonDDL{}
@@ -421,4 +420,3 @@ func NewMinCostByBacktrace() MinCostAlgo {
 func (m *MinCostByInsertNonDDL) MinCost(costSolver CostSolver, gpu types.GPU, jobs []types.Job) (float64, []types.Job) {
 	panic("Implement me. 考完试实现。")
 }
-

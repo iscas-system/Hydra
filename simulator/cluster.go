@@ -12,9 +12,9 @@ import (
 type Cluster struct {
 	gpuType2CountConfig map[types.GPUType]int
 	gpus                map[types.GPUType][]types.GPU
-	gpuTypes     []types.GPUType
-	timer        types.Time
-	gpuJobQueues map[types.GPUID]*GPUJobQueue
+	gpuTypes            []types.GPUType
+	timer               types.Time
+	gpuJobQueues        map[types.GPUID]*GPUJobQueue
 }
 
 func (c *Cluster) InitJob(jobName types.JobName) types.Job {

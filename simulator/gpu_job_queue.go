@@ -27,7 +27,7 @@ func (q *GPUJobQueue) transformJob(job types.Job) *Job {
 	return job.(*Job)
 }
 
-func (q *GPUJobQueue) SetJobs(jobs... types.Job) {
+func (q *GPUJobQueue) SetJobs(jobs ...types.Job) {
 	res := make([]*Job, 0, len(jobs))
 	for _, j := range jobs {
 		res = append(res, j.(*Job))

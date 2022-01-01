@@ -311,7 +311,7 @@ func (s *jobDistanceSolver) Distance(kMeansCenterGPU types.GPU, kMeansPointJobs 
 // ------------------------------------------------ Distance具体算法 ----------------------------------------------------
 
 type MinCostDistanceAlgo struct {
-	minCostAlgo MinCostAlgo
+	minCostAlgo     MinCostAlgo
 	costSolverMaker CostSolverMaker
 }
 
@@ -367,4 +367,3 @@ type SimpleHeuristicGreedyDistanceAlgo struct {
 func (s *SimpleHeuristicGreedyDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
 	panic("Implement Me.")
 }
-

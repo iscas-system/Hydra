@@ -4,13 +4,8 @@ import "DES-go/util"
 
 type JobName string
 
-
 type JobExecutionDetail interface {
 	SumRuntimeOnGPUs() Duration
-}
-
-type JobExecutionRange interface {
-
 }
 
 type Job interface {

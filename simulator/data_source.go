@@ -92,7 +92,7 @@ func initDataSource(csvFilePath string) {
 	}
 }
 
-func SetDataSource(jobMetas []types.JobMeta, ) {
+func SetDataSource(jobMetas []types.JobMeta) {
 	metasMap := make(map[types.JobName]types.JobMeta)
 	for _, meta := range jobMetas {
 		metasMap[meta.JobName()] = meta
