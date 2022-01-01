@@ -247,10 +247,12 @@ type jobDistanceSolver struct {
 	distanceAlgo DistanceAlgo
 }
 
-type DistanceAlgo func(gpuCluster types.Cluster,
-	kMeansCenterGPU types.GPU,
-	kMeansPointJobs []types.Job,
-	jobNotInKMeansCluster types.Job) *distanceResp
+type DistanceAlgo interface {
+	Distance(gpuCluster types.Cluster,
+		kMeansCenterGPU types.GPU,
+		kMeansPointJobs []types.Job,
+		jobNotInKMeansCluster types.Job) *distanceResp
+}
 
 func newJobDistanceSolver(
 	cluster types.Cluster,
@@ -301,56 +303,68 @@ func (s *jobDistanceSolver) Distance(kMeansCenterGPU types.GPU, kMeansPointJobs 
 	if memorized, ok := s.distanceMemo.Load(memoKey); ok {
 		return memorized.(*distanceResp)
 	}
-	distanceResp := s.distanceAlgo(s.gpuCluster, kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster)
+	distanceResp := s.distanceAlgo.Distance(s.gpuCluster, kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster)
 	s.distanceMemo.Store(memoKey, distanceResp)
 	return distanceResp
 }
 
 // ------------------------------------------------ Distance具体算法 ----------------------------------------------------
 
-// NewMinCostDistanceAlgo 使用最小cost作为距离的算法参数
+type MinCostDistanceAlgo struct {
+	minCostAlgo MinCostAlgo
+	costSolverMaker CostSolverMaker
+}
+
+// Distance 使用最小cost作为距离的算法参数
 // 使用将新的任务放置到该簇后的minCost作为距离。
 // 首先，将任务经过SJF排序，如果没有任何job违反ddl，则这个放置的cost就会是最优的，不需要经过后续过程。
 // 如果，有任务违反了ddl，则进行分支限界法搜索。
 // 使用MinCost顺序选择开节点，每个节点的估计成本为：将所有未放置到搜索路径的任务按照SJF排序后，该队列的代价值。
-func NewMinCostDistanceAlgo(algo MinCostAlgo, costSolverMaker CostSolverMaker) DistanceAlgo {
-	return func(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
-		// 不关心一个簇中任务的顺序。
-		jobs := append(kMeansPointJobs, jobNotInKMeansCluster)
-		// 首先尝试将jobs使用SRTF排序，并计算一次cost。如果发现ddl没有被违反，则使用这个排序即可。
-		//（实际上，算法之所以在总体上不是最优的（由于NP-hard，且不知道任务的到来，所以算不出最优），
-		// 也是由于在不违反ddl时，只能使用SJF去思考，无法预测将来的任务到来是否会打散当前的SJF排序。
-		// 这是一种贪心的思想。不过只要无法预测将来任务的到来，就不可能做出最优解。）
-		// 不过是否可以再用一个度量指标，用于描述这个job有多么容易违反ddl？（离违反ddl有多近）这可以作为之后的改进思路。
-		jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), jobs)
-		costSolver := costSolverMaker(func(gpu types.GPU) types.Time {
-			jctOffset := gpuCluster.Now()
-			// 考虑到非抢占式调度，要将当前正在运行的任务剩余运行时间考虑进来。
-			runningJob := gpuCluster.CurrRunningJob(gpu.ID())
-			if runningJob != nil {
-				jctOffset += types.Time(runningJob.RemainingDuration(gpu.Type()))
-			}
-			return jctOffset
-		})
-		costResp := costSolver.Cost(kMeansCenterGPU, jobs)
-		if !costResp.ddlViolated {
-			return &distanceResp{
-				jobsSeq:  jobs,
-				distance: costResp.cost,
-			}
+func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
+	// 不关心一个簇中任务的顺序。
+	jobs := append(kMeansPointJobs, jobNotInKMeansCluster)
+	// 首先尝试将jobs使用SRTF排序，并计算一次cost。如果发现ddl没有被违反，则使用这个排序即可。
+	//（实际上，算法之所以在总体上不是最优的（由于NP-hard，且不知道任务的到来，所以算不出最优），
+	// 也是由于在不违反ddl时，只能使用SJF去思考，无法预测将来的任务到来是否会打散当前的SJF排序。
+	// 这是一种贪心的思想。不过只要无法预测将来任务的到来，就不可能做出最优解。）
+	// 不过是否可以再用一个度量指标，用于描述这个job有多么容易违反ddl？（离违反ddl有多近）这可以作为之后的改进思路。
+	jobs_util.GetJobsSliceUtil().ReorderToSRTF(kMeansCenterGPU.Type(), jobs)
+	costSolver := m.costSolverMaker(func(gpu types.GPU) types.Time {
+		jctOffset := gpuCluster.Now()
+		// 考虑到非抢占式调度，要将当前正在运行的任务剩余运行时间考虑进来。
+		runningJob := gpuCluster.CurrRunningJob(gpu.ID())
+		if runningJob != nil {
+			jctOffset += types.Time(runningJob.RemainingDuration(gpu.Type()))
 		}
-		minCost, optimus := algo(costSolver, kMeansCenterGPU, jobs)
+		return jctOffset
+	})
+	costResp := costSolver.Cost(kMeansCenterGPU, jobs)
+	if !costResp.ddlViolated {
 		return &distanceResp{
-			jobsSeq:  optimus,
-			distance: minCost,
+			jobsSeq:  jobs,
+			distance: costResp.cost,
 		}
+	}
+	minCost, optimus := m.minCostAlgo.MinCost(costSolver, kMeansCenterGPU, jobs)
+	return &distanceResp{
+		jobsSeq:  optimus,
+		distance: minCost,
+	}
+}
+
+func NewMinCostDistanceAlgo(minCostAlgo MinCostAlgo, costSolverMaker CostSolverMaker) DistanceAlgo {
+	return &MinCostDistanceAlgo{
+		minCostAlgo:     minCostAlgo,
+		costSolverMaker: costSolverMaker,
 	}
 }
 
 // ------------------------------------------------ 贪心算法 ------------------------------------------------------------
 
-func NewSimpleHeuristicGreedyDistanceAlgo() DistanceAlgo {
-	return func(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
-		panic("Implement Me.")
-	}
+type SimpleHeuristicGreedyDistanceAlgo struct {
 }
+
+func (s *SimpleHeuristicGreedyDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
+	panic("Implement Me.")
+}
+
