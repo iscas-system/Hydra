@@ -11,6 +11,6 @@ type Cluster interface {
 	Now() Time
 	CurrRunningJob(gpuID GPUID) Job
 	ClosestTimeToFinishAnyJob() Time
-	InitJob(jobName JobName) Job
+	InitJob(jobMeta JobMeta) Job
 	util.PrettyExpose
 }

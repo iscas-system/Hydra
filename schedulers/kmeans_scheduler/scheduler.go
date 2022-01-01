@@ -109,7 +109,7 @@ func (k *Scheduler) OnScheduleEvent(event types.ScheduleEvent) {
 			fmt.Printf("allArrivedJobsCount = [%d]\n", k.allArrivedJobsCount)
 			newJobs := make([]types.Job, 0, len(e.JobMetas()))
 			for _, jobMeta := range e.JobMetas() {
-				newJobs = append(newJobs, k.gpuCluster.InitJob(jobMeta.JobName()))
+				newJobs = append(newJobs, k.gpuCluster.InitJob(jobMeta))
 			}
 			k.insertJobs2Waiting(newJobs...)
 			if len(k.gpuCluster.EmptyGPUJobQueues()) > 0 {

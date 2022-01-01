@@ -17,8 +17,8 @@ type Cluster struct {
 	gpuJobQueues        map[types.GPUID]*GPUJobQueue
 }
 
-func (c *Cluster) InitJob(jobName types.JobName) types.Job {
-	return NewJob(jobName)
+func (c *Cluster) InitJob(jobMeta types.JobMeta) types.Job {
+	return NewJob(jobMeta.JobName())
 }
 
 func (c *Cluster) GPUJobQueues() map[types.GPUID]types.GPUJobQueue {

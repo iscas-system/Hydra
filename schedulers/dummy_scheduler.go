@@ -33,7 +33,7 @@ func (d *DummyScheduler) DoSchedule() {
 	}
 	jobs := make([]types.Job, 0, len(d.unscheduledJobMetas))
 	for _, job := range d.unscheduledJobMetas {
-		jobs = append(jobs, d.cluster.InitJob(job.JobName()))
+		jobs = append(jobs, d.cluster.InitJob(job))
 	}
 	targetJobQueue := d.cluster.GPUJobQueues()[types.GPUID(d.nextScheduleToGPUID)]
 	targetJobQueue.SetJobs(append(targetJobQueue.Jobs(), jobs...)...)
