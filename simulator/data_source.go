@@ -11,7 +11,7 @@ import (
 )
 
 type DataSource struct {
-	JobMetas              map[types.JobName]types.JobMeta // index by job name
+	JobMetas              map[types.JobName]*JobMeta // index by job name
 	JobNameSortedBySubmit []types.JobName
 }
 
@@ -63,7 +63,7 @@ func initDataSource(csvFilePath string) {
 		}
 	}
 
-	jobMetas := make(map[types.JobName]types.JobMeta)
+	jobMetas := make(map[types.JobName]*JobMeta)
 	jobNamesSortedBySubmitTime := make([]types.JobName, 0, len(csvDataRecords)-1)
 	for _, record := range csvDataRecords[1:] {
 		jobName := types.JobName(record[colJobNameIdx])
@@ -92,8 +92,8 @@ func initDataSource(csvFilePath string) {
 	}
 }
 
-func SetDataSource(jobMetas []types.JobMeta) {
-	metasMap := make(map[types.JobName]types.JobMeta)
+func SetDataSource(jobMetas []*JobMeta) {
+	metasMap := make(map[types.JobName]*JobMeta)
 	for _, meta := range jobMetas {
 		metasMap[meta.JobName()] = meta
 	}
@@ -123,28 +123,24 @@ func SetDataSource(jobMetas []types.JobMeta) {
 	dataSourceInstance = ds
 }
 
-func (ds *DataSource) Transform(jobMeta types.JobMeta) *JobMeta {
-	return jobMeta.(*JobMeta)
-}
-
-func (ds *DataSource) JobMeta(jobName types.JobName) types.JobMeta {
+func (ds *DataSource) JobMeta(jobName types.JobName) *JobMeta {
 	return ds.JobMetas[jobName]
 }
 
 func (ds *DataSource) Duration(jobName types.JobName, gpuType types.GPUType) types.Duration {
-	return ds.Transform(ds.JobMetas[jobName]).durations[gpuType]
+	return ds.JobMetas[jobName].durations[gpuType]
 }
 
 func (ds *DataSource) SubmitTime(jobName types.JobName) types.Time {
-	return ds.Transform(ds.JobMetas[jobName]).submitTime
+	return ds.JobMetas[jobName].submitTime
 }
 
 func (ds *DataSource) DDL(jobName types.JobName) types.Time {
-	return ds.Transform(ds.JobMetas[jobName]).ddl
+	return ds.JobMetas[jobName].ddl
 }
 
 func (ds *DataSource) Durations(jobName types.JobName) map[types.GPUType]types.Duration {
-	return ds.Transform(ds.JobMetas[jobName]).durations
+	return ds.JobMetas[jobName].durations
 }
 
 func (ds *DataSource) IterBySubmitTime(iterFunc func(indices []int, meta []types.JobMeta)) {
@@ -156,7 +152,7 @@ func (ds *DataSource) IterBySubmitTime(iterFunc func(indices []int, meta []types
 		indices = append(indices, i)
 		var j int
 		for j = i + 1; j < len(ds.JobNameSortedBySubmit); j++ {
-			if ds.Transform(ds.JobMeta(ds.JobNameSortedBySubmit[j])).submitTime == ds.Transform(metas[0]).submitTime {
+			if ds.JobMeta(ds.JobNameSortedBySubmit[j]).submitTime == metas[0].SubmitTime() {
 				metas = append(metas, ds.JobMeta(ds.JobNameSortedBySubmit[j]))
 				indices = append(indices, j)
 			} else {

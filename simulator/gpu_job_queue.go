@@ -23,10 +23,6 @@ func (q *GPUJobQueue) Jobs() []types.Job {
 	return jobs
 }
 
-func (q *GPUJobQueue) transformJob(job types.Job) *Job {
-	return job.(*Job)
-}
-
 func (q *GPUJobQueue) SetJobs(jobs ...types.Job) {
 	res := make([]*Job, 0, len(jobs))
 	for _, j := range jobs {
@@ -35,13 +31,13 @@ func (q *GPUJobQueue) SetJobs(jobs ...types.Job) {
 	q.jobs = res
 	// those jobs not on the first rank cannot have 'running' status
 	for i := 1; i < len(q.jobs); i++ {
-		q.transformJob(q.jobs[i]).setNotRunning()
+		q.jobs[i].setNotRunning()
 	}
 }
 
 func (q *GPUJobQueue) ClearQueue() []types.Job {
 	for _, job := range q.jobs {
-		q.transformJob(job).setNotRunning()
+		job.setNotRunning()
 	}
 	res := q.Jobs()
 	q.jobs = []*Job{}
@@ -63,7 +59,7 @@ func (q *GPUJobQueue) passDuration(fromTime types.Time, duration types.Duration)
 		if j.IsFinished() {
 			panic(fmt.Sprintf("GPUJobQueue %+v passDuration %+v, j.IsFinished() is true, j = %+v", q, duration, j))
 		}
-		q.transformJob(j).executesFor(q.gpu, tempTime, types.Duration(currTime-tempTime))
+		j.executesFor(q.gpu, tempTime, types.Duration(currTime-tempTime))
 		if !j.IsFinished() {
 			break
 		}
