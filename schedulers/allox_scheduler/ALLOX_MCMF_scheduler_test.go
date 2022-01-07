@@ -73,6 +73,7 @@ func TestSolver(t *testing.T) {
 	solver.Solve()
 
 	fmt.Println("Minimum JCT:", solver.minCost)
+	fmt.Println(solver.maxFlow)
 	fmt.Println("Scheduling result:", solver.GetSchedulingResult())
 }
 
