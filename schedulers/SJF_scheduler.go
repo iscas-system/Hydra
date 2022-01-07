@@ -2,6 +2,7 @@ package schedulers
 
 import (
 	"DES-go/schedulers/jobs_util"
+	"DES-go/schedulers/types"
 	"DES-go/simulator"
 	"fmt"
 	"math"
@@ -28,10 +29,10 @@ type SJFScheduler struct {
 	// 则会造成超大的overhead。这只存在于理论当中。
 	preemptive bool
 
-	cluster *simulator.Cluster
+	cluster types.Cluster
 
 	// 等待队列中的所有任务，其分别在每种类型的GPU上，按照RemainingDuration排序。
-	sortedWaitingJobs map[simulator.GPUType][]*simulator.Job
+	sortedWaitingJobs map[types.GPUType][]types.Job
 }
 
 func NewSJFScheduler(preemptive bool) *SJFScheduler {
@@ -52,9 +53,9 @@ func (s *SJFScheduler) doScheduleNonPreemptive() {
 	for s.hasWaitingJob() && s.hasEmptyGPUQueue() {
 		// 从waitingJobs中，在全部可能的EmptyGPUSlot上，挑选一个速度最快的。
 		emptyQueues := s.getEmptyGPUQueues()
-		var targetJob *simulator.Job = nil
-		var targetQueue *simulator.GPUJobQueue = nil
-		leastRemainingDuration := simulator.Duration(math.Inf(1))
+		var targetJob types.Job = nil
+		var targetQueue types.GPUJobQueue = nil
+		leastRemainingDuration := types.Duration(math.Inf(1))
 		// 遍历全部的waiting job，按照gpu type进行分类，在每个waitingJobs上找首个job（即在这个类型上剩余执行时间最短的任务）
 		// 遍历结束后，找到一个速度最快的任务。
 		for gpuType, waitingJobs := range s.sortedWaitingJobs {
@@ -62,7 +63,7 @@ func (s *SJFScheduler) doScheduleNonPreemptive() {
 				continue
 			}
 			firstWaitingJob := waitingJobs[0]
-			var candidateQueue *simulator.GPUJobQueue = nil
+			var candidateQueue types.GPUJobQueue = nil
 			for _, queue := range emptyQueues {
 				if queue.GPU().Type() != gpuType {
 					continue
@@ -87,7 +88,7 @@ func (s *SJFScheduler) doScheduleNonPreemptive() {
 			panic("SJFScheduler targetJob == nil || targetQueue == nil")
 		}
 		s.removeFromSortedWaitingJobs(targetJob)
-		targetQueue.SetJobs([]*simulator.Job{targetJob})
+		targetQueue.SetJobs(targetJob)
 	}
 }
 
@@ -112,7 +113,7 @@ func (s *SJFScheduler) hasWaitingJob() bool {
 	return false
 }
 
-func (s *SJFScheduler) insertJob2SortedWaitingJobs(job *simulator.Job) {
+func (s *SJFScheduler) insertJob2SortedWaitingJobs(job types.Job) {
 	for _, gpuType := range s.cluster.GPUTypes() {
 		ls := s.sortedWaitingJobs[gpuType]
 		target := job.RemainingDuration(gpuType)
@@ -123,7 +124,7 @@ func (s *SJFScheduler) insertJob2SortedWaitingJobs(job *simulator.Job) {
 	}
 }
 
-func (s *SJFScheduler) removeFromSortedWaitingJobs(job *simulator.Job) {
+func (s *SJFScheduler) removeFromSortedWaitingJobs(job types.Job) {
 	for _, gpuType := range s.cluster.GPUTypes() {
 		ls := s.sortedWaitingJobs[gpuType]
 		target := job.RemainingDuration(gpuType)
@@ -144,7 +145,7 @@ func (s *SJFScheduler) removeFromSortedWaitingJobs(job *simulator.Job) {
 		if targetIdx == -1 {
 			panic("SJFScheduler removeFromSortedWaitingJobs targetIdx == -1")
 		}
-		var removed *simulator.Job
+		var removed types.Job
 		removed, s.sortedWaitingJobs[gpuType] = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(targetIdx, ls)
 		if removed != job {
 			panic("SJFScheduler removeFromSortedWaitingJobs removed != job")
@@ -161,8 +162,8 @@ func (s *SJFScheduler) hasEmptyGPUQueue() bool {
 	return false
 }
 
-func (s *SJFScheduler) getEmptyGPUQueues() []*simulator.GPUJobQueue {
-	queues := make([]*simulator.GPUJobQueue, 0, len(s.cluster.GPUJobQueues()))
+func (s *SJFScheduler) getEmptyGPUQueues() []types.GPUJobQueue {
+	queues := make([]types.GPUJobQueue, 0, len(s.cluster.GPUJobQueues()))
 	for _, queue := range s.cluster.GPUJobQueues() {
 		if len(queue.Jobs()) == 0 {
 			queues = append(queues, queue)
@@ -171,24 +172,24 @@ func (s *SJFScheduler) getEmptyGPUQueues() []*simulator.GPUJobQueue {
 	return queues
 }
 
-func (s *SJFScheduler) SetCluster(cluster *simulator.Cluster) {
+func (s *SJFScheduler) SetCluster(cluster types.Cluster) {
 	s.cluster = cluster
-	s.sortedWaitingJobs = make(map[simulator.GPUType][]*simulator.Job)
+	s.sortedWaitingJobs = make(map[types.GPUType][]types.Job)
 	for _, gpuType := range s.cluster.GPUTypes() {
-		s.sortedWaitingJobs[gpuType] = make([]*simulator.Job, 0)
+		s.sortedWaitingJobs[gpuType] = make([]types.Job, 0)
 	}
 }
 
-func (s *SJFScheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
+func (s *SJFScheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	switch e := event.(type) {
-	case *simulator.ScheduleEventJobsArrived:
+	case *types.ScheduleEventJobsArrived:
 		{
 			for _, jobMeta := range e.JobMetas() {
 				s.insertJob2SortedWaitingJobs(simulator.NewJob(jobMeta.JobName()))
 			}
 			s.DoSchedule()
 		}
-	case *simulator.ScheduleEventJobsFinished:
+	case *types.ScheduleEventJobsFinished:
 		{
 			if !s.hasEmptyGPUQueue() {
 				panic("!s.hasEmptyGPUQueue() when some jobs finished.")
@@ -198,8 +199,8 @@ func (s *SJFScheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
 	}
 }
 
-func (s *SJFScheduler) NextActiveScheduleTime() simulator.Time {
-	return simulator.Time(math.Inf(1))
+func (s *SJFScheduler) NextActiveScheduleTime() types.Time {
+	return types.Time(math.Inf(1))
 }
 
 func (s *SJFScheduler) Name() string {

@@ -3,6 +3,7 @@ package main
 import (
 	"DES-go/schedulers"
 	"DES-go/schedulers/kmeans_scheduler"
+	"DES-go/schedulers/types"
 	"DES-go/simulator"
 )
 
@@ -12,31 +13,30 @@ func main() {
 	scheduler := initKMeansScheduler()
 	simu := simulator.NewSimulator(scheduler,
 		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),
-		simulator.WithOptionDataSourceCSVPath("/Users/yangchen/Projects/Graduate/DES-go/cases/case_200_all_3.csv"),
+		simulator.WithOptionDataSourceCSVPath("/Users/purchaser/go/src/DES-go/cases/case_200_all.csv"),
 		simulator.WithOptionLogEnabled(true),
-		simulator.WithOptionLogPath("/tmp/logs"),
-		simulator.WithOptionGPUType2Count(map[simulator.GPUType]int{
-			"V100": 8,
-			"P100": 8,
-			"T4":   4,
+		simulator.WithOptionLogPath("/Users/purchaser/go/src/DES-go/logs"),
+		simulator.WithOptionGPUType2Count(map[types.GPUType]int{
+			"V100": 10,
+			"P100": 5,
+			"T4":   10,
 		}))
 	simu.Start()
 }
 
-func initDummyScheduler() simulator.Scheduler {
+func initDummyScheduler() types.Scheduler {
 	return schedulers.NewDummyScheduler()
 }
 
-func initSJFScheduler() simulator.Scheduler {
+func initSJFScheduler() types.Scheduler {
 	return schedulers.NewSJFScheduler(false)
 }
 
-func initKMeansScheduler() simulator.Scheduler {
+func initKMeansScheduler() types.Scheduler {
 	return kmeans_scheduler.New(
 		kmeans_scheduler.WithScheme(kmeans_scheduler.NewSimpleOneShotScheduleScheme(false, -1)),
 		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
-			kmeans_scheduler.NewMinCostByBranchAndBoundAlgo(
-				kmeans_scheduler.MinCostBranchAndBoundLCStandardPredictCost),
+			kmeans_scheduler.NewMinCostByBranchAndBoundAlgo(kmeans_scheduler.MinCostBranchAndBoundLCStandardPredictCost),
 			kmeans_scheduler.NewSimpleAddCostSolverMaker(kmeans_scheduler.DDLCostTypeStrict, 1e20))),
 	)
 }

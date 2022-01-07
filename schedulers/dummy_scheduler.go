@@ -1,16 +1,16 @@
 package schedulers
 
 import (
-	"DES-go/simulator"
+	"DES-go/schedulers/types"
 	"math"
 )
 
 type DummyScheduler struct {
-	cluster             *simulator.Cluster
+	cluster             types.Cluster
 	nextScheduleToGPUID int
-	lastScheduleTime    simulator.Time
+	lastScheduleTime    types.Time
 	maxGPUJobQueueID    int
-	unscheduledJobMetas []*simulator.JobMeta
+	unscheduledJobMetas []types.JobMeta
 
 	unscheduledJobsCacheLength int
 	maxScheduleInterval        int
@@ -21,7 +21,7 @@ func NewDummyScheduler() *DummyScheduler {
 	unscheduledJobsCacheLength := 100
 	maxScheduleInterval := 1000
 	return &DummyScheduler{
-		unscheduledJobMetas:        make([]*simulator.JobMeta, 0, unscheduledJobsCacheLength),
+		unscheduledJobMetas:        make([]types.JobMeta, 0, unscheduledJobsCacheLength),
 		maxScheduleInterval:        maxScheduleInterval,
 		unscheduledJobsCacheLength: unscheduledJobsCacheLength,
 	}
@@ -31,19 +31,19 @@ func (d *DummyScheduler) DoSchedule() {
 	if d.unscheduledJobMetas == nil {
 		panic("DummyScheduler d.unscheduledJobMetas == nil")
 	}
-	jobs := make([]*simulator.Job, 0, len(d.unscheduledJobMetas))
+	jobs := make([]types.Job, 0, len(d.unscheduledJobMetas))
 	for _, job := range d.unscheduledJobMetas {
-		jobs = append(jobs, simulator.NewJob(job.JobName()))
+		jobs = append(jobs, d.cluster.InitJob(job))
 	}
-	targetJobQueue := d.cluster.GPUJobQueues()[simulator.GPUID(d.nextScheduleToGPUID)]
-	targetJobQueue.SetJobs(append(targetJobQueue.Jobs(), jobs...))
+	targetJobQueue := d.cluster.GPUJobQueues()[types.GPUID(d.nextScheduleToGPUID)]
+	targetJobQueue.SetJobs(append(targetJobQueue.Jobs(), jobs...)...)
 
 	d.nextScheduleToGPUID = (d.nextScheduleToGPUID + 1) % d.maxGPUJobQueueID
 	d.lastScheduleTime = d.cluster.Now()
 	d.unscheduledJobMetas = d.unscheduledJobMetas[:0]
 }
 
-func (d *DummyScheduler) SetCluster(cluster *simulator.Cluster) {
+func (d *DummyScheduler) SetCluster(cluster types.Cluster) {
 	d.cluster = cluster
 	d.nextScheduleToGPUID = 0
 	d.lastScheduleTime = d.cluster.Now()
@@ -56,15 +56,15 @@ func (d *DummyScheduler) SetCluster(cluster *simulator.Cluster) {
 	}
 }
 
-func (d *DummyScheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
+func (d *DummyScheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	switch e := event.(type) {
-	case *simulator.ScheduleEventDurationPassed:
+	case *types.ScheduleEventDurationPassed:
 		{
-			if d.cluster.Now()-d.lastScheduleTime >= simulator.Time(d.maxScheduleInterval) {
+			if d.cluster.Now()-d.lastScheduleTime >= types.Time(d.maxScheduleInterval) {
 				d.DoSchedule()
 			}
 		}
-	case *simulator.ScheduleEventJobsArrived:
+	case *types.ScheduleEventJobsArrived:
 		{
 			d.unscheduledJobMetas = append(d.unscheduledJobMetas, e.JobMetas()...)
 			if len(d.unscheduledJobMetas) > d.unscheduledJobsCacheLength {
@@ -74,11 +74,11 @@ func (d *DummyScheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
 	}
 }
 
-func (d *DummyScheduler) NextActiveScheduleTime() simulator.Time {
+func (d *DummyScheduler) NextActiveScheduleTime() types.Time {
 	if len(d.unscheduledJobMetas) > 0 {
-		return simulator.Time(d.maxScheduleInterval) - (d.cluster.Now() - d.lastScheduleTime)
+		return types.Time(d.maxScheduleInterval) - (d.cluster.Now() - d.lastScheduleTime)
 	}
-	return simulator.Time(math.Inf(1))
+	return types.Time(math.Inf(1))
 }
 
 func (d *DummyScheduler) Name() string {

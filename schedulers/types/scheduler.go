@@ -1,4 +1,4 @@
-package simulator
+package types
 
 type Scheduler interface {
 	// DoSchedule 每个调度器使用该方法进行调度。
@@ -8,7 +8,7 @@ type Scheduler interface {
 
 	// SetCluster
 	// Simulator 会在开始模拟时调用 SetCluster 方法，将集群注入到 Scheduler 当中。
-	SetCluster(cluster *Cluster)
+	SetCluster(cluster Cluster)
 	// OnScheduleEvent
 	// 由 Simulator 调用的方法，将任何一个可能产生调度的时间传输给 Scheduler ，让它通过事件决定是否进行一次调度。
 	OnScheduleEvent(event ScheduleEvent)

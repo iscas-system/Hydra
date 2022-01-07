@@ -1,4 +1,4 @@
-package simulator
+package types
 
 type ScheduleEventType int
 
@@ -20,7 +20,7 @@ func (s *ScheduleEventDurationPassed) Duration() Duration {
 	return s.duration
 }
 
-func newScheduleEventDurationPassed(duration Duration) *ScheduleEventDurationPassed {
+func NewScheduleEventDurationPassed(duration Duration) *ScheduleEventDurationPassed {
 	return &ScheduleEventDurationPassed{duration: duration}
 }
 
@@ -29,14 +29,14 @@ func (s *ScheduleEventDurationPassed) GetEventType() ScheduleEventType {
 }
 
 type ScheduleEventJobsArrived struct {
-	jobMetas []*JobMeta
+	jobMetas []JobMeta
 }
 
-func (s ScheduleEventJobsArrived) JobMetas() []*JobMeta {
+func (s ScheduleEventJobsArrived) JobMetas() []JobMeta {
 	return s.jobMetas
 }
 
-func newScheduleEventJobsArrived(jobMetas []*JobMeta) *ScheduleEventJobsArrived {
+func NewScheduleEventJobsArrived(jobMetas []JobMeta) *ScheduleEventJobsArrived {
 	return &ScheduleEventJobsArrived{jobMetas: jobMetas}
 }
 
@@ -45,14 +45,14 @@ func (s *ScheduleEventJobsArrived) GetEventType() ScheduleEventType {
 }
 
 type ScheduleEventJobsFinished struct {
-	jobs []*Job
+	jobs []Job
 }
 
-func (s ScheduleEventJobsFinished) Jobs() []*Job {
+func (s ScheduleEventJobsFinished) Jobs() []Job {
 	return s.jobs
 }
 
-func newScheduleEventJobsFinished(jobs []*Job) *ScheduleEventJobsFinished {
+func NewScheduleEventJobsFinished(jobs []Job) *ScheduleEventJobsFinished {
 	return &ScheduleEventJobsFinished{jobs: jobs}
 }
 

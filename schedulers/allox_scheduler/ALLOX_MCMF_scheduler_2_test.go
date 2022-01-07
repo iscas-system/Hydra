@@ -22,7 +22,6 @@ func TestSolver2(t *testing.T) {
 
 	jobNum := 200
 	gpuNum := 20
-	fmt.Println(records[0])
 
 	// Matrix P in the paper
 	timeMatrix := make([][]float64, jobNum)
@@ -45,24 +44,24 @@ func TestSolver2(t *testing.T) {
 		}
 	}
 	jobNodes := make([]*Node, jobNum)
-	gpuSlotNodes := make([]*Node, jobNum * gpuNum)
+	gpuSlotNodes := make([]*Node, jobNum*gpuNum)
 
 	for i := 0; i < jobNum; i++ {
-		jobNodes[i] = NewNode("job" + strconv.Itoa(i), "job")
+		jobNodes[i] = NewNode("job"+strconv.Itoa(i), "job")
 	}
 
 	for i := 0; i < jobNum; i++ {
 		for j := 0; j < gpuNum; j++ {
 			// gpu-j 's slot i (the i th job on gpu j)
-			gpuSlotNodes[i * gpuNum + j] = NewNode("gpu" + strconv.Itoa(j) + "-" + "slot" + strconv.Itoa(i), "gpu")
+			gpuSlotNodes[i*gpuNum+j] = NewNode("gpu"+strconv.Itoa(j)+"-"+"slot"+strconv.Itoa(i), "gpu")
 		}
 	}
 	weights := make([][]float64, jobNum)
 	for i := 0; i < jobNum; i++ {
-		weights[i] = make([]float64, jobNum * gpuNum)
+		weights[i] = make([]float64, jobNum*gpuNum)
 		for j := 0; j < jobNum; j++ {
 			for k := 0; k < gpuNum; k++ {
-				weights[i][j * gpuNum + k] = timeMatrix[i][k] * float64(j + 1)
+				weights[i][j*gpuNum+k] = timeMatrix[i][k] * float64(j+1)
 			}
 		}
 	}
@@ -90,4 +89,3 @@ func TestSolver2(t *testing.T) {
 	fmt.Println("Scheduling result:", solver.GetSchedulingResult())
 
 }
-

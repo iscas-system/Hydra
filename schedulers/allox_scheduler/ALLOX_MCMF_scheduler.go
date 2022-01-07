@@ -1,15 +1,13 @@
 package allox_scheduler
 
 import (
-	"DES-go/simulator"
+	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
 	"math"
 )
 
-
 // In Allox, the author build the scheduling problem as a min-cost bipartite graph matching problem
-
 
 // In graph theory, a min-cost bipartite graph matching problem can be transformed into an equal min cost max flow (MCMF) problem
 // Here we use spfa algorithm to find augmenting path until we can't find more to solve MCMF problem
@@ -18,45 +16,42 @@ import (
 // BTW, another common way to solve the bipartite graph max match problem is KM algorithm, but it's a bit more complicated to implement.
 
 type AlloxScheduler struct {
-	online bool
-	cluster *simulator.Cluster
-	graph *Graph
+	online  bool
+	cluster types.Cluster
+	graph   *Graph
 
-	allWaitingJobs []*simulator.JobMeta
-
+	allWaitingJobs []types.JobMeta
 }
 
 func (a *AlloxScheduler) DoSchedule() {
 
 }
 
-func (a *AlloxScheduler) SetCluster(cluster *simulator.Cluster) {
+func (a *AlloxScheduler) SetCluster(cluster types.Cluster) {
 	a.cluster = cluster
 }
 
-func (a *AlloxScheduler) OnScheduleEvent(event simulator.ScheduleEvent) {
+func (a *AlloxScheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	switch e := event.(type) {
-	case *simulator.ScheduleEventJobsArrived:
+	case *types.ScheduleEventJobsArrived:
 		{
 			a.allWaitingJobs = e.JobMetas()
 			a.DoSchedule()
 		}
 
-	case *simulator.ScheduleEventJobsFinished:
+	case *types.ScheduleEventJobsFinished:
 		{
 		}
 	}
 }
 
-func (a *AlloxScheduler) NextActiveScheduleTime() simulator.Time {
-	return simulator.Time(math.Inf(1))
+func (a *AlloxScheduler) NextActiveScheduleTime() types.Time {
+	return types.Time(math.Inf(1))
 }
 
 func (a *AlloxScheduler) Name() string {
 	return fmt.Sprintf("AlloxScheduler[online=%v]", a.online)
 }
-
-
 
 // For Graph Build
 type Node struct {
@@ -70,7 +65,7 @@ func NewNode(name string, nodeType string) *Node {
 }
 
 type Edge struct {
-	name string
+	name     string
 	from, to *Node
 	// 边的容量，随求解的过程实时更新
 	// 准确来说边的容量应该是一个定值，此处capacity用来表示边上的可用容量
@@ -82,15 +77,14 @@ type Edge struct {
 
 	// 是否为反向边
 	reversed bool
-
 }
 
 func NewEdge(from, to *Node, capacity, weight float64, reversed bool) *Edge {
 	edge := &Edge{
-		from: from,
-		to: to,
+		from:     from,
+		to:       to,
 		capacity: capacity,
-		weight: weight,
+		weight:   weight,
 		reversed: reversed,
 	}
 	edge.name = from.name + "->" + to.name
@@ -108,10 +102,11 @@ type Graph struct {
 	// Edge类型在求解过程中，capacity会发生改变，不能使用Edge作为key, 采用Edge的Name作为key
 	reverse map[string]*Edge
 }
+
 func NewGraph() *Graph {
 	return &Graph{
-		nodes: make([]*Node, 0),
-		outs:  make(map[Node][]*Edge),
+		nodes:   make([]*Node, 0),
+		outs:    make(map[Node][]*Edge),
 		reverse: make(map[string]*Edge),
 	}
 }
@@ -131,7 +126,7 @@ func (g *Graph) AddNode(node *Node) {
 }
 
 func (g *Graph) AddEdge(from, to *Node, capacity, weight float64) {
-	e1 := NewEdge(from ,to , capacity, weight, false)
+	e1 := NewEdge(from, to, capacity, weight, false)
 	e2 := NewEdge(to, from, 0, -weight, true)
 
 	g.outs[*from] = append(g.outs[*from], e1)
@@ -141,10 +136,8 @@ func (g *Graph) AddEdge(from, to *Node, capacity, weight float64) {
 	g.reverse[e2.name] = e1
 }
 
-
 type MCMFSolver struct {
-
-	graph *Graph
+	graph  *Graph
 	result map[Node]*Node
 
 	maxFlow float64
@@ -160,19 +153,18 @@ type MCMFSolver struct {
 
 	// spfa
 	distance map[Node]float64
-	visit map[Node]bool
-
+	visit    map[Node]bool
 }
 
 func NewMCMFSolver(graph *Graph) *MCMFSolver {
 	solver := &MCMFSolver{
-		graph: graph,
-		result: make(map[Node]*Node),
-		flow: make(map[Node]float64),
-		paths: make([][]*Edge, 0),
-		l: make(map[Node]*Edge),
+		graph:    graph,
+		result:   make(map[Node]*Node),
+		flow:     make(map[Node]float64),
+		paths:    make([][]*Edge, 0),
+		l:        make(map[Node]*Edge),
 		distance: make(map[Node]float64),
-		visit: make(map[Node]bool),
+		visit:    make(map[Node]bool),
 	}
 	solver.q.New()
 	return solver
@@ -213,7 +205,7 @@ func (solver *MCMFSolver) spfa() bool {
 			w := e.weight
 			f := e.capacity
 
-			if f > 0 && solver.distance[v] > solver.distance[u] + w {
+			if f > 0 && solver.distance[v] > solver.distance[u]+w {
 				solver.distance[v] = solver.distance[u] + w
 				solver.l[v] = e
 				solver.flow[v] = math.Min(solver.flow[u], f)
@@ -238,7 +230,7 @@ func (solver *MCMFSolver) spfa() bool {
 }
 
 // 先在图中进行表示，接下来和框架进行整合
-func(solver *MCMFSolver) GetSchedulingResult() map[string]string {
+func (solver *MCMFSolver) GetSchedulingResult() map[string]string {
 	result := make(map[string]string)
 
 	for _, path := range solver.paths {
@@ -257,8 +249,5 @@ func(solver *MCMFSolver) GetSchedulingResult() map[string]string {
 		}
 	}
 	return result
-
-
-
 
 }
