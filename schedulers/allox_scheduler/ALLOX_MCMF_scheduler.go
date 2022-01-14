@@ -53,6 +53,14 @@ func (a *AlloxScheduler) Name() string {
 	return fmt.Sprintf("AlloxScheduler[online=%v]", a.online)
 }
 
+func (a *AlloxScheduler) Info() interface{} {
+	return a.Name()
+}
+
+func (a *AlloxScheduler) Record() *types.SchedulerRecord {
+	return nil
+}
+
 // For Graph Build
 type Node struct {
 	name string

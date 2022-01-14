@@ -206,3 +206,11 @@ func (s *SJFScheduler) NextActiveScheduleTime() types.Time {
 func (s *SJFScheduler) Name() string {
 	return fmt.Sprintf("SJFScheduler[preemptive=%v]", s.preemptive)
 }
+
+func (s *SJFScheduler) Info() interface{} {
+	return s.Name()
+}
+
+func (s *SJFScheduler) Record() *types.SchedulerRecord {
+	return nil
+}

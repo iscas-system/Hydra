@@ -34,8 +34,20 @@ type JobExecutionRange struct {
 	completenessRatio float64
 }
 
-func (jer *JobExecutionRange) Gpu() types.GPU {
+func (jer *JobExecutionRange) GPU() types.GPU {
 	return jer.gpu
+}
+
+func (jer *JobExecutionRange) JobName() types.JobName {
+	return jer.jobName
+}
+
+func (jer *JobExecutionRange) TimeRange() types.TimeRange {
+	return jer.timeRange
+}
+
+func (jer *JobExecutionRange) CompletenessRatio() float64 {
+	return jer.completenessRatio
 }
 
 func newJobExecutionRange(gpu types.GPU, jobName types.JobName, timeRange *TimeRange) *JobExecutionRange {
@@ -62,13 +74,9 @@ func (jer *JobExecutionRange) resetCompletenessRatio() float64 {
 	return jer.completenessRatio
 }
 
-func (jer *JobExecutionRange) CompletenessRatio() float64 {
-	return jer.completenessRatio
-}
-
 type JobExecutionDetail struct {
 	jobName         types.JobName
-	executionRanges map[types.GPU][]*JobExecutionRange
+	executionRanges map[types.GPU][]types.JobExecutionRange
 }
 
 func newJobExecutionDetail(jobName types.JobName) *JobExecutionDetail {
@@ -77,17 +85,17 @@ func newJobExecutionDetail(jobName types.JobName) *JobExecutionDetail {
 
 func (jed *JobExecutionDetail) addExecutionRange(gpu types.GPU, timeRange *TimeRange) {
 	if jed.executionRanges == nil {
-		jed.executionRanges = make(map[types.GPU][]*JobExecutionRange)
+		jed.executionRanges = make(map[types.GPU][]types.JobExecutionRange)
 	}
 	if _, ok := jed.executionRanges[gpu]; !ok {
-		jed.executionRanges[gpu] = make([]*JobExecutionRange, 0)
+		jed.executionRanges[gpu] = make([]types.JobExecutionRange, 0)
 	}
 
 	// In case that the last execution range is closely jointed with new execution range. Combine them.
 	if len(jed.executionRanges[gpu]) > 0 {
 		lastExecutionRange := jed.executionRanges[gpu][len(jed.executionRanges[gpu])-1]
-		if math.Abs(float64(lastExecutionRange.timeRange.end-timeRange.start)) < 1e-6 {
-			lastExecutionRange.modifyTimeRange(nil, &timeRange.end)
+		if math.Abs(float64(lastExecutionRange.TimeRange().End()-timeRange.Start())) < 1e-6 {
+			(lastExecutionRange.(*JobExecutionRange)).modifyTimeRange(nil, &timeRange.end)
 			return
 		}
 	}
@@ -101,10 +109,14 @@ func (jed *JobExecutionDetail) SumRuntimeOnGPUs() types.Duration {
 	sum := types.Duration(0.)
 	for _, rs := range jed.executionRanges {
 		for _, r := range rs {
-			sum += r.timeRange.Runtime()
+			sum += r.TimeRange().Runtime()
 		}
 	}
 	return sum
+}
+
+func (jed *JobExecutionDetail) ExecutionRanges() map[types.GPU][]types.JobExecutionRange {
+	return jed.executionRanges
 }
 
 type Job struct {

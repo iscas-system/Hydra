@@ -22,6 +22,12 @@ type Scheduler interface {
 	// 同时， Scheduler 需要在全部任务执行完，且没有新任务时返回一个inf值。这样可以保证全部任务都执行结束后，能够正常退出模拟。
 	NextActiveScheduleTime() Time
 
-	// Name 取个好听的名字吧
+	// Name 调度器基本描述信息
 	Name() string
+
+	// Info 详细描述信息
+	Info() interface{}
+
+	// Record 获取调度器运行记录信息，用于实验统计数据。
+	Record() *SchedulerRecord
 }

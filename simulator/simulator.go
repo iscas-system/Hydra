@@ -104,11 +104,11 @@ func (s *Simulator) transformJobs(jobs []*Job) []types.Job {
 }
 
 func (s *Simulator) logTimePassed(duration types.Duration) {
-	allInfo := util.PrettyF("\nTimePassed for %f seconds, finished jobs count: %d. \ncluster info: \n%# v.\n", float64(duration), len(s.recordedFinishedJobs), s.cluster)
+	allInfo := util.PrettyF("\nTime Passed: %f seconds, finished jobs count: %d. \ncluster info: \n%# v.\n", float64(duration), len(s.recordedFinishedJobs), s.cluster)
 	if s.opts.formatPrintLevel == AllFormatPrint {
 		fmt.Printf(allInfo)
 	} else if s.opts.formatPrintLevel == ShortMsgPrint {
-		shortInfo := util.PrettyF("\nTimePassed for %f seconds, finished jobs count: %d.\n", float64(duration), len(s.recordedFinishedJobs))
+		shortInfo := util.PrettyF("\nTime Passed: %f seconds, finished jobs count: %d.\n", float64(duration), len(s.recordedFinishedJobs))
 		fmt.Printf(shortInfo)
 	} else if s.opts.formatPrintLevel == NoFormatPrint {
 		// pass.
@@ -116,8 +116,9 @@ func (s *Simulator) logTimePassed(duration types.Duration) {
 	s.logger.ReceiveStringLog(allInfo)
 }
 
+// TODO Deprecated. 使用metrics包替代。logger仅用来记录模拟器的详细调度过程。
 func (s *Simulator) logMetrics() {
-	violationCount, avgViolationDelay := MetricViolation(s.recordedFinishedJobs)
+	violationCount, avgViolationDelay := Violation(s.recordedFinishedJobs)
 	metrics := util.PrettyF("simulation completed, "+
 		"scheduler = [%s], "+
 		"finished job count = [%d], "+

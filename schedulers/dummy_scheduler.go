@@ -84,3 +84,11 @@ func (d *DummyScheduler) NextActiveScheduleTime() types.Time {
 func (d *DummyScheduler) Name() string {
 	return "DummyScheduler"
 }
+
+func (d *DummyScheduler) Info() interface{} {
+	return d.Name()
+}
+
+func (d *DummyScheduler) Record() *types.SchedulerRecord {
+	return nil
+}

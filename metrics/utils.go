@@ -1,12 +1,12 @@
-package simulator
+package metrics
 
 import (
 	"DES-go/schedulers/types"
 	"DES-go/util"
 )
 
-// AvgJCT 计算一批任务的平均JCT
-func AvgJCT(jobs []*Job) types.Time {
+// avgJCT 计算一批任务的平均JCT
+func avgJCT(jobs []types.Job) types.Time {
 	if len(jobs) == 0 {
 		return 0
 	}
@@ -17,8 +17,8 @@ func AvgJCT(jobs []*Job) types.Time {
 	return sumJCT / types.Time(len(jobs))
 }
 
-// MetricViolation 计算一批任务的违约个数，以及平均DDL违约时间
-func MetricViolation(jobs []*Job) (int, types.Duration) {
+// violation 计算一批任务的违约个数，以及平均DDL违约时间
+func violation(jobs []types.Job) (int, types.Duration) {
 	if len(jobs) == 0 {
 		return 0, 0
 	}
@@ -34,13 +34,13 @@ func MetricViolation(jobs []*Job) (int, types.Duration) {
 	return violatedCount, sumViolationDelay / types.Duration(len(jobs))
 }
 
-func AvgQueuingDelay(jobs []*Job) types.Duration {
+func avgQueuingDelay(jobs []types.Job) types.Duration {
 	is := make([]interface{}, 0, len(jobs))
 	for _, job := range jobs {
 		is = append(is, job)
 	}
 	return types.Duration(util.AvgFloat64(func(i interface{}) float64 {
-		j := i.(*Job)
+		j := i.(types.Job)
 		return float64(j.QueueDelay())
 	}, is...))
 }

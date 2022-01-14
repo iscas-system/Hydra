@@ -3,6 +3,7 @@ package jobs_util
 import (
 	"DES-go/schedulers/types"
 	"DES-go/util"
+	"math"
 	"sort"
 )
 
@@ -10,6 +11,10 @@ type JobsSliceUtil struct{}
 
 func GetJobsSliceUtil() JobsSliceUtil {
 	return JobsSliceUtil{}
+}
+
+func (u JobsSliceUtil) JobHasDDL(job types.Job) bool {
+	return !math.IsInf(float64(job.JobMeta().DDL()), 1)
 }
 
 func (u JobsSliceUtil) ReorderToSRTF(gpuType types.GPUType, jobs []types.Job) {

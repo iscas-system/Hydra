@@ -3,6 +3,7 @@ package main
 import (
 	"DES-go/schedulers"
 	"DES-go/schedulers/kmeans_scheduler"
+	"DES-go/schedulers/kmeans_scheduler/cost"
 	"DES-go/schedulers/types"
 	"DES-go/simulator"
 )
@@ -34,9 +35,11 @@ func initSJFScheduler() types.Scheduler {
 
 func initKMeansScheduler() types.Scheduler {
 	return kmeans_scheduler.New(
-		kmeans_scheduler.WithScheme(kmeans_scheduler.NewSimpleOneShotScheduleScheme(false, -1)),
+		kmeans_scheduler.WithScheme(kmeans_scheduler.NewSimpleOneShotScheduleScheme(false, false, -1)),
 		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
-			kmeans_scheduler.NewMinCostByBranchAndBoundAlgo(kmeans_scheduler.MinCostBranchAndBoundLCStandardPredictCost),
-			kmeans_scheduler.NewSimpleAddCostSolverMaker(kmeans_scheduler.DDLCostTypeStrict, 1e20))),
+			//cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeDDLInsertion),
+			//cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeAllPermutation),
+			cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeFixNonDDL),
+			cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 }

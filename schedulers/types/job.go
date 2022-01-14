@@ -8,6 +8,16 @@ type JobExecutionDetail interface {
 	SumRuntimeOnGPUs() Duration
 }
 
+type JobExecutionRange interface {
+	TimeRange() TimeRange
+}
+
+type TimeRange interface {
+	Start() Time
+	End() Time
+	Runtime() Duration
+}
+
 type Job interface {
 	JobName() JobName
 	ExecutionDetail() JobExecutionDetail

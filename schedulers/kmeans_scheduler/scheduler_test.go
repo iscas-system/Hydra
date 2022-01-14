@@ -1,24 +1,17 @@
 package kmeans_scheduler
 
 import (
+	"DES-go/schedulers/kmeans_scheduler/cost"
 	"DES-go/schedulers/types"
 	"DES-go/simulator"
+	"encoding/json"
 	"testing"
 )
 
-func Test_closure(t *testing.T) {
-	a := 0
-	f := func() {
-		a = 1
-	}
-	f()
-	t.Log(a)
-}
-
-func Test1(t *testing.T) {
+func Test_scheduler(t *testing.T) {
 	scheduler := New(WithScheme(
-		NewSimpleOneShotScheduleScheme(false, -1)),
-		WithDistanceAlgo(NewMinCostDistanceAlgo(NewMinCostByBranchAndBoundAlgo(MinCostBranchAndBoundLCStandardPartialCost), NewSimpleAddCostSolverMaker(DDLCostTypeStrict, 1e20))),
+		NewSimpleOneShotScheduleScheme(false, false, -1)),
+		WithDistanceAlgo(NewMinCostDistanceAlgo(cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPartialCost, cost.BranchAndBoundAlgoTypeAllPermutation), cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 	simu := simulator.NewSimulator(scheduler,
 		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),
@@ -28,23 +21,33 @@ func Test1(t *testing.T) {
 			"V100": 1,
 			"T4":   1,
 		}))
-	simulator.SetDataSource([]types.JobMeta{
+	simulator.SetDataSource([]*simulator.JobMeta{
 		simulator.NewJobMeta("job1", 0, 12, map[types.GPUType]types.Duration{"V100": 5, "T4": 10}),
 		simulator.NewJobMeta("job2", 0, 7, map[types.GPUType]types.Duration{"V100": 6, "T4": 12}),
 		simulator.NewJobMeta("job3", 0, 6, map[types.GPUType]types.Duration{"V100": 3, "T4": 5}),
 	})
 	simu.Start()
-	//scheduler.insertJobs2Waiting(simulator.NewJob("job1"), simulator.NewJob("job2"), simulator.NewJob("job3"))
-	//scheduler.doSimpleOneShotSchedule(&SimpleOneShotScheme{
-	//	Preemptive:      false,
-	//	PreemptiveCycle: 0,
-	//})
-
 }
 
 func Test2(t *testing.T) {
 	a := []int{1, 2}
-	b := make([]int, 0, 3)
-	copy(b, a)
+	b := make([]int, 3, 3)
+	copy(b[1:], a)
 	t.Log(b)
+}
+
+type IA interface {
+	A() string
+}
+type A struct {
+}
+func (A) A() string{
+	return "AAA"
+}
+
+func TestJson(t *testing.T) {
+	a := A{}
+	r, e := json.Marshal(a)
+	t.Log(e)
+	t.Log(r)
 }
