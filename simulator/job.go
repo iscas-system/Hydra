@@ -156,6 +156,10 @@ func (j *Job) JobMeta() types.JobMeta {
 	return getDataSource().JobMeta(j.JobName())
 }
 
+func (j *Job) HasDDL() bool {
+	return !math.IsInf(float64(j.JobMeta().DDL()), 1)
+}
+
 func (j *Job) PrettyExpose() interface{} {
 	return struct {
 		types.Job

@@ -10,7 +10,7 @@ import (
 
 func Test_scheduler(t *testing.T) {
 	scheduler := New(WithScheme(
-		NewSimpleOneShotScheduleScheme(false, false, -1)),
+		NewBasicScheduleScheme(false, false, -1, false)),
 		WithDistanceAlgo(NewMinCostDistanceAlgo(cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPartialCost, cost.BranchAndBoundAlgoTypeAllPermutation), cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 	simu := simulator.NewSimulator(scheduler,
@@ -26,7 +26,7 @@ func Test_scheduler(t *testing.T) {
 		simulator.NewJobMeta("job2", 0, 7, map[types.GPUType]types.Duration{"V100": 6, "T4": 12}),
 		simulator.NewJobMeta("job3", 0, 6, map[types.GPUType]types.Duration{"V100": 3, "T4": 5}),
 	})
-	simu.Start()
+	simu.Run()
 }
 
 func Test2(t *testing.T) {
@@ -41,7 +41,8 @@ type IA interface {
 }
 type A struct {
 }
-func (A) A() string{
+
+func (A) A() string {
 	return "AAA"
 }
 

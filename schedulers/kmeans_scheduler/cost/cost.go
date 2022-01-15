@@ -77,9 +77,9 @@ const (
 )
 
 type Resp struct {
-	Cost    float64
-	JCTCost float64
-	DDLCost float64
+	Cost            float64
+	JCTCost         float64
+	DDLCost         float64
 	DDLViolatedJobs []types.Job
 	DDLViolated     bool
 }
@@ -165,7 +165,14 @@ func (s *SimpleAddSolver) Cost(gpu types.GPU, jobs []types.Job) *Resp {
 	return costResp
 }
 
+type MinCostParams struct {
+	CostSolver Solver
+	GPU        types.GPU
+	Jobs       []types.Job
+}
+
 type MinCostAlgo interface {
-	MinCost(params *BranchAndBoundAlgoParams) (float64, []types.Job)
+	MinCost(params *MinCostParams) (float64, []types.Job)
 	String() string
+	RecordExtra() interface{}
 }

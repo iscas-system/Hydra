@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 type DataSource struct {
@@ -39,7 +40,13 @@ func initDataSource(csvFilePath string) {
 
 	fmt.Printf("DataSource reading %d lines of records from %s...\n", len(csvDataRecords), csvFilePath)
 
+	for _, records := range csvDataRecords {
+		for idx, content := range records {
+			records[idx] = strings.TrimSpace(content)
+		}
+	}
 	csvHeaders := csvDataRecords[0]
+
 	colIndexOf := func(colName string) int {
 		res := util.StringSliceIndexOf(csvHeaders, colName)
 		if res == -1 {

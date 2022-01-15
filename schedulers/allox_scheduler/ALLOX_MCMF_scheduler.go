@@ -5,6 +5,9 @@ import (
 	"DES-go/util"
 	"fmt"
 	"math"
+	"regexp"
+	"strconv"
+	"time"
 )
 
 // In Allox, the author build the scheduling problem as a min-cost bipartite graph matching problem
@@ -21,9 +24,159 @@ type AlloxScheduler struct {
 	graph   *Graph
 
 	allWaitingJobs []types.JobMeta
+
+	hasDoneScheduledOnce bool
+
+	SchedulerRecord *types.SchedulerRecord
+}
+
+func NewAlloxScheduler(online bool) *AlloxScheduler {
+	return &AlloxScheduler{
+		online:               online,
+		cluster:              nil,
+		graph:                nil,
+		allWaitingJobs:       []types.JobMeta{},
+		hasDoneScheduledOnce: false,
+		SchedulerRecord: &types.SchedulerRecord{
+			DoScheduleRecords: []*types.DoScheduleCallRecord{},
+		},
+	}
 }
 
 func (a *AlloxScheduler) DoSchedule() {
+	start := time.Now()
+	if !a.online {
+		a.DoOneShotSchedule()
+	} else {
+		panic("implement me.")
+	}
+	duration := time.Since(start)
+	a.SchedulerRecord.DoScheduleRecords = append(a.SchedulerRecord.DoScheduleRecords, &types.DoScheduleCallRecord{Duration: duration})
+}
+
+func (a *AlloxScheduler) DoOneShotSchedule() {
+	if a.hasDoneScheduledOnce {
+		return
+	}
+	g := NewGraph()
+	source := NewNode("source", "source")
+	sink := NewNode("sink", "sink")
+	g.AddSource(source)
+	g.AddSink(sink)
+
+	jobNum := len(a.allWaitingJobs)
+	gpuNum := len(a.cluster.GPUJobQueues())
+	gpuSlice := make([]types.GPU, gpuNum)
+	jobsSlice := make([]types.Job, 0, jobNum)
+	for gpuID, gpuJobQueue := range a.cluster.GPUJobQueues() {
+		gpuSlice[gpuID] = gpuJobQueue.GPU()
+		// gpuSlice = append(gpuSlice, gpuJobQueue.GPU())
+	}
+	for _, jobMeta := range a.allWaitingJobs {
+		jobsSlice = append(jobsSlice, a.cluster.InitJob(jobMeta))
+	}
+
+	// Matrix P in the paper
+	timeMatrix := make([][]float64, jobNum)
+	for i := 0; i < jobNum; i++ {
+		timeMatrix[i] = make([]float64, gpuNum)
+	}
+	for i := 0; i < jobNum; i++ {
+		for j := 0; j < gpuNum; j++ {
+			timeMatrix[i][j] = float64(jobsSlice[i].RemainingDuration(gpuSlice[j].Type()))
+		}
+	}
+	jobNodes := make([]*Node, jobNum)
+	gpuSlotNodes := make([]*Node, jobNum*gpuNum)
+
+	for i := 0; i < jobNum; i++ {
+		jobNodes[i] = NewNode("job"+strconv.Itoa(i), "job")
+	}
+
+	for i := 0; i < jobNum; i++ {
+		for j := 0; j < gpuNum; j++ {
+			// gpu-j 's slot i (the i th job on gpu j)
+			gpuSlotNodes[i*gpuNum+j] = NewNode("gpu"+strconv.Itoa(j)+"-"+"slot"+strconv.Itoa(i), "gpu")
+		}
+	}
+	weights := make([][]float64, jobNum)
+	for i := 0; i < jobNum; i++ {
+		weights[i] = make([]float64, jobNum*gpuNum)
+		for j := 0; j < jobNum; j++ {
+			for k := 0; k < gpuNum; k++ {
+				weights[i][j*gpuNum+k] = timeMatrix[i][k] * float64(j+1)
+			}
+		}
+	}
+
+	for _, node := range jobNodes {
+		g.AddNode(node)
+		g.AddEdge(source, node, 1., 0)
+	}
+
+	for _, node := range gpuSlotNodes {
+		g.AddNode(node)
+		g.AddEdge(node, sink, 1., 0)
+	}
+
+	for i, job := range jobNodes {
+		for j, gpuSlot := range gpuSlotNodes {
+			g.AddEdge(job, gpuSlot, 1., weights[i][j])
+		}
+	}
+	solver := NewMCMFSolver(g)
+	solver.Solve()
+
+	scheduleResult := solver.GetSchedulingResult()
+	fmt.Println("Minimum JCT:", solver.minCost)
+	fmt.Println(solver.maxFlow)
+	fmt.Println("Scheduling result:", scheduleResult)
+	gpuSlotReg := regexp.MustCompile(`^gpu([0-9]+)-slot([0-9]+)$`)
+	jobIdxReg := regexp.MustCompile(`^job([0-9]+)$`)
+	gpu2slot2job := make(map[types.GPU]map[int]types.Job)
+	for _, gpu := range gpuSlice {
+		gpu2slot2job[gpu] = make(map[int]types.Job)
+	}
+	for jobStr, gpuSlotStr := range scheduleResult {
+		jobStrMatches := jobIdxReg.FindStringSubmatch(jobStr)
+		jobIdx, _ := strconv.Atoi(jobStrMatches[1])
+		gpuSlotMatches := gpuSlotReg.FindStringSubmatch(gpuSlotStr)
+		gpuIdx, _ := strconv.Atoi(gpuSlotMatches[1])
+		gpuSlot, _ := strconv.Atoi(gpuSlotMatches[2])
+		gpu2slot2job[gpuSlice[gpuIdx]][gpuSlot] = jobsSlice[jobIdx]
+	}
+
+	// fmt.Println("Scheduling gpu2slot2job:", gpu2slot2job)
+	fmt.Println("gpuSlice:")
+	for idx, gpu := range gpuSlice {
+		fmt.Printf("gpu-%d: %+v\n", idx, util.Pretty(gpu))
+	}
+	fmt.Println("jobsSlice:")
+	for idx, job := range jobsSlice {
+		fmt.Printf("job-%d: %+v\n", idx, util.Pretty(job))
+	}
+	for gpu, slot2jobs := range gpu2slot2job {
+		maxSlot := -1
+		for slot := range slot2jobs {
+			if slot > maxSlot {
+				maxSlot = slot
+			}
+		}
+		jobs := make([]types.Job, maxSlot+1)
+		for slot, job := range slot2jobs {
+			// slot和执行位置是对称的（反了吗）？？？
+			jobs[len(jobs)-slot-1] = job
+		}
+		fmt.Printf("Schedule to GPU %+v, maxSlot + 1 = %d, jobs = \n", gpu, maxSlot+1)
+		for idx, job := range jobs {
+			fmt.Printf("job %d, %+v\n", idx+1, util.Pretty(job))
+		}
+		a.cluster.GPUJobQueues()[gpu.ID()].SetJobs(jobs...)
+	}
+	a.hasDoneScheduledOnce = true
+}
+
+func (a *AlloxScheduler) DoOnlineSchedule() {
 
 }
 
@@ -58,7 +211,7 @@ func (a *AlloxScheduler) Info() interface{} {
 }
 
 func (a *AlloxScheduler) Record() *types.SchedulerRecord {
-	return nil
+	return a.SchedulerRecord
 }
 
 // For Graph Build

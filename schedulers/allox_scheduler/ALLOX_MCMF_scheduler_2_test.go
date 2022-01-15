@@ -4,12 +4,14 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"testing"
 )
 
 func TestSolver2(t *testing.T) {
-	file, _ := os.Open("/Users/yangchen/Projects/Graduate/DES-go/cases/case_200_all_2.csv")
+	//file, _ := os.Open("/Users/yangchen/Projects/Graduate/DES-go/cases/case_200_all_2.csv")
+	file, _ := os.Open("/Users/purchaser/go/src/DES-go/cases/case_200_all_2.csv")
 	reader := csv.NewReader(file)
 	records, _ := reader.ReadAll()
 	records = records[1:]
@@ -23,6 +25,14 @@ func TestSolver2(t *testing.T) {
 	jobNum := 200
 	gpuNum := 20
 
+	gpuSlice := make([]string, 0, gpuNum)
+	for i := 0; i < gpuNum; i++ {
+		gpuSlice = append(gpuSlice, fmt.Sprintf("gpu-%d", i))
+	}
+	jobsSlice := make([]string, 0, jobNum)
+	for i := 0; i < jobNum; i++ {
+		jobsSlice = append(jobsSlice, fmt.Sprintf("job-%d", i))
+	}
 	// Matrix P in the paper
 	timeMatrix := make([][]float64, jobNum)
 	for i := 0; i < jobNum; i++ {
@@ -84,8 +94,25 @@ func TestSolver2(t *testing.T) {
 	solver := NewMCMFSolver(g)
 	solver.Solve()
 
+	scheduleResult := solver.GetSchedulingResult()
 	fmt.Println("Minimum JCT:", solver.minCost)
 	fmt.Println(solver.maxFlow)
-	fmt.Println("Scheduling result:", solver.GetSchedulingResult())
+	fmt.Println("Scheduling result:", scheduleResult)
+	gpuSlotReg := regexp.MustCompile(`^gpu([0-9]+)-slot([0-9]+)$`)
+	jobIdxReg := regexp.MustCompile(`^job([0-9]+)$`)
+	gpu2slot2job := make(map[string]map[int]string)
+	for _, gpu := range gpuSlice {
+		gpu2slot2job[gpu] = make(map[int]string)
+	}
+	for jobStr, gpuSlotStr := range scheduleResult {
+		jobStrMatches := jobIdxReg.FindStringSubmatch(jobStr)
+		jobIdx, _ := strconv.Atoi(jobStrMatches[1])
+		gpuSlotMatches := gpuSlotReg.FindStringSubmatch(gpuSlotStr)
+		gpuIdx, _ := strconv.Atoi(gpuSlotMatches[1])
+		gpuSlot, _ := strconv.Atoi(gpuSlotMatches[2])
+		gpu2slot2job[gpuSlice[gpuIdx]][gpuSlot] = jobsSlice[jobIdx]
+	}
+
+	fmt.Println("Scheduling gpu2slot2job:", gpu2slot2job)
 
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"time"
 )
 
 // SJFScheduler
@@ -22,34 +23,39 @@ import (
 // 抢占与非抢占的区别就在于，非抢占只遍历那些空闲的GPU，而抢占式，则会先将GPU队列中的全部任务卸下，
 // 让它们全部变为空闲的GPU，再按照非抢占的调度算法执行即可。
 type SJFScheduler struct {
-	// 可指定是否为抢占式的调度。
-	// 如果是可抢占式的，则能够将正在运行的任务卸下，完全地重新排序。
-	// 如果是非抢占式的，则集群队列中的正在运行的任务无法被调度开。
-	// 抢占式的SJF（SRTF）是一个理想化的调度，因为在实际中，如果每次有新的任务到来都会造成当前运行的任务被调度开，
-	// 则会造成超大的overhead。这只存在于理论当中。
-	preemptive bool
-
-	cluster types.Cluster
-
-	// 等待队列中的所有任务，其分别在每种类型的GPU上，按照RemainingDuration排序。
-	sortedWaitingJobs map[types.GPUType][]types.Job
+	*GreedySchedulerTemplate
+	//
+	//cluster types.Cluster
+	//
+	//// 等待队列中的所有任务，其分别在每种类型的GPU上，按照RemainingDuration排序。
+	//sortedWaitingJobs map[types.GPUType][]types.Job
+	//
+	//DoScheduleCalls []*types.DoScheduleCallRecord
 }
 
-func NewSJFScheduler(preemptive bool) *SJFScheduler {
-	return &SJFScheduler{
-		preemptive: preemptive,
+//func NewSJFSchedulerXXX() *SJFScheduler {
+//	return &SJFScheduler{
+//		DoScheduleCalls: make([]*types.DoScheduleCallRecord, 0),
+//	}
+//}
+
+func NewSJFScheduler() *SJFScheduler {
+	template := NewGreedySchedulerTemplate()
+	edf := &SJFScheduler{
+		template,
 	}
+	template.impl = edf
+	return edf
 }
 
 func (s *SJFScheduler) DoSchedule() {
-	if s.preemptive {
-		s.doSchedulePreemptive()
-	} else {
-		s.doScheduleNonPreemptive()
-	}
+	start := time.Now()
+	s.doSchedule()
+	duration := time.Since(start)
+	s.DoScheduleCalls = append(s.DoScheduleCalls, &types.DoScheduleCallRecord{Duration: duration})
 }
 
-func (s *SJFScheduler) doScheduleNonPreemptive() {
+func (s *SJFScheduler) doSchedule() {
 	for s.hasWaitingJob() && s.hasEmptyGPUQueue() {
 		// 从waitingJobs中，在全部可能的EmptyGPUSlot上，挑选一个速度最快的。
 		emptyQueues := s.getEmptyGPUQueues()
@@ -85,23 +91,44 @@ func (s *SJFScheduler) doScheduleNonPreemptive() {
 			}
 		}
 		if targetJob == nil || targetQueue == nil {
-			panic("SJFScheduler targetJob == nil || targetQueue == nil")
+			panic("GreedySchedulerTemplate targetJob == nil || targetQueue == nil")
 		}
 		s.removeFromSortedWaitingJobs(targetJob)
 		targetQueue.SetJobs(targetJob)
 	}
 }
 
-func (s *SJFScheduler) doSchedulePreemptive() {
-	// 如果做抢占式的调度，就将所有正在运行的任务都撤下来，放入到sortedWaitingJobs中。
-	for _, queue := range s.cluster.GPUJobQueues() {
-		jobs := queue.ClearQueue()
-		for _, job := range jobs {
-			s.insertJob2SortedWaitingJobs(job)
+func (s *SJFScheduler) pickTarget(emptyQueues []types.GPUJobQueue) (types.Job, types.GPUJobQueue) {
+	var targetJob types.Job = nil
+	var targetQueue types.GPUJobQueue = nil
+	leastRemainingDuration := types.Duration(math.Inf(1))
+	for gpuType, waitingJobs := range s.sortedWaitingJobs {
+		if len(waitingJobs) == 0 {
+			continue
+		}
+		firstWaitingJob := waitingJobs[0]
+		var candidateQueue types.GPUJobQueue = nil
+		for _, queue := range emptyQueues {
+			if queue.GPU().Type() != gpuType {
+				continue
+			}
+			if candidateQueue == nil {
+				candidateQueue = queue
+				break
+			}
+		}
+		if candidateQueue == nil {
+			continue
+		}
+		if targetJob == nil {
+			targetJob, targetQueue = firstWaitingJob, candidateQueue
+			leastRemainingDuration = targetJob.RemainingDuration(gpuType)
+		} else if rd := firstWaitingJob.RemainingDuration(gpuType); rd < leastRemainingDuration {
+			targetJob, targetQueue = firstWaitingJob, candidateQueue
+			leastRemainingDuration = rd
 		}
 	}
-	// 之后再按照非抢占式的调度来做就ok了。
-	s.doScheduleNonPreemptive()
+	return targetJob, targetQueue
 }
 
 func (s *SJFScheduler) hasWaitingJob() bool {
@@ -132,7 +159,7 @@ func (s *SJFScheduler) removeFromSortedWaitingJobs(job types.Job) {
 			return ls[i].RemainingDuration(gpuType) >= target
 		})
 		if ls[i].RemainingDuration(gpuType) != target {
-			panic("SJFScheduler removeFromSortedWaitingJobs ls[i].RemainingDuration(gpuType) != target")
+			panic("GreedySchedulerTemplate removeFromSortedWaitingJobs ls[i].RemainingDuration(gpuType) != target")
 		}
 		var targetIdx = -1
 		for ls[i].RemainingDuration(gpuType) == target {
@@ -143,12 +170,12 @@ func (s *SJFScheduler) removeFromSortedWaitingJobs(job types.Job) {
 			i++
 		}
 		if targetIdx == -1 {
-			panic("SJFScheduler removeFromSortedWaitingJobs targetIdx == -1")
+			panic("GreedySchedulerTemplate removeFromSortedWaitingJobs targetIdx == -1")
 		}
 		var removed types.Job
 		removed, s.sortedWaitingJobs[gpuType] = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(targetIdx, ls)
 		if removed != job {
-			panic("SJFScheduler removeFromSortedWaitingJobs removed != job")
+			panic("GreedySchedulerTemplate removeFromSortedWaitingJobs removed != job")
 		}
 	}
 }
@@ -204,7 +231,7 @@ func (s *SJFScheduler) NextActiveScheduleTime() types.Time {
 }
 
 func (s *SJFScheduler) Name() string {
-	return fmt.Sprintf("SJFScheduler[preemptive=%v]", s.preemptive)
+	return fmt.Sprintf("SJFScheduler")
 }
 
 func (s *SJFScheduler) Info() interface{} {
@@ -212,5 +239,7 @@ func (s *SJFScheduler) Info() interface{} {
 }
 
 func (s *SJFScheduler) Record() *types.SchedulerRecord {
-	return nil
+	return &types.SchedulerRecord{
+		DoScheduleRecords: s.DoScheduleCalls,
+	}
 }

@@ -13,7 +13,7 @@ type Simulator struct {
 	cluster   *Cluster
 	logger    *logger
 
-	recordedFinishedJobs []*Job
+	recordedFinishedJobs []types.Job
 }
 
 func NewSimulator(scheduler types.Scheduler, setOpts ...SetOption) *Simulator {
@@ -32,11 +32,11 @@ func NewSimulator(scheduler types.Scheduler, setOpts ...SetOption) *Simulator {
 		opts:                 opts,
 		cluster:              NewCluster(opts.gpuType2Count),
 		logger:               logger,
-		recordedFinishedJobs: make([]*Job, 0),
+		recordedFinishedJobs: make([]types.Job, 0),
 	}
 }
 
-func (s *Simulator) Start() {
+func (s *Simulator) Run() *types.Record {
 	s.cluster.startServe()
 	s.scheduler.SetCluster(s.cluster)
 	getDataSource().IterBySubmitTime(func(indices []int, metas []types.JobMeta) {
@@ -57,8 +57,14 @@ func (s *Simulator) Start() {
 		s.emitEvent(types.NewScheduleEventJobsArrived(metas))
 	})
 	s.passDuration(0, true)
-	s.logMetrics()
+	//s.logMetrics()
 	s.logger.Exit()
+	return &types.Record{
+		Scheduler:       s.scheduler,
+		Cluster:         s.cluster,
+		FinishedJobs:    s.recordedFinishedJobs,
+		SchedulerRecord: s.scheduler.Record(),
+	}
 }
 
 func (s *Simulator) passDuration(duration types.Duration, noMoreNewSubmits bool) {
@@ -86,7 +92,9 @@ func (s *Simulator) passDuration(duration types.Duration, noMoreNewSubmits bool)
 		fmt.Printf("finishedJobs len=[%d], all Finished len=[%d]", len(finishedJobs), len(s.recordedFinishedJobs))
 		s.logTimePassed(partialDuration)
 		currTime += types.Time(partialDuration)
-		s.recordedFinishedJobs = append(s.recordedFinishedJobs, finishedJobs...)
+		for _, job := range finishedJobs {
+			s.recordedFinishedJobs = append(s.recordedFinishedJobs, job)
+		}
 		s.logger.ReceiveFinishedJobs(finishedJobs)
 		s.emitEvent(types.NewScheduleEventDurationPassed(partialDuration))
 		if len(finishedJobs) > 0 {
@@ -117,21 +125,21 @@ func (s *Simulator) logTimePassed(duration types.Duration) {
 }
 
 // TODO Deprecated. 使用metrics包替代。logger仅用来记录模拟器的详细调度过程。
-func (s *Simulator) logMetrics() {
-	violationCount, avgViolationDelay := Violation(s.recordedFinishedJobs)
-	metrics := util.PrettyF("simulation completed, "+
-		"scheduler = [%s], "+
-		"finished job count = [%d], "+
-		"avg jct = [%f], "+
-		"violated job count = [%d], "+
-		"avg violate delay = [%f] "+
-		"avg queuing delay = [%f] "+
-		"\n",
-		s.scheduler.Name(), len(s.recordedFinishedJobs), AvgJCT(s.recordedFinishedJobs), violationCount, avgViolationDelay, AvgQueuingDelay(s.recordedFinishedJobs))
-
-	fmt.Println(metrics)
-	s.logger.ReceiveStringLog(metrics)
-}
+//func (s *Simulator) logMetrics() {
+//	violationCount, avgViolationDelay := Violation(s.recordedFinishedJobs)
+//	metrics := util.PrettyF("simulation completed, "+
+//		"scheduler = [%s], "+
+//		"finished job count = [%d], "+
+//		"avg jct = [%f], "+
+//		"violated job count = [%d], "+
+//		"avg violate delay = [%f] "+
+//		"avg queuing delay = [%f] "+
+//		"\n",
+//		s.scheduler.Name(), len(s.recordedFinishedJobs), AvgJCT(s.recordedFinishedJobs), violationCount, avgViolationDelay, AvgQueuingDelay(s.recordedFinishedJobs))
+//
+//	fmt.Println(metrics)
+//	s.logger.ReceiveStringLog(metrics)
+//}
 
 func (s *Simulator) emitEvent(event types.ScheduleEvent) {
 	s.scheduler.OnScheduleEvent(event)

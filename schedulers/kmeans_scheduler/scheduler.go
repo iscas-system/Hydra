@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 // Scheduler 大体思路：
@@ -32,8 +33,8 @@ type Scheduler struct {
 
 	allArrivedJobsCount int
 
-	DoScheduleOnceRecords []*types.DoScheduleOnceRecord
-	// DoScheduleOnceRecords: make([]*types.DoScheduleOnceRecord, 0, 128),
+	DoScheduleCallRecords []*types.DoScheduleCallRecord
+	// DoScheduleCallRecords: make([]*types.DoScheduleCallRecord, 0, 128),
 }
 
 // Options
@@ -45,8 +46,8 @@ type Options struct {
 
 // 指定默认的选项。
 var defaultOptions = &Options{
-	ScheduleScheme: NewSimpleOneShotScheduleScheme(true,false, -1),
-	DistanceAlgo:   NewMinCostDistanceAlgo(
+	ScheduleScheme: NewBasicScheduleScheme(true, false, -1, true),
+	DistanceAlgo: NewMinCostDistanceAlgo(
 		cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPartialCost, cost.BranchAndBoundAlgoTypeAllPermutation),
 		cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20)),
 }
@@ -77,15 +78,25 @@ func New(setOptions ...SetOptions) *Scheduler {
 	for _, setOption := range setOptions {
 		setOption(opts)
 	}
-	return &Scheduler{
-		opts: opts,
-		DoScheduleOnceRecords: make([]*types.DoScheduleOnceRecord, 0, 128),
+	scheduler := &Scheduler{
+		opts:                  opts,
+		DoScheduleCallRecords: make([]*types.DoScheduleCallRecord, 0, 128),
 	}
+	opts.ScheduleScheme.SetScheduler(scheduler)
+	return scheduler
 }
 
 // DoSchedule 调度入口
 func (k *Scheduler) DoSchedule() {
-	k.opts.ScheduleScheme.DoSchedule(k)
+	start := time.Now()
+	validSchedule := k.opts.ScheduleScheme.DoSchedule()
+	duration := time.Since(start)
+	if !validSchedule {
+		return
+	}
+	k.DoScheduleCallRecords = append(k.DoScheduleCallRecords, &types.DoScheduleCallRecord{
+		Duration: duration,
+	})
 }
 
 func (k *Scheduler) SetCluster(cluster types.Cluster) {
@@ -138,20 +149,20 @@ func (k *Scheduler) NextActiveScheduleTime() types.Time {
 }
 
 func (k *Scheduler) Name() string {
-	return fmt.Sprintf("KMeansScheduler[opts=%s]", util.Pretty(k.opts))
+	return fmt.Sprintf("KMeansScheduler")
 }
 
 func (k *Scheduler) Info() interface{} {
-	return map[string]interface{} {
-		"Name": "KMeansScheduler",
+	return map[string]interface{}{
+		"Type":           "KMeansScheduler",
 		"ScheduleScheme": k.opts.ScheduleScheme.String(),
-		"DistanceAlgo": k.opts.DistanceAlgo.String(),
+		"DistanceAlgo":   k.opts.DistanceAlgo.String(),
 	}
 }
 
 func (k *Scheduler) Record() *types.SchedulerRecord {
 	return &types.SchedulerRecord{
-		DoScheduleRecords: k.DoScheduleOnceRecords,
+		DoScheduleRecords: k.DoScheduleCallRecords,
 		Extra:             k.opts.ScheduleScheme.RecordExtra(),
 	}
 }
@@ -159,65 +170,109 @@ func (k *Scheduler) Record() *types.SchedulerRecord {
 // --- 接下来定义调度的Scheme ---------------------------------------------------------------------------------------------
 
 type ScheduleScheme interface {
-	DoSchedule(scheduler *Scheduler)
+	SetScheduler(scheduler *Scheduler)
+	// DoSchedule 返回bool确认这次调度是否有效
+	DoSchedule() bool
 	String() string
 	RecordExtra() interface{}
 }
 
-type BasicDoScheduleRecord struct {
-
-}
-
 type BasicScheduleScheme struct {
+	scheduler *Scheduler
 	// 指定是否可抢占，如果在实际中是可抢占的，那么需要指定一个调度的周期（否则会造成每次调度时造成大量的任务启停开销）
 	// 如果不指定周期，则为一个理想化的调度（现实中无法实现）
 	Preemptive      bool
-	Parallel bool
+	Parallel        bool
 	PreemptiveCycle types.Duration
+	OneShot         bool
+
+	// hasDoneOnceSchedule 在OneShot为false时使用。OneShot为false时，只允许一次调度发生。
+	hasDoneOnceSchedule bool
+
+	// distanceSolver
+	distanceSolver *jobDistanceSolver
+
+	Record *BasicScheduleSchemeSummaryRecord
 }
 
-func NewSimpleOneShotScheduleScheme(Parallel bool, Preemptive bool, PreemptiveCycle types.Duration) ScheduleScheme {
+func NewBasicScheduleScheme(Parallel bool,
+	Preemptive bool,
+	PreemptiveCycle types.Duration,
+	OneShot bool) ScheduleScheme {
 	return &BasicScheduleScheme{
-		Parallel: Parallel,
-		Preemptive:       Preemptive,
-		PreemptiveCycle:  PreemptiveCycle,
+		Parallel:        Parallel,
+		Preemptive:      Preemptive,
+		PreemptiveCycle: PreemptiveCycle,
+		OneShot:         OneShot,
+		Record: &BasicScheduleSchemeSummaryRecord{
+			KMeansRoundDurations: make([]time.Duration, 0, 1024),
+		},
 	}
 }
 
+func (s *BasicScheduleScheme) SetScheduler(scheduler *Scheduler) {
+	s.scheduler = scheduler
+	s.distanceSolver = newJobDistanceSolver(scheduler.opts.DistanceAlgo)
+	s.distanceSolver.scheduler = scheduler
+}
+
 func (s *BasicScheduleScheme) String() string {
-	return fmt.Sprintf("BasicScheduleScheme[Parallel=%v]", s.Parallel)
+	return fmt.Sprintf("BasicScheduleScheme[Parallel=%v, OneShot=%v]", s.Parallel, s.OneShot)
 }
 
 func (s *BasicScheduleScheme) RecordExtra() interface{} {
-	return nil
+	s.Record.AverageKMeansRoundDurationMs = int(util.AvgDuration(s.Record.KMeansRoundDurations...).Milliseconds())
+	s.Record.MaxKMeansRoundDurationMs = int(util.MaxDuration(s.Record.KMeansRoundDurations...).Milliseconds())
+	s.Record.MinKMeansRoundDurationMs = int(util.MinDuration(s.Record.KMeansRoundDurations...).Milliseconds())
+	s.Record.DistanceSolverRecordExtra = s.distanceSolver.RecordExtra()
+	return s.Record
+}
+
+type BasicScheduleSchemeSummaryRecord struct {
+	KMeansRoundDurations         []time.Duration `json:"-"`
+	AverageKMeansRoundDurationMs int             `json:"average_k_means_round_duration_ms"`
+	MaxKMeansRoundDurationMs     int             `json:"max_k_means_round_duration_ms"`
+	MinKMeansRoundDurationMs     int             `json:"min_k_means_round_duration_ms"`
+	DistanceSolverRecordExtra    interface{}     `json:"distance_solver_record_extra"`
 }
 
 // DoSchedule 简单的one shot机制。将全部jobs一次性使用KMeans得出分配结果。
-func (s *BasicScheduleScheme) DoSchedule(scheduler *Scheduler) {
-	// 如果需要做非抢占式的，那么意味着每个waiting的job到任意一个簇的距离，需要考虑到当前正在执行的任务的剩余时间。
+func (s *BasicScheduleScheme) DoSchedule() bool {
+	scheduler := s.scheduler
+	if s.OneShot && s.hasDoneOnceSchedule {
+		fmt.Printf("BasicScheduleScheme DoSchedule called when s.OneShot is false and hasDoneOnceSchedule.")
+		return false
+	}
 	// 初始，先将每个GPU放到簇中。
 	// 每个簇中的jobs使用slice存储，但是一般时刻不关心它的顺序。
 	// 只有最优解的顺序是我们关心的。所以每次将最优解的job sequence赋值到簇中。
-	distanceSolver := newJobDistanceSolver(scheduler.gpuCluster, scheduler.opts.DistanceAlgo)
 	kMeansCluster := make(map[types.GPU][]types.Job)
 	for gpuID := range scheduler.gpuCluster.GPUJobQueues() {
 		gpu := scheduler.gpuCluster.GPU(gpuID)
 		kMeansCluster[gpu] = make([]types.Job, 0)
 	}
-	if s.Parallel {
-		s.FillKMeansClusterInParallel(scheduler, kMeansCluster, distanceSolver)
-	} else {
-		s.FillKMeansClusterInSerial(scheduler, kMeansCluster, distanceSolver)
-	}
+	s.FillKMeansCluster(scheduler, kMeansCluster)
+	s.SetKMeansResult2GPUCluster(scheduler, kMeansCluster)
+	return true
+}
+
+func (s *BasicScheduleScheme) SetKMeansResult2GPUCluster(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) {
 	for gpuID, queue := range scheduler.gpuCluster.GPUJobQueues() {
 		gpu := scheduler.gpuCluster.GPU(gpuID)
 		// 找到空闲的队列。
 		if len(queue.Jobs()) == 0 {
 			if len(kMeansCluster[gpu]) > 0 {
-				// 将该GPU簇对应的最优序列的第一个任务放置到空闲位置上。
-				var removed types.Job
-				removed, kMeansCluster[gpu] = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(0, kMeansCluster[gpu])
-				queue.SetJobs(removed)
+				if !s.OneShot {
+					// 将该GPU簇对应的最优序列的第一个任务放置到空闲位置上。
+					var removed types.Job
+					removed, kMeansCluster[gpu] = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(0, kMeansCluster[gpu])
+					queue.SetJobs(removed)
+				} else {
+					allJobs := make([]types.Job, len(kMeansCluster[gpu]))
+					copy(allJobs, kMeansCluster[gpu])
+					kMeansCluster[gpu] = kMeansCluster[gpu][0:0]
+					queue.SetJobs(allJobs...)
+				}
 			}
 		}
 	}
@@ -225,80 +280,93 @@ func (s *BasicScheduleScheme) DoSchedule(scheduler *Scheduler) {
 	for _, jobs := range kMeansCluster {
 		scheduler.insertJobs2Waiting(jobs...)
 	}
+	s.hasDoneOnceSchedule = true
 }
 
-func (s *BasicScheduleScheme) FillKMeansClusterInParallel(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job, distanceSolver *jobDistanceSolver) {
+func (s *BasicScheduleScheme) FillKMeansCluster(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) {
+	kMeansRoundsDurations := make([]time.Duration, 0, len(scheduler.waitingJobs))
 	for len(scheduler.waitingJobs) > 0 {
-		// 计算每个点到每个簇的距离，选择一个最小的。
-		minDis := math.Inf(1)
-		var bestJobsSeq []types.Job = nil
-		var bestGPU types.GPU = nil
-		var bestJobIdx int
-		wg := &sync.WaitGroup{}
-		mu := &sync.Mutex{}
-		for idx, waitingJob := range scheduler.waitingJobs {
-			idx := idx
-			waitingJob := waitingJob
-			util.GoWithWG(wg, idx, func(idx int) {
-				innerWg := &sync.WaitGroup{}
-				for gpu, jobsInCluster := range kMeansCluster {
-					gpu := gpu
-					jobsInCluster := jobsInCluster
-					idx := idx
-					util.GoWithWG(innerWg, 0, func(_ int) {
-						distanceResp := distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
-						if len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1) {
-							panic("len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1)")
-						}
-						mu.Lock()
-						defer mu.Unlock()
-						if distanceResp.distance < minDis {
-							minDis = distanceResp.distance
-							bestJobsSeq = distanceResp.jobsSeq
-							bestGPU = gpu
-							bestJobIdx = idx
-						}
-					})
-				}
-				innerWg.Wait()
-			})
+		start := time.Now()
+		if s.Parallel {
+			s.KMeansRoundInParallel(scheduler, kMeansCluster)
+		} else {
+			s.KMeansRoundInSerial(scheduler, kMeansCluster)
 		}
-		wg.Wait()
-		kMeansCluster[bestGPU] = bestJobsSeq
-		_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
+		duration := time.Since(start)
+		kMeansRoundsDurations = append(kMeansRoundsDurations, duration)
+		fmt.Println(util.PrettyF("kMeans round finished, waitingJobsLength = %3d", len(scheduler.waitingJobs)))
 	}
+	s.Record.KMeansRoundDurations = append(s.Record.KMeansRoundDurations, kMeansRoundsDurations...)
 }
 
-func (s *BasicScheduleScheme) FillKMeansClusterInSerial(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job, distanceSolver *jobDistanceSolver) {
-	for len(scheduler.waitingJobs) > 0 {
-		// 计算每个点到每个簇的距离，选择一个最小的。
-		minDis := math.Inf(1)
-		var bestJobsSeq []types.Job = nil
-		var bestGPU types.GPU = nil
-		var bestJobIdx int
-		for idx, waitingJob := range scheduler.waitingJobs {
-			idx := idx
-			waitingJob := waitingJob
+func (s *BasicScheduleScheme) KMeansRoundInParallel(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) {
+	// 计算每个点到每个簇的距离，选择一个最小的。
+	minDis := math.Inf(1)
+	var bestJobsSeq []types.Job = nil
+	var bestGPU types.GPU = nil
+	var bestJobIdx int
+	wg := &sync.WaitGroup{}
+	mu := &sync.Mutex{}
+	for idx, waitingJob := range scheduler.waitingJobs {
+		idx := idx
+		waitingJob := waitingJob
+		util.GoWithWG(wg, idx, func(idx int) {
+			innerWg := &sync.WaitGroup{}
 			for gpu, jobsInCluster := range kMeansCluster {
 				gpu := gpu
 				jobsInCluster := jobsInCluster
 				idx := idx
-				distanceResp := distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
-				// fmt.Printf("gpu = %s, jobsInCluster = %s, waitingJob = %s, distanceResp = %s\n", util.Pretty(gpu), util.Pretty(jobsInCluster), util.Pretty(waitingJob), util.Pretty(distanceResp))
-				if len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1) {
-					panic("len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1)")
-				}
-				if distanceResp.distance < minDis {
-					minDis = distanceResp.distance
-					bestJobsSeq = distanceResp.jobsSeq
-					bestGPU = gpu
-					bestJobIdx = idx
-				}
+				util.GoWithWG(innerWg, 0, func(_ int) {
+					distanceResp := s.distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
+					if len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1) {
+						panic("len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1)")
+					}
+					mu.Lock()
+					defer mu.Unlock()
+					if distanceResp.distance < minDis {
+						minDis = distanceResp.distance
+						bestJobsSeq = distanceResp.jobsSeq
+						bestGPU = gpu
+						bestJobIdx = idx
+					}
+				})
+			}
+			innerWg.Wait()
+		})
+	}
+	wg.Wait()
+	kMeansCluster[bestGPU] = bestJobsSeq
+	_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
+}
+
+func (s *BasicScheduleScheme) KMeansRoundInSerial(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) {
+	// 计算每个点到每个簇的距离，选择一个最小的。
+	minDis := math.Inf(1)
+	var bestJobsSeq []types.Job = nil
+	var bestGPU types.GPU = nil
+	var bestJobIdx int
+	for idx, waitingJob := range scheduler.waitingJobs {
+		idx := idx
+		waitingJob := waitingJob
+		for gpu, jobsInCluster := range kMeansCluster {
+			gpu := gpu
+			jobsInCluster := jobsInCluster
+			idx := idx
+			distanceResp := s.distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
+			// fmt.Printf("gpu = %s, jobsInCluster = %s, waitingJob = %s, distanceResp = %s\n", util.Pretty(gpu), util.Pretty(jobsInCluster), util.Pretty(waitingJob), util.Pretty(distanceResp))
+			if len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1) {
+				panic("len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1)")
+			}
+			if distanceResp.distance < minDis {
+				minDis = distanceResp.distance
+				bestJobsSeq = distanceResp.jobsSeq
+				bestGPU = gpu
+				bestJobIdx = idx
 			}
 		}
-		kMeansCluster[bestGPU] = bestJobsSeq
-		_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
 	}
+	kMeansCluster[bestGPU] = bestJobsSeq
+	_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -309,10 +377,21 @@ func (s *BasicScheduleScheme) FillKMeansClusterInSerial(scheduler *Scheduler, kM
 // 可以实现为包含多种算法，比如最优的放置可以使用分支限界搜索方法。
 // 如果速度较慢可以使用启发式的贪心算法。
 type jobDistanceSolver struct {
-	gpuCluster types.Cluster
+	scheduler *Scheduler
 	// 避免重复计算，使用memo记录重复参数的调用。
 	distanceMemo *sync.Map // map[string]*distanceResp
 	distanceAlgo DistanceAlgo
+
+	Record   *DistanceSolverRecordSummaryExtra
+	RecordMu *sync.Mutex
+}
+
+type DistanceSolverRecordSummaryExtra struct {
+	DistanceCallRecords     []*DistanceCallRecord `json:"-"`
+	MemorizedCallCount      int                   `json:"memorized_call_count"`
+	NonMemorizedCallCount   int                   `json:"non_memorized_call_count"`
+	CallCount               int                   `json:"call_count"`
+	DistanceAlgoRecordExtra interface{}           `json:"distance_algo_record_extra"`
 }
 
 type DistanceAlgo interface {
@@ -321,15 +400,18 @@ type DistanceAlgo interface {
 		kMeansPointJobs []types.Job,
 		jobNotInKMeansCluster types.Job) *distanceResp
 	String() string
+	RecordExtra() interface{}
 }
 
-func newJobDistanceSolver(
-	cluster types.Cluster,
-	algo DistanceAlgo) *jobDistanceSolver {
+func newJobDistanceSolver(algo DistanceAlgo) *jobDistanceSolver {
 	return &jobDistanceSolver{
-		gpuCluster:   cluster,
+		scheduler:    nil,         // 等待SetScheduler被调用时注入进来。
 		distanceMemo: &sync.Map{}, // make(map[string]*distanceResp),
 		distanceAlgo: algo,
+		Record: &DistanceSolverRecordSummaryExtra{
+			DistanceCallRecords: make([]*DistanceCallRecord, 0, 1024),
+		},
+		RecordMu: &sync.Mutex{},
 	}
 }
 
@@ -346,7 +428,7 @@ func (s *jobDistanceSolver) distanceMemoKey(kMeansCenterGPU types.GPU, kMeansPoi
 		builder.WriteString(strconv.FormatFloat(job.RemainingRatio(), 'f', 6, 64))
 		builder.WriteByte('-')
 	}
-	if runningJob := s.gpuCluster.CurrRunningJob(kMeansCenterGPU.ID()); runningJob != nil {
+	if runningJob := s.scheduler.gpuCluster.CurrRunningJob(kMeansCenterGPU.ID()); runningJob != nil {
 		builder.WriteString("Running:")
 		writeJob(runningJob)
 	}
@@ -364,17 +446,53 @@ type distanceResp struct {
 	distance float64
 }
 
+type DistanceCallRecord struct {
+	GPUName                  string        `json:"gpu_name"`
+	KMeansPointsJobsCount    int           `json:"k_means_points_jobs_count"`
+	UseMemorized             bool          `json:"memorized"`
+	DistanceAlgoCallDuration time.Duration `json:"distance_algo_call_duration"`
+}
+
 // Distance 定义算法入口
 // Scheduler 通过使用该方法，获得某个job到某簇的距离
 func (s *jobDistanceSolver) Distance(kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
+	record := &DistanceCallRecord{
+		GPUName:               kMeansCenterGPU.String(),
+		KMeansPointsJobsCount: len(kMeansPointJobs),
+	}
+	defer func() {
+		s.RecordMu.Lock()
+		defer s.RecordMu.Unlock()
+		s.Record.DistanceCallRecords = append(s.Record.DistanceCallRecords, record)
+	}()
 	copiedSlice := jobs_util.GetJobsSliceUtil().Copy(kMeansPointJobs)
 	memoKey := s.distanceMemoKey(kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster)
 	if memorized, ok := s.distanceMemo.Load(memoKey); ok {
+		record.UseMemorized = true
 		return memorized.(*distanceResp)
 	}
-	distanceResp := s.distanceAlgo.Distance(s.gpuCluster, kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster)
+	start := time.Now()
+	distanceResp := s.distanceAlgo.Distance(s.scheduler.gpuCluster, kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster)
+	duration := time.Since(start)
 	s.distanceMemo.Store(memoKey, distanceResp)
+
+	record.UseMemorized = false
+	record.DistanceAlgoCallDuration = duration
 	return distanceResp
+}
+
+func (s *jobDistanceSolver) RecordExtra() interface{} {
+	useMemo := 0
+	for _, record := range s.Record.DistanceCallRecords {
+		if record.UseMemorized {
+			useMemo++
+		}
+	}
+	s.Record.CallCount = len(s.Record.DistanceCallRecords)
+	s.Record.MemorizedCallCount = useMemo
+	s.Record.NonMemorizedCallCount = s.Record.CallCount - s.Record.MemorizedCallCount
+	s.Record.DistanceAlgoRecordExtra = s.distanceAlgo.RecordExtra()
+	return s.Record
 }
 
 // ------------------------------------------------ Distance具体算法 ----------------------------------------------------
@@ -382,10 +500,31 @@ func (s *jobDistanceSolver) Distance(kMeansCenterGPU types.GPU, kMeansPointJobs 
 type MinCostDistanceAlgo struct {
 	minCostAlgo     cost.MinCostAlgo
 	costSolverMaker cost.SolverMaker
+
+	Record   *MinCostDistanceAlgoSummaryRecord
+	RecordMu *sync.Mutex
 }
 
 func (m *MinCostDistanceAlgo) String() string {
 	return fmt.Sprintf("MinCostDistanceAlgo[minCostAlgo=%s]", m.minCostAlgo)
+}
+
+type MinCostDistanceAlgoSummaryRecord struct {
+	CallRecords                   []*MinCostDistanceCallRecord `json:"-"`
+	CallCount                     int                          `json:"call_count"`
+	UseMinCostAlgoCount           int                          `json:"use_min_cost_algo_count"`
+	UseSJFGreedyCount             int                          `json:"use_sjf_greedy_count"`
+	MinCostAlgoDurations          []time.Duration              `json:"-"`
+	AverageMinCostAlgoDurationsMs int                          `json:"average_min_cost_algo_durations_ms"`
+
+	MinCostAlgoRecordExtra interface{} `json:"min_cost_algo_record_extra"`
+}
+
+type MinCostDistanceCallRecord struct {
+	CenterGPUName       string        `json:"center_gpu_name"`
+	PointJobsCount      int           `json:"point_jobs_count"`
+	UseMinCostAlgo      bool          `json:"use_min_cost_algo"`
+	MinCostAlgoDuration time.Duration `json:"min_cost_algo_duration"`
 }
 
 // Distance 使用最小cost作为距离的算法参数
@@ -394,6 +533,15 @@ func (m *MinCostDistanceAlgo) String() string {
 // 如果，有任务违反了ddl，则进行分支限界法搜索。
 // 使用MinCost顺序选择开节点，每个节点的估计成本为：将所有未放置到搜索路径的任务按照SJF排序后，该队列的代价值。
 func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
+	record := &MinCostDistanceCallRecord{
+		CenterGPUName:  kMeansCenterGPU.String(),
+		PointJobsCount: len(kMeansPointJobs),
+	}
+	defer func() {
+		m.RecordMu.Lock()
+		defer m.RecordMu.Unlock()
+		m.Record.CallRecords = append(m.Record.CallRecords, record)
+	}()
 	// 不关心一个簇中任务的顺序。
 	jobs := append(kMeansPointJobs, jobNotInKMeansCluster)
 	// 首先尝试将jobs使用SRTF排序，并计算一次cost。如果发现ddl没有被违反，则使用这个排序即可。
@@ -413,16 +561,21 @@ func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU
 	})
 	costResp := costSolver.Cost(kMeansCenterGPU, jobs)
 	if !costResp.DDLViolated {
+		record.UseMinCostAlgo = false
 		return &distanceResp{
 			jobsSeq:  jobs,
 			distance: costResp.Cost,
 		}
 	}
-	minCost, optimus := m.minCostAlgo.MinCost(&cost.BranchAndBoundAlgoParams{
+	start := time.Now()
+	minCost, optimus := m.minCostAlgo.MinCost(&cost.MinCostParams{
 		CostSolver: costSolver,
 		GPU:        kMeansCenterGPU,
 		Jobs:       jobs,
 	})
+	duration := time.Since(start)
+	record.UseMinCostAlgo = true
+	record.MinCostAlgoDuration = duration
 	return &distanceResp{
 		jobsSeq:  optimus,
 		distance: minCost,
@@ -433,7 +586,30 @@ func NewMinCostDistanceAlgo(minCostAlgo cost.MinCostAlgo, costSolverMaker cost.S
 	return &MinCostDistanceAlgo{
 		minCostAlgo:     minCostAlgo,
 		costSolverMaker: costSolverMaker,
+		Record: &MinCostDistanceAlgoSummaryRecord{
+			CallRecords:          make([]*MinCostDistanceCallRecord, 0, 1024),
+			CallCount:            0,
+			UseMinCostAlgoCount:  0,
+			UseSJFGreedyCount:    0,
+			MinCostAlgoDurations: make([]time.Duration, 0, 1024),
+		},
+		RecordMu: &sync.Mutex{},
 	}
+}
+
+func (m *MinCostDistanceAlgo) RecordExtra() interface{} {
+	useMinCostAlgoCount := 0
+	for _, record := range m.Record.CallRecords {
+		if record.UseMinCostAlgo {
+			useMinCostAlgoCount++
+		}
+	}
+	m.Record.CallCount = len(m.Record.CallRecords)
+	m.Record.UseMinCostAlgoCount = useMinCostAlgoCount
+	m.Record.UseSJFGreedyCount = m.Record.CallCount - useMinCostAlgoCount
+	m.Record.AverageMinCostAlgoDurationsMs = int(util.AvgDuration(m.Record.MinCostAlgoDurations...).Milliseconds())
+	m.Record.MinCostAlgoRecordExtra = m.minCostAlgo.RecordExtra()
+	return m.Record
 }
 
 // ------------------------------------------------ 贪心算法 ------------------------------------------------------------
@@ -441,6 +617,14 @@ func NewMinCostDistanceAlgo(minCostAlgo cost.MinCostAlgo, costSolverMaker cost.S
 type SimpleHeuristicGreedyDistanceAlgo struct {
 }
 
+func (s *SimpleHeuristicGreedyDistanceAlgo) String() string {
+	panic("implement me")
+}
+
 func (s *SimpleHeuristicGreedyDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
 	panic("Implement Me.")
+}
+
+func (m *SimpleHeuristicGreedyDistanceAlgo) RecordExtra() interface{} {
+	return nil
 }

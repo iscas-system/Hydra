@@ -90,5 +90,7 @@ func (d *DummyScheduler) Info() interface{} {
 }
 
 func (d *DummyScheduler) Record() *types.SchedulerRecord {
-	return nil
+	return &types.SchedulerRecord{
+		DoScheduleRecords: []*types.DoScheduleCallRecord{},
+	}
 }

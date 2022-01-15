@@ -6,6 +6,7 @@ type JobName string
 
 type JobExecutionDetail interface {
 	SumRuntimeOnGPUs() Duration
+	ExecutionRanges() map[GPU][]JobExecutionRange
 }
 
 type JobExecutionRange interface {
@@ -31,6 +32,7 @@ type Job interface {
 	JobMeta() JobMeta
 	Violation() (bool, Duration)
 	JCT() Time
+	HasDDL() bool
 	ActualRuntimeOnGPUs() Duration
 	util.PrettyExpose
 }
