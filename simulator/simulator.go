@@ -4,6 +4,7 @@ import (
 	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
+	"log"
 	"math"
 )
 
@@ -23,7 +24,7 @@ func NewSimulator(scheduler types.Scheduler, setOpts ...SetOption) *Simulator {
 		setOpt(opts)
 	}
 	if opts.dataSourceCSVPath != "" {
-		initDataSource(opts.dataSourceCSVPath)
+		initDataSource(opts.dataSourceCSVPath, opts.dataSourceRange)
 	}
 
 	logger := NewLogger(opts.logEnabled, opts.logDirPath)
@@ -57,8 +58,6 @@ func (s *Simulator) Run() *types.Record {
 		s.emitEvent(types.NewScheduleEventJobsArrived(metas))
 	})
 	s.passDuration(0, true)
-	//s.logMetrics()
-	s.logger.Exit()
 	return &types.Record{
 		Scheduler:       s.scheduler,
 		Cluster:         s.cluster,
@@ -89,13 +88,12 @@ func (s *Simulator) passDuration(duration types.Duration, noMoreNewSubmits bool)
 		possibleNextEventTime := math.Min(float64(s.scheduler.NextActiveScheduleTime()), float64(closestTimeToFinishAnyJob))
 		partialDuration := types.Duration(math.Min(math.Max(possibleNextEventTime, float64(s.opts.minDurationPassInterval)), float64(targetTime-currTime)))
 		finishedJobs := s.cluster.passDuration(partialDuration)
-		fmt.Printf("finishedJobs len=[%d], all Finished len=[%d]", len(finishedJobs), len(s.recordedFinishedJobs))
+		// fmt.Printf("finishedJobs len=[%d], all Finished len=[%d]", len(finishedJobs), len(s.recordedFinishedJobs))
 		s.logTimePassed(partialDuration)
 		currTime += types.Time(partialDuration)
 		for _, job := range finishedJobs {
 			s.recordedFinishedJobs = append(s.recordedFinishedJobs, job)
 		}
-		s.logger.ReceiveFinishedJobs(finishedJobs)
 		s.emitEvent(types.NewScheduleEventDurationPassed(partialDuration))
 		if len(finishedJobs) > 0 {
 			s.emitEvent(types.NewScheduleEventJobsFinished(s.transformJobs(finishedJobs)))
@@ -112,34 +110,23 @@ func (s *Simulator) transformJobs(jobs []*Job) []types.Job {
 }
 
 func (s *Simulator) logTimePassed(duration types.Duration) {
-	allInfo := util.PrettyF("\nTime Passed: %f seconds, finished jobs count: %d. \ncluster info: \n%# v.\n", float64(duration), len(s.recordedFinishedJobs), s.cluster)
 	if s.opts.formatPrintLevel == AllFormatPrint {
-		fmt.Printf(allInfo)
+		allInfo := util.PrettyF("\nTime Passed: %f seconds, finished jobs count: %d. \ncluster info: \n%# v.\n", float64(duration), len(s.recordedFinishedJobs), s.cluster)
+		log.Printf(allInfo)
 	} else if s.opts.formatPrintLevel == ShortMsgPrint {
-		shortInfo := util.PrettyF("\nTime Passed: %f seconds, finished jobs count: %d.\n", float64(duration), len(s.recordedFinishedJobs))
-		fmt.Printf(shortInfo)
-	} else if s.opts.formatPrintLevel == NoFormatPrint {
+		log.Printf("\nTime Passed: %f seconds, finished jobs count: %d.\n", float64(duration), len(s.recordedFinishedJobs))
+	} else if s.opts.formatPrintLevel == NoPrint {
 		// pass.
 	}
-	s.logger.ReceiveStringLog(allInfo)
 }
 
-// TODO Deprecated. 使用metrics包替代。logger仅用来记录模拟器的详细调度过程。
-//func (s *Simulator) logMetrics() {
-//	violationCount, avgViolationDelay := Violation(s.recordedFinishedJobs)
-//	metrics := util.PrettyF("simulation completed, "+
-//		"scheduler = [%s], "+
-//		"finished job count = [%d], "+
-//		"avg jct = [%f], "+
-//		"violated job count = [%d], "+
-//		"avg violate delay = [%f] "+
-//		"avg queuing delay = [%f] "+
-//		"\n",
-//		s.scheduler.Name(), len(s.recordedFinishedJobs), AvgJCT(s.recordedFinishedJobs), violationCount, avgViolationDelay, AvgQueuingDelay(s.recordedFinishedJobs))
-//
-//	fmt.Println(metrics)
-//	s.logger.ReceiveStringLog(metrics)
-//}
+func (s *Simulator) logJobFinished(finishedJobs []types.Job) {
+	if s.opts.formatPrintLevel == AllFormatPrint || s.opts.formatPrintLevel == ShortMsgPrint {
+		log.Printf("finishedJobs len=[%d], all Finished len=[%d]\n", len(finishedJobs), len(s.recordedFinishedJobs))
+	} else if s.opts.formatPrintLevel == NoPrint {
+		// pass.
+	}
+}
 
 func (s *Simulator) emitEvent(event types.ScheduleEvent) {
 	s.scheduler.OnScheduleEvent(event)

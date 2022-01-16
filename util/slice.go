@@ -1,6 +1,11 @@
 package util
 
-import "math"
+import (
+	"fmt"
+	"math"
+	"strconv"
+	"strings"
+)
 
 func StringSliceIndexOf(slice []string, target string) int {
 	for i, s := range slice {
@@ -9,6 +14,18 @@ func StringSliceIndexOf(slice []string, target string) int {
 		}
 	}
 	return -1
+}
+
+func StringSliceJoinWith(slice []string, s string) string {
+	return fmt.Sprintf("[%s]", strings.Join(slice, s))
+}
+
+func IntSliceJoinWith(slice []int, s string) string {
+	stringSlice := make([]string, 0, len(slice))
+	for _, elem := range slice {
+		stringSlice = append(stringSlice, strconv.Itoa(elem))
+	}
+	return StringSliceJoinWith(stringSlice, s)
 }
 
 func SumFloat64(f func(item interface{}) float64, vs ...interface{}) float64 {

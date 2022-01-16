@@ -24,7 +24,6 @@ func newCostSolverCommon(defaultJCTOffsetGetter jctOffsetGetter) *solverCommon {
 type jctOffsetGetter func(gpu types.GPU) types.Time
 
 func (c *solverCommon) costMemoKey(gpu types.GPU, jobs []types.Job, jctOffset types.Time) string {
-	// fmt.Printf("cost Memo Key, gpu = %s, jobs = %s, jctOffset = %s\n", util.Pretty(gpu), util.Pretty(jobs), util.Pretty(jctOffset))
 	builder := &strings.Builder{}
 	// gpu info
 	builder.WriteString("GPU:")

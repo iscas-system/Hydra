@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"DES-go/schedulers/types"
+	"DES-go/util"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,8 +13,13 @@ import (
 	"time"
 )
 
+type Reports struct {
+	CaseName   string               `json:"case_name"`
+	CaseRanges [][]int              `json:"case_ranges"`
+	Reports    map[string][]*Report `json:"reports"`
+}
+
 type Report struct {
-	CasePath      string         `json:"case_path"`
 	SchedulerName string         `json:"scheduler_name"`
 	SchedulerInfo interface{}    `json:"scheduler_info"`
 	ClusterConfig *ClusterConfig `json:"cluster_config"`
@@ -49,7 +55,9 @@ type JobExecutionRange struct {
 
 type Execution struct {
 	AverageJCTSeconds                  float64     `json:"average_jct_seconds"`
+	AverageQueueDelaySeconds           float64     `json:"average_queue_delay_seconds"`
 	AverageDDLViolationDurationSeconds float64     `json:"average_ddl_violation_duration_seconds"`
+	TotalDDLViolationDurationSeconds   float64     `json:"total_ddl_violation_duration_seconds"`
 	DDLViolatedJobs                    []*Job      `json:"-"`
 	DDLViolatedJobsCount               int         `json:"ddl_violated_jobs_count"`
 	FinishedJobs                       []*Job      `json:"-"`
@@ -61,15 +69,29 @@ type Execution struct {
 }
 
 type SimulationMetaConfig struct {
-	CasePath      string
+	CaseFileName  string
+	CaseRanges    [][]int
 	ClusterConfig map[types.GPUType]int
 }
 
-func SaveSimulationReport(folder string, record *types.Record, config *SimulationMetaConfig) {
-	report := generateSimulationReport(record, config)
-	fileName := generateFileName(report)
+func SaveSimulationReport(folder string, schedulerType2Records map[string][]*types.Record, config *SimulationMetaConfig) {
+	caseName := strings.Split(config.CaseFileName, ".")[0]
+	reports := &Reports{
+		CaseName:   caseName,
+		CaseRanges: config.CaseRanges,
+		Reports:    make(map[string][]*Report),
+	}
+	for schedulerType, records := range schedulerType2Records {
+		reportsSlice := make([]*Report, 0, len(records))
+		for _, record := range records {
+			report := generateSimulationReport(record, config)
+			reportsSlice = append(reportsSlice, report)
+		}
+		reports.Reports[schedulerType] = reportsSlice
+	}
+	fileName := generateFileName(reports)
 	filePath := path.Join(folder, fileName)
-	bs, err := json.MarshalIndent(report, "", "\t")
+	bs, err := json.MarshalIndent(reports, "", "\t")
 	if err != nil {
 		panic(fmt.Sprintf("Save Report json Marshal failed, err = %s", err.Error()))
 	}
@@ -78,23 +100,28 @@ func SaveSimulationReport(folder string, record *types.Record, config *Simulatio
 		panic(fmt.Sprintf("Save Report WriteFile failed, err = %+v", err))
 	}
 	fmt.Printf("generate report to %s\n", filePath)
-	fmt.Printf("content \n%s\n", string(bs))
+	//fmt.Printf("content \n%s\n", string(bs))
 }
 
-func generateFileName(report *Report) string {
-	caseName := strings.Split(path.Base(report.CasePath), ".")[0]
+func generateFileName(reports *Reports) string {
 	datetime := time.Now().Format("01-02_15:04:05")
-	return fmt.Sprintf("%s_%s_[jct_%d]_[violated_%d]_%s.json",
-		report.SchedulerName,
-		caseName,
-		int(report.Execution.AverageJCTSeconds),
-		report.Execution.DDLViolatedJobsCount,
+	schedulerNames := make([]string, 0, len(reports.Reports))
+	for schedulerName := range reports.Reports {
+		schedulerNames = append(schedulerNames, schedulerName)
+	}
+	schedulersCombined := util.StringSliceJoinWith(schedulerNames, "_")
+	firstCaseRangeCombined := util.IntSliceJoinWith(reports.CaseRanges[0], "_")
+	lastCaseRangeCombined := util.IntSliceJoinWith(reports.CaseRanges[len(reports.CaseRanges)-1], "_")
+	return fmt.Sprintf("%s_%s_case_range_(%v-%v)_%s.json",
+		schedulersCombined,
+		reports.CaseName,
+		firstCaseRangeCombined,
+		lastCaseRangeCombined,
 		datetime)
 }
 
 func generateSimulationReport(record *types.Record, config *SimulationMetaConfig) *Report {
 	report := &Report{
-		CasePath:      config.CasePath,
 		SchedulerName: record.Scheduler.Name(),
 		SchedulerInfo: record.Scheduler.Info(),
 	}
@@ -113,7 +140,9 @@ func generateSimulationReport(record *types.Record, config *SimulationMetaConfig
 	}
 	execution := &Execution{
 		AverageJCTSeconds:                  avgJCT(record.FinishedJobs),
+		AverageQueueDelaySeconds:           avgQueuingDelay(record.FinishedJobs),
 		AverageDDLViolationDurationSeconds: avgViolatedDuration,
+		TotalDDLViolationDurationSeconds:   avgViolatedDuration * float64(len(violatedJobs)),
 		// DDLViolatedJobs:               packJobs(violatedJobs),
 		DDLViolatedJobsCount: len(violatedJobs),
 		// FinishedJobs:                  packJobs(record.FinishedJobs),

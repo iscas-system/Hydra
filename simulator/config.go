@@ -5,12 +5,12 @@ import (
 	"os"
 )
 
-type FormatPrintLevel int
+type LogPrintLevel int
 
 const (
-	NoFormatPrint  = FormatPrintLevel(0)
-	ShortMsgPrint  = FormatPrintLevel(1)
-	AllFormatPrint = FormatPrintLevel(2)
+	NoPrint        = LogPrintLevel(0)
+	ShortMsgPrint  = LogPrintLevel(1)
+	AllFormatPrint = LogPrintLevel(2)
 )
 
 type Options struct {
@@ -19,7 +19,8 @@ type Options struct {
 	gpuType2Count           map[types.GPUType]int
 	minDurationPassInterval types.Duration
 	dataSourceCSVPath       string
-	formatPrintLevel        FormatPrintLevel
+	dataSourceRange         []int
+	formatPrintLevel        LogPrintLevel
 }
 
 var defaultOptions = &Options{
@@ -32,16 +33,17 @@ var defaultOptions = &Options{
 	},
 	minDurationPassInterval: 1.,
 	dataSourceCSVPath:       "",
+	dataSourceRange:         nil,
 	formatPrintLevel:        ShortMsgPrint,
 }
 
 type SetOption func(options *Options)
 
-func WithOptionLogEnabled(enabled bool) SetOption {
-	return func(options *Options) {
-		options.logEnabled = enabled
-	}
-}
+//func WithOptionLogEnabled(enabled bool) SetOption {
+//	return func(options *Options) {
+//		options.logEnabled = enabled
+//	}
+//}
 
 func WithOptionLogPath(logPath string) SetOption {
 	return func(options *Options) {
@@ -61,9 +63,15 @@ func WithOptionDataSourceCSVPath(csvPath string) SetOption {
 	}
 }
 
-func WithOptionFmtPrintLevel(formatPrintLevel FormatPrintLevel) SetOption {
+func WithOptionDataSourceRange(start, end int) SetOption {
 	return func(options *Options) {
-		options.formatPrintLevel = formatPrintLevel
+		options.dataSourceRange = []int{start, end}
+	}
+}
+
+func WithOptionLogPrintLevel(logLevel LogPrintLevel) SetOption {
+	return func(options *Options) {
+		options.formatPrintLevel = logLevel
 	}
 }
 

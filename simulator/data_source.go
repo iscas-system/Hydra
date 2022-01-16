@@ -14,6 +14,7 @@ import (
 type DataSource struct {
 	JobMetas              map[types.JobName]*JobMeta // index by job name
 	JobNameSortedBySubmit []types.JobName
+	CaseRange             []int
 }
 
 var dataSourceInstance *DataSource
@@ -22,14 +23,12 @@ func getDataSource() *DataSource {
 	return dataSourceInstance
 }
 
-func initDataSource(csvFilePath string) {
+func initDataSource(csvFilePath string, dataSourceRange []int) {
 	file, err := os.Open(csvFilePath)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-
-	fmt.Printf("DataSource reading csv from %s...\n", csvFilePath)
 
 	reader := csv.NewReader(file)
 	reader.FieldsPerRecord = 0
@@ -38,14 +37,13 @@ func initDataSource(csvFilePath string) {
 		panic(err)
 	}
 
-	fmt.Printf("DataSource reading %d lines of records from %s...\n", len(csvDataRecords), csvFilePath)
-
 	for _, records := range csvDataRecords {
 		for idx, content := range records {
 			records[idx] = strings.TrimSpace(content)
 		}
 	}
 	csvHeaders := csvDataRecords[0]
+	csvDataRecords = csvDataRecords[1:]
 
 	colIndexOf := func(colName string) int {
 		res := util.StringSliceIndexOf(csvHeaders, colName)
@@ -71,8 +69,8 @@ func initDataSource(csvFilePath string) {
 	}
 
 	jobMetas := make(map[types.JobName]*JobMeta)
-	jobNamesSortedBySubmitTime := make([]types.JobName, 0, len(csvDataRecords)-1)
-	for _, record := range csvDataRecords[1:] {
+	jobNamesSortedBySubmitTime := make([]types.JobName, 0, len(csvDataRecords))
+	for _, record := range csvDataRecords {
 		jobName := types.JobName(record[colJobNameIdx])
 		submitTime, err := strconv.ParseFloat(record[colSubmitTimeIdx], 64)
 		if err != nil {
@@ -96,6 +94,7 @@ func initDataSource(csvFilePath string) {
 	dataSourceInstance = &DataSource{
 		JobMetas:              jobMetas,
 		JobNameSortedBySubmit: jobNamesSortedBySubmitTime,
+		CaseRange:             dataSourceRange,
 	}
 }
 
@@ -151,16 +150,17 @@ func (ds *DataSource) Durations(jobName types.JobName) map[types.GPUType]types.D
 }
 
 func (ds *DataSource) IterBySubmitTime(iterFunc func(indices []int, meta []types.JobMeta)) {
-	for i := 0; i < len(ds.JobNameSortedBySubmit); i++ {
+	iterTarget := ds.JobNameSortedBySubmit[ds.CaseRange[0]:ds.CaseRange[1]]
+	for i := 0; i < len(iterTarget); i++ {
 		metas := make([]types.JobMeta, 0, 1)
 		indices := make([]int, 0, 1)
-		l := ds.JobMeta(ds.JobNameSortedBySubmit[i])
+		l := ds.JobMeta(iterTarget[i])
 		metas = append(metas, l)
 		indices = append(indices, i)
 		var j int
-		for j = i + 1; j < len(ds.JobNameSortedBySubmit); j++ {
-			if ds.JobMeta(ds.JobNameSortedBySubmit[j]).submitTime == metas[0].SubmitTime() {
-				metas = append(metas, ds.JobMeta(ds.JobNameSortedBySubmit[j]))
+		for j = i + 1; j < len(iterTarget); j++ {
+			if ds.JobMeta(iterTarget[j]).submitTime == metas[0].SubmitTime() {
+				metas = append(metas, ds.JobMeta(iterTarget[j]))
 				indices = append(indices, j)
 			} else {
 				j--

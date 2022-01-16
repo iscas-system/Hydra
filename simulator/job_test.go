@@ -6,7 +6,7 @@ import (
 )
 
 func TestJobExecutionDetail_AddExecutionRange(t *testing.T) {
-	initDataSource("/Users/purchaser/go/src/DES-go/cases/case1.csv")
+	initDataSource("/Users/purchaser/go/src/DES-go/cases/case1.csv", nil)
 	j := NewJob("job1")
 	j.executionDetail = newJobExecutionDetail("job1")
 	gpu := NewGPU(1, "V100")

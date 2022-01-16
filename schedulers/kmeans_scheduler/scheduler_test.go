@@ -14,8 +14,7 @@ func Test_scheduler(t *testing.T) {
 		WithDistanceAlgo(NewMinCostDistanceAlgo(cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPartialCost, cost.BranchAndBoundAlgoTypeAllPermutation), cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 	simu := simulator.NewSimulator(scheduler,
-		simulator.WithOptionFmtPrintLevel(simulator.ShortMsgPrint),
-		simulator.WithOptionLogEnabled(true),
+		simulator.WithOptionLogPrintLevel(simulator.ShortMsgPrint),
 		simulator.WithOptionLogPath("/Users/purchaser/go/src/DES-go/logs"),
 		simulator.WithOptionGPUType2Count(map[types.GPUType]int{
 			"V100": 1,

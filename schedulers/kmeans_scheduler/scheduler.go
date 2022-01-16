@@ -6,6 +6,7 @@ import (
 	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
+	"log"
 	"math"
 	"sort"
 	"strconv"
@@ -123,7 +124,6 @@ func (k *Scheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	case *types.ScheduleEventJobsArrived:
 		{
 			k.allArrivedJobsCount += len(e.JobMetas())
-			fmt.Printf("allArrivedJobsCount = [%d]\n", k.allArrivedJobsCount)
 			newJobs := make([]types.Job, 0, len(e.JobMetas()))
 			for _, jobMeta := range e.JobMetas() {
 				newJobs = append(newJobs, k.gpuCluster.InitJob(jobMeta))
@@ -240,7 +240,6 @@ type BasicScheduleSchemeSummaryRecord struct {
 func (s *BasicScheduleScheme) DoSchedule() bool {
 	scheduler := s.scheduler
 	if s.OneShot && s.hasDoneOnceSchedule {
-		fmt.Printf("BasicScheduleScheme DoSchedule called when s.OneShot is false and hasDoneOnceSchedule.")
 		return false
 	}
 	// 初始，先将每个GPU放到簇中。
@@ -287,19 +286,24 @@ func (s *BasicScheduleScheme) FillKMeansCluster(scheduler *Scheduler, kMeansClus
 	kMeansRoundsDurations := make([]time.Duration, 0, len(scheduler.waitingJobs))
 	for len(scheduler.waitingJobs) > 0 {
 		start := time.Now()
+		var bestJobIdx int
+		var bestGPU types.GPU
+		var bestJobsSeq []types.Job
 		if s.Parallel {
-			s.KMeansRoundInParallel(scheduler, kMeansCluster)
+			bestJobIdx, bestGPU, bestJobsSeq = s.KMeansRoundInParallel(scheduler, kMeansCluster)
 		} else {
-			s.KMeansRoundInSerial(scheduler, kMeansCluster)
+			bestJobIdx, bestGPU, bestJobsSeq = s.KMeansRoundInSerial(scheduler, kMeansCluster)
 		}
+		kMeansCluster[bestGPU] = bestJobsSeq
+		_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
 		duration := time.Since(start)
 		kMeansRoundsDurations = append(kMeansRoundsDurations, duration)
-		fmt.Println(util.PrettyF("kMeans round finished, waitingJobsLength = %3d", len(scheduler.waitingJobs)))
+		log.Printf("kMeans round finished, waitingJobsLength = %3d", len(scheduler.waitingJobs))
 	}
 	s.Record.KMeansRoundDurations = append(s.Record.KMeansRoundDurations, kMeansRoundsDurations...)
 }
 
-func (s *BasicScheduleScheme) KMeansRoundInParallel(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) {
+func (s *BasicScheduleScheme) KMeansRoundInParallel(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) (int, types.GPU, []types.Job) {
 	// 计算每个点到每个簇的距离，选择一个最小的。
 	minDis := math.Inf(1)
 	var bestJobsSeq []types.Job = nil
@@ -323,11 +327,15 @@ func (s *BasicScheduleScheme) KMeansRoundInParallel(scheduler *Scheduler, kMeans
 					}
 					mu.Lock()
 					defer mu.Unlock()
-					if distanceResp.distance < minDis {
-						minDis = distanceResp.distance
-						bestJobsSeq = distanceResp.jobsSeq
-						bestGPU = gpu
-						bestJobIdx = idx
+					if distanceResp.distance <= minDis {
+						currBestJob := scheduler.waitingJobs[bestJobIdx]
+						pickedJob := scheduler.waitingJobs[idx]
+						if distanceResp.distance < minDis || pickedJob.JobName() < currBestJob.JobName() {
+							minDis = distanceResp.distance
+							bestJobsSeq = distanceResp.jobsSeq
+							bestGPU = gpu
+							bestJobIdx = idx
+						}
 					}
 				})
 			}
@@ -335,11 +343,10 @@ func (s *BasicScheduleScheme) KMeansRoundInParallel(scheduler *Scheduler, kMeans
 		})
 	}
 	wg.Wait()
-	kMeansCluster[bestGPU] = bestJobsSeq
-	_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
+	return bestJobIdx, bestGPU, bestJobsSeq
 }
 
-func (s *BasicScheduleScheme) KMeansRoundInSerial(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) {
+func (s *BasicScheduleScheme) KMeansRoundInSerial(scheduler *Scheduler, kMeansCluster map[types.GPU][]types.Job) (int, types.GPU, []types.Job) {
 	// 计算每个点到每个簇的距离，选择一个最小的。
 	minDis := math.Inf(1)
 	var bestJobsSeq []types.Job = nil
@@ -353,7 +360,6 @@ func (s *BasicScheduleScheme) KMeansRoundInSerial(scheduler *Scheduler, kMeansCl
 			jobsInCluster := jobsInCluster
 			idx := idx
 			distanceResp := s.distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
-			// fmt.Printf("gpu = %s, jobsInCluster = %s, waitingJob = %s, distanceResp = %s\n", util.Pretty(gpu), util.Pretty(jobsInCluster), util.Pretty(waitingJob), util.Pretty(distanceResp))
 			if len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1) {
 				panic("len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1)")
 			}
@@ -365,8 +371,7 @@ func (s *BasicScheduleScheme) KMeansRoundInSerial(scheduler *Scheduler, kMeansCl
 			}
 		}
 	}
-	kMeansCluster[bestGPU] = bestJobsSeq
-	_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
+	return bestJobIdx, bestGPU, bestJobsSeq
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -4,7 +4,6 @@ import (
 	"DES-go/schedulers/jobs_util"
 	"DES-go/schedulers/types"
 	"DES-go/simulator"
-	"DES-go/util"
 	"fmt"
 	"math"
 	"time"
@@ -125,11 +124,6 @@ func (s *GreedySchedulerTemplate) OnScheduleEvent(event types.ScheduleEvent) {
 		{
 			for _, jobMeta := range e.JobMetas() {
 				s.impl.insertJob2SortedWaitingJobs(simulator.NewJob(jobMeta.JobName()))
-			}
-			for idx, j := range s.sortedWaitingJobs["T4"] {
-				if idx < 50 {
-					fmt.Printf("idx = %d, j = %s", idx, util.Pretty(j))
-				}
 			}
 			s.DoSchedule()
 		}

@@ -31,7 +31,10 @@ func violation(jobs []types.Job) ([]types.Job, float64) {
 			violatedJobs = append(violatedJobs, job)
 		}
 	}
-	return violatedJobs, float64(sumViolationDelay) / float64(len(jobs))
+	if len(violatedJobs) == 0 {
+		return violatedJobs, 0
+	}
+	return violatedJobs, float64(sumViolationDelay) / float64(len(violatedJobs))
 }
 
 func avgQueuingDelay(jobs []types.Job) float64 {

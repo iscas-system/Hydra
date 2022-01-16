@@ -3,7 +3,6 @@ package simulator
 import (
 	"DES-go/schedulers/types"
 	"DES-go/util"
-	"fmt"
 	"math"
 	"sort"
 	"sync"
@@ -70,9 +69,6 @@ func NewCluster(gpuType2CountConfig map[types.GPUType]int) *Cluster {
 			gpuJobQueues[gpu.ID()] = NewGPUJobQueue(gpu)
 		}
 	}
-
-	gpusConfigJson := util.Pretty(gpuType2CountConfig)
-	fmt.Printf("Cluster Inited, gpus config = %s.", gpusConfigJson)
 
 	return &Cluster{
 		gpuType2CountConfig: gpuType2CountConfig,

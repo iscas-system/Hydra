@@ -4,6 +4,7 @@ import (
 	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
+	"log"
 	"math"
 	"regexp"
 	"strconv"
@@ -128,9 +129,9 @@ func (a *AlloxScheduler) DoOneShotSchedule() {
 	solver.Solve()
 
 	scheduleResult := solver.GetSchedulingResult()
-	fmt.Println("Minimum JCT:", solver.minCost)
-	fmt.Println(solver.maxFlow)
-	fmt.Println("Scheduling result:", scheduleResult)
+	log.Println("Minimum JCT:", solver.minCost)
+	log.Println(solver.maxFlow)
+	log.Println("Scheduling result:", scheduleResult)
 	gpuSlotReg := regexp.MustCompile(`^gpu([0-9]+)-slot([0-9]+)$`)
 	jobIdxReg := regexp.MustCompile(`^job([0-9]+)$`)
 	gpu2slot2job := make(map[types.GPU]map[int]types.Job)
@@ -145,16 +146,6 @@ func (a *AlloxScheduler) DoOneShotSchedule() {
 		gpuSlot, _ := strconv.Atoi(gpuSlotMatches[2])
 		gpu2slot2job[gpuSlice[gpuIdx]][gpuSlot] = jobsSlice[jobIdx]
 	}
-
-	// fmt.Println("Scheduling gpu2slot2job:", gpu2slot2job)
-	fmt.Println("gpuSlice:")
-	for idx, gpu := range gpuSlice {
-		fmt.Printf("gpu-%d: %+v\n", idx, util.Pretty(gpu))
-	}
-	fmt.Println("jobsSlice:")
-	for idx, job := range jobsSlice {
-		fmt.Printf("job-%d: %+v\n", idx, util.Pretty(job))
-	}
 	for gpu, slot2jobs := range gpu2slot2job {
 		maxSlot := -1
 		for slot := range slot2jobs {
@@ -166,10 +157,6 @@ func (a *AlloxScheduler) DoOneShotSchedule() {
 		for slot, job := range slot2jobs {
 			// slot和执行位置是对称的（反了吗）？？？
 			jobs[len(jobs)-slot-1] = job
-		}
-		fmt.Printf("Schedule to GPU %+v, maxSlot + 1 = %d, jobs = \n", gpu, maxSlot+1)
-		for idx, job := range jobs {
-			fmt.Printf("job %d, %+v\n", idx+1, util.Pretty(job))
 		}
 		a.cluster.GPUJobQueues()[gpu.ID()].SetJobs(jobs...)
 	}
@@ -203,11 +190,11 @@ func (a *AlloxScheduler) NextActiveScheduleTime() types.Time {
 }
 
 func (a *AlloxScheduler) Name() string {
-	return fmt.Sprintf("AlloxScheduler[online=%v]", a.online)
+	return "AlloxScheduler"
 }
 
 func (a *AlloxScheduler) Info() interface{} {
-	return a.Name()
+	return fmt.Sprintf("AlloxScheduler[online=%v]", a.online)
 }
 
 func (a *AlloxScheduler) Record() *types.SchedulerRecord {
