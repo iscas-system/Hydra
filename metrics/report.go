@@ -16,6 +16,7 @@ import (
 type Reports struct {
 	CaseName   string               `json:"case_name"`
 	CaseRanges [][]int              `json:"case_ranges"`
+	ClusterConfigs []map[string]int `json:"cluster_configs"`
 	Reports    map[string][]*Report `json:"reports"`
 }
 
@@ -32,6 +33,7 @@ type GPU struct {
 
 type ClusterConfig struct {
 	GPUs map[string]int `json:"GPUs"`
+	GPUCount int `json:"gpu_count"`
 }
 
 type Job struct {
@@ -71,7 +73,7 @@ type Execution struct {
 type SimulationMetaConfig struct {
 	CaseFileName  string
 	CaseRanges    [][]int
-	ClusterConfig map[types.GPUType]int
+	ClusterConfigs []map[string]int
 }
 
 func SaveSimulationReport(folder string, schedulerType2Records map[string][]*types.Record, config *SimulationMetaConfig) {
@@ -79,6 +81,7 @@ func SaveSimulationReport(folder string, schedulerType2Records map[string][]*typ
 	reports := &Reports{
 		CaseName:   caseName,
 		CaseRanges: config.CaseRanges,
+		ClusterConfigs: config.ClusterConfigs,
 		Reports:    make(map[string][]*Report),
 	}
 	for schedulerType, records := range schedulerType2Records {
@@ -126,8 +129,9 @@ func generateSimulationReport(record *types.Record, config *SimulationMetaConfig
 		SchedulerInfo: record.Scheduler.Info(),
 	}
 	clusterConfig := &ClusterConfig{GPUs: make(map[string]int)}
-	for gpuType, count := range config.ClusterConfig {
-		clusterConfig.GPUs[string(gpuType)] = count
+	for gpuType, gpus := range record.Cluster.GPUs() {
+		clusterConfig.GPUs[string(gpuType)] = len(gpus)
+		clusterConfig.GPUCount += len(gpus)
 	}
 	report.ClusterConfig = clusterConfig
 	schedulerRecord := record.SchedulerRecord

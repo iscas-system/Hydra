@@ -17,54 +17,61 @@ import (
 )
 
 func main() {
-	config := loadConfig("/Users/purchaser/go/src/DES-go/config.json")
+	config := loadConfig("/home/yzc/go/src/DES-go/config.json")
+	// config := loadConfig("/Users/purchaser/go/src/DES-go/config.json")
 
-	clusterConfig := map[types.GPUType]int{
-		"V100": 5,
-		"P100": 10,
-		"T4":   15,
-	}
+	// clusterConfigs 代表集群的配置变化空间，分别传入初始的状态，以及末尾状态，以及增加步长，可以按顺序获取一批gpu配置
+	clusterConfigs := generateGPUConfig(
+		map[string]int {
+		"V100": 10,
+		"P100": 15,
+		"T4":   20,
+	}, map[string]int {
+			"V100": 10,
+			"P100": 15,
+			"T4":   20,
+		}, 1)
 
-	//caseFileName := "case1.csv"
-	//caseRanges := []int{{0, 5}}
-
-	//caseFileName := "case_50_all.csv"
-	//caseRanges := [][]int{{0, 30}, {0, 40}, {0, 50}}
-
-	//caseFileName := "case_200_all.csv"
-	//caseFileName := "case_200_all_2.csv"
-	//caseFileName := "case_200_all_3.csv"
-	//caseRanges := make([][]int, 0)
-	//for i := 10; i <= 200; i += 10 {
-	//	caseRanges = append(caseRanges, []int{0, i})
-	//}
-
-	caseFileName := "case_500_all.csv"
-	//casePath := "case_500_long_all.csv"
+	caseFileName := "case_5000_all.csv"
+	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 	caseRanges := make([][]int, 0)
-	for i := 10; i <= 300; i += 10 {
+	for i := 10; i <= 400; i += 10 {
 		caseRanges = append(caseRanges, []int{0, i})
 	}
-	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 
 	// schedulerTypes 表示了要进行模拟的调度器类型。
 	schedulerTypes := []SchedulerType{
-		SJF,
-		EDF,
-		KMeans,
+		// SJF,
+		// EDF,
+		// KMeans,
 		Allox,
 	}
 
-	records := doSimulation(config, caseFileName, clusterConfig, caseRanges, schedulerTypes)
+	// records := doSimulationForOneClusterConfig(config, caseFileName, clusterConfig, caseRanges, schedulerTypes)
+	records := doSimulationForMultiClusterConfig(config, caseFileName, clusterConfigs, caseRanges, schedulerTypes)
 
 	metrics.SaveSimulationReport(config.ReportsPath, records, &metrics.SimulationMetaConfig{
 		CaseFileName:  caseFileName,
 		CaseRanges:    caseRanges,
-		ClusterConfig: clusterConfig,
+		ClusterConfigs: clusterConfigs,
 	})
 }
 
-func doSimulation(config *Config, caseFileName string, clusterConfig map[types.GPUType]int, caseRanges [][]int, schedulerTypes []SchedulerType) map[string][]*types.Record {
+func doSimulationForMultiClusterConfig(config *Config, caseFileName string, clusterConfig []map[string]int, caseRanges [][]int, schedulerTypes []SchedulerType) map[string][]*types.Record {
+	result := make(map[string][]*types.Record)
+	for _, cc := range clusterConfig {
+		m := doSimulationForOneClusterConfig(config, caseFileName, cc, caseRanges, schedulerTypes)
+		for k, v := range m {
+			if _, ok := result[k]; !ok {
+				result[k] = make([]*types.Record, 0)
+			}
+			result[k] = append(result[k], v...)
+		}
+	}
+	return result
+}
+
+func doSimulationForOneClusterConfig(config *Config, caseFileName string, clusterConfig map[string]int, caseRanges [][]int, schedulerTypes []SchedulerType) map[string][]*types.Record {
 	casePath := path.Join(config.CasesPath, caseFileName)
 	schedulerType2records := make(map[string][]*types.Record)
 	fmt.Printf("Starting simulation...\n")
@@ -177,4 +184,26 @@ func loadConfig(configPath string) *Config {
 		panic(err)
 	}
 	return config
+}
+
+func generateGPUConfig(initConfig map[string]int, targetConfig map[string]int, step int) []map[string]int {
+	gpus := []string{"T4", "P100", "V100"}
+	result := make([]map[string]int, 0)
+	result = append(result, initConfig)
+	curr := util.CopyStringIntMap(initConfig)
+	for {
+		keys := util.StringIntMapLessOrEqualsKeys(curr, targetConfig)
+		if len(keys) == 0 {
+			return result
+		}
+		util.StringSliceSortBy(keys, gpus)
+		for _, key := range keys {
+			curr = util.CopyStringIntMap(curr)
+			curr[key] += step
+			if curr[key] > targetConfig[key] {
+				curr[key] = targetConfig[key]
+			}
+			result = append(result, curr)
+		}
+	}
 }

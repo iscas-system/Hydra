@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -18,6 +19,27 @@ func StringSliceIndexOf(slice []string, target string) int {
 
 func StringSliceJoinWith(slice []string, s string) string {
 	return fmt.Sprintf("[%s]", strings.Join(slice, s))
+}
+
+func SwapStringSlice(slice []string, i, j int) {
+	o := slice[i]
+	slice[i] = slice[j]
+	slice[j] = o
+}
+
+func StringSliceSortBy(slice []string, targetSequence []string) {
+	sorter := &Sorter{
+		LenFunc: func() int {
+			return len(slice)
+		},
+		LessFunc: func(i, j int) bool {
+			return StringSliceIndexOf(targetSequence, slice[i]) < StringSliceIndexOf(targetSequence, slice[j])
+		},
+		SwapFunc: func(i, j int) {
+			SwapStringSlice(slice, i, j)
+		},
+	}
+	sort.Sort(sorter)
 }
 
 func IntSliceJoinWith(slice []int, s string) string {

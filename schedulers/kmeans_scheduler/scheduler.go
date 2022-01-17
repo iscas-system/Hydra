@@ -6,7 +6,6 @@ import (
 	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
-	"log"
 	"math"
 	"sort"
 	"strconv"
@@ -35,7 +34,6 @@ type Scheduler struct {
 	allArrivedJobsCount int
 
 	DoScheduleCallRecords []*types.DoScheduleCallRecord
-	// DoScheduleCallRecords: make([]*types.DoScheduleCallRecord, 0, 128),
 }
 
 // Options
@@ -298,7 +296,7 @@ func (s *BasicScheduleScheme) FillKMeansCluster(scheduler *Scheduler, kMeansClus
 		_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
 		duration := time.Since(start)
 		kMeansRoundsDurations = append(kMeansRoundsDurations, duration)
-		log.Printf("kMeans round finished, waitingJobsLength = %3d", len(scheduler.waitingJobs))
+		// fmt.Printf("kMeans round finished, waitingJobsLength = %3d\n", len(scheduler.waitingJobs))
 	}
 	s.Record.KMeansRoundDurations = append(s.Record.KMeansRoundDurations, kMeansRoundsDurations...)
 }

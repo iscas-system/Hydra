@@ -51,9 +51,13 @@ func WithOptionLogPath(logPath string) SetOption {
 	}
 }
 
-func WithOptionGPUType2Count(gpuType2Count map[types.GPUType]int) SetOption {
+func WithOptionGPUType2Count(gpuType2Count map[string]int) SetOption {
 	return func(options *Options) {
-		options.gpuType2Count = gpuType2Count
+		transformed := make(map[types.GPUType]int)
+		for gpuTypeStr, c := range gpuType2Count {
+			transformed[types.GPUType(gpuTypeStr)] = c
+		}
+		options.gpuType2Count = transformed
 	}
 }
 
