@@ -17,4 +17,5 @@ type Record struct {
 	Cluster         Cluster
 	FinishedJobs    []Job
 	SchedulerRecord *SchedulerRecord
+	CaseRange       []int
 }

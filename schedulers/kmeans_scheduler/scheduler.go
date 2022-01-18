@@ -296,7 +296,7 @@ func (s *BasicScheduleScheme) FillKMeansCluster(scheduler *Scheduler, kMeansClus
 		_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
 		duration := time.Since(start)
 		kMeansRoundsDurations = append(kMeansRoundsDurations, duration)
-		// fmt.Printf("kMeans round finished, waitingJobsLength = %3d\n", len(scheduler.waitingJobs))
+		//fmt.Printf("kMeans round finished, waitingJobsLength = %3d\n", len(scheduler.waitingJobs))
 	}
 	s.Record.KMeansRoundDurations = append(s.Record.KMeansRoundDurations, kMeansRoundsDurations...)
 }
@@ -390,11 +390,10 @@ type jobDistanceSolver struct {
 }
 
 type DistanceSolverRecordSummaryExtra struct {
-	DistanceCallRecords     []*DistanceCallRecord `json:"-"`
-	MemorizedCallCount      int                   `json:"memorized_call_count"`
-	NonMemorizedCallCount   int                   `json:"non_memorized_call_count"`
-	CallCount               int                   `json:"call_count"`
-	DistanceAlgoRecordExtra interface{}           `json:"distance_algo_record_extra"`
+	MemorizedCallCount      int         `json:"memorized_call_count"`
+	NonMemorizedCallCount   int         `json:"non_memorized_call_count"`
+	CallCount               int         `json:"call_count"`
+	DistanceAlgoRecordExtra interface{} `json:"distance_algo_record_extra"`
 }
 
 type DistanceAlgo interface {
@@ -411,10 +410,8 @@ func newJobDistanceSolver(algo DistanceAlgo) *jobDistanceSolver {
 		scheduler:    nil,         // 等待SetScheduler被调用时注入进来。
 		distanceMemo: &sync.Map{}, // make(map[string]*distanceResp),
 		distanceAlgo: algo,
-		Record: &DistanceSolverRecordSummaryExtra{
-			DistanceCallRecords: make([]*DistanceCallRecord, 0, 1024),
-		},
-		RecordMu: &sync.Mutex{},
+		Record:       &DistanceSolverRecordSummaryExtra{},
+		RecordMu:     &sync.Mutex{},
 	}
 }
 
@@ -463,11 +460,14 @@ func (s *jobDistanceSolver) Distance(kMeansCenterGPU types.GPU, kMeansPointJobs 
 		GPUName:               kMeansCenterGPU.String(),
 		KMeansPointsJobsCount: len(kMeansPointJobs),
 	}
-	defer func() {
+	locked := func(f func()) {
 		s.RecordMu.Lock()
 		defer s.RecordMu.Unlock()
-		s.Record.DistanceCallRecords = append(s.Record.DistanceCallRecords, record)
-	}()
+		f()
+	}
+	defer locked(func() {
+		s.Record.CallCount++
+	})
 	copiedSlice := jobs_util.GetJobsSliceUtil().Copy(kMeansPointJobs)
 	memoKey := s.distanceMemoKey(kMeansCenterGPU, copiedSlice, jobNotInKMeansCluster)
 	if memorized, ok := s.distanceMemo.Load(memoKey); ok {
@@ -481,19 +481,14 @@ func (s *jobDistanceSolver) Distance(kMeansCenterGPU types.GPU, kMeansPointJobs 
 
 	record.UseMemorized = false
 	record.DistanceAlgoCallDuration = duration
+	locked(func() {
+		s.Record.NonMemorizedCallCount++
+	})
 	return distanceResp
 }
 
 func (s *jobDistanceSolver) RecordExtra() interface{} {
-	useMemo := 0
-	for _, record := range s.Record.DistanceCallRecords {
-		if record.UseMemorized {
-			useMemo++
-		}
-	}
-	s.Record.CallCount = len(s.Record.DistanceCallRecords)
-	s.Record.MemorizedCallCount = useMemo
-	s.Record.NonMemorizedCallCount = s.Record.CallCount - s.Record.MemorizedCallCount
+	s.Record.MemorizedCallCount = s.Record.CallCount - s.Record.NonMemorizedCallCount
 	s.Record.DistanceAlgoRecordExtra = s.distanceAlgo.RecordExtra()
 	return s.Record
 }
@@ -513,12 +508,12 @@ func (m *MinCostDistanceAlgo) String() string {
 }
 
 type MinCostDistanceAlgoSummaryRecord struct {
-	CallRecords                   []*MinCostDistanceCallRecord `json:"-"`
-	CallCount                     int                          `json:"call_count"`
-	UseMinCostAlgoCount           int                          `json:"use_min_cost_algo_count"`
-	UseSJFGreedyCount             int                          `json:"use_sjf_greedy_count"`
-	MinCostAlgoDurations          []time.Duration              `json:"-"`
-	AverageMinCostAlgoDurationsMs int                          `json:"average_min_cost_algo_durations_ms"`
+	// CallRecords                   *MinCostDistanceCallRecord `json:"-"`
+	CallCount                     int           `json:"call_count"`
+	UseMinCostAlgoCount           int           `json:"use_min_cost_algo_count"`
+	UseSJFGreedyCount             int           `json:"use_sjf_greedy_count"`
+	SumMinCostAlgoDuration        time.Duration `json:"-"`
+	AverageMinCostAlgoDurationsMs int           `json:"average_min_cost_algo_durations_ms"`
 
 	MinCostAlgoRecordExtra interface{} `json:"min_cost_algo_record_extra"`
 }
@@ -540,11 +535,14 @@ func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU
 		CenterGPUName:  kMeansCenterGPU.String(),
 		PointJobsCount: len(kMeansPointJobs),
 	}
-	defer func() {
+	locked := func(f func()) {
 		m.RecordMu.Lock()
 		defer m.RecordMu.Unlock()
-		m.Record.CallRecords = append(m.Record.CallRecords, record)
-	}()
+		f()
+	}
+	defer locked(func() {
+		m.Record.CallCount++
+	})
 	// 不关心一个簇中任务的顺序。
 	jobs := append(kMeansPointJobs, jobNotInKMeansCluster)
 	// 首先尝试将jobs使用SRTF排序，并计算一次cost。如果发现ddl没有被违反，则使用这个排序即可。
@@ -579,6 +577,10 @@ func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU
 	duration := time.Since(start)
 	record.UseMinCostAlgo = true
 	record.MinCostAlgoDuration = duration
+	locked(func() {
+		m.Record.UseMinCostAlgoCount++
+		m.Record.SumMinCostAlgoDuration += duration
+	})
 	return &distanceResp{
 		jobsSeq:  optimus,
 		distance: minCost,
@@ -590,27 +592,18 @@ func NewMinCostDistanceAlgo(minCostAlgo cost.MinCostAlgo, costSolverMaker cost.S
 		minCostAlgo:     minCostAlgo,
 		costSolverMaker: costSolverMaker,
 		Record: &MinCostDistanceAlgoSummaryRecord{
-			CallRecords:          make([]*MinCostDistanceCallRecord, 0, 1024),
-			CallCount:            0,
-			UseMinCostAlgoCount:  0,
-			UseSJFGreedyCount:    0,
-			MinCostAlgoDurations: make([]time.Duration, 0, 1024),
+			CallCount:              0,
+			UseMinCostAlgoCount:    0,
+			UseSJFGreedyCount:      0,
+			SumMinCostAlgoDuration: 0,
 		},
 		RecordMu: &sync.Mutex{},
 	}
 }
 
 func (m *MinCostDistanceAlgo) RecordExtra() interface{} {
-	useMinCostAlgoCount := 0
-	for _, record := range m.Record.CallRecords {
-		if record.UseMinCostAlgo {
-			useMinCostAlgoCount++
-		}
-	}
-	m.Record.CallCount = len(m.Record.CallRecords)
-	m.Record.UseMinCostAlgoCount = useMinCostAlgoCount
-	m.Record.UseSJFGreedyCount = m.Record.CallCount - useMinCostAlgoCount
-	m.Record.AverageMinCostAlgoDurationsMs = int(util.AvgDuration(m.Record.MinCostAlgoDurations...).Milliseconds())
+	m.Record.UseSJFGreedyCount = m.Record.CallCount - m.Record.UseMinCostAlgoCount
+	m.Record.AverageMinCostAlgoDurationsMs = int(m.Record.SumMinCostAlgoDuration.Milliseconds() / int64(m.Record.UseMinCostAlgoCount))
 	m.Record.MinCostAlgoRecordExtra = m.minCostAlgo.RecordExtra()
 	return m.Record
 }

@@ -17,42 +17,42 @@ import (
 )
 
 func main() {
-	config := loadConfig("/home/yzc/go/src/DES-go/config.json")
-	// config := loadConfig("/Users/purchaser/go/src/DES-go/config.json")
+	//config := loadConfig("/home/yzc/go/src/DES-go/config.json")
+	config := loadConfig("/Users/purchaser/go/src/DES-go/config.json")
 
 	// clusterConfigs 代表集群的配置变化空间，分别传入初始的状态，以及末尾状态，以及增加步长，可以按顺序获取一批gpu配置
 	clusterConfigs := generateGPUConfig(
-		map[string]int {
-		"V100": 10,
-		"P100": 15,
-		"T4":   20,
-	}, map[string]int {
-			"V100": 10,
-			"P100": 15,
-			"T4":   20,
+		map[string]int{
+			"V100": 25,
+			"P100": 10,
+			"T4":   10,
+		}, map[string]int{
+			"V100": 25,
+			"P100": 10,
+			"T4":   10,
 		}, 1)
 
-	caseFileName := "case_5000_all.csv"
+	caseFileName := "case_5000_all_30_ddl.csv"
 	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 	caseRanges := make([][]int, 0)
-	for i := 10; i <= 400; i += 10 {
+	for i := 300; i <= 400; i += 10 {
 		caseRanges = append(caseRanges, []int{0, i})
 	}
 
 	// schedulerTypes 表示了要进行模拟的调度器类型。
 	schedulerTypes := []SchedulerType{
-		// SJF,
-		// EDF,
-		// KMeans,
-		Allox,
+		SJF,
+		EDF,
+		KMeans,
+		//Allox,
 	}
 
 	// records := doSimulationForOneClusterConfig(config, caseFileName, clusterConfig, caseRanges, schedulerTypes)
 	records := doSimulationForMultiClusterConfig(config, caseFileName, clusterConfigs, caseRanges, schedulerTypes)
 
 	metrics.SaveSimulationReport(config.ReportsPath, records, &metrics.SimulationMetaConfig{
-		CaseFileName:  caseFileName,
-		CaseRanges:    caseRanges,
+		CaseFileName:   caseFileName,
+		CaseRanges:     caseRanges,
 		ClusterConfigs: clusterConfigs,
 	})
 }
@@ -99,6 +99,7 @@ func doSimulationForOneClusterConfig(config *Config, caseFileName string, cluste
 			duration := end.Sub(start)
 			fmt.Printf("Simulation For Scheduler %s, CaseRange: %d Finished, EndTime: %s, RunTime: %.2f\n",
 				schedulerType, caseRange, end.Format(timeLayout), duration.Seconds())
+			record.CaseRange = caseRange
 			recordsSlice = append(recordsSlice, record)
 		}
 		schedulerType2records[string(schedulerType)] = recordsSlice

@@ -218,6 +218,9 @@ func (m *BranchAndBoundTemplate) RecordExtra() interface{} {
 			AveragePredictionReduceMinCostCount: float64(sumPredictionReduceMinCostCount) / float64(currJobsCountRecordsCount),
 		})
 	}
+	if recordsCount == 0 {
+		return m.Record
+	}
 	m.Record.MaxJobsCount = maxJobsCount
 	m.Record.AverageExpandNodesCount = float64(sumAllExpandNodesCount) / float64(recordsCount)
 	m.Record.AverageJobsCount = float64(sumAllJobsCount) / float64(recordsCount)
