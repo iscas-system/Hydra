@@ -7,7 +7,6 @@ import (
 	"container/heap"
 	"fmt"
 	"math"
-	"sort"
 	"sync"
 	"time"
 )
@@ -17,10 +16,10 @@ type MinCostAlgoByBranchAndBound interface {
 
 	// initNodes
 	// 初始化分支限界的节点。
-	initNodes(params *MinCostParams) []*BranchAndBoundNode
+	initNodes(params *BranchAndBoundMinCostParams) []*BranchAndBoundNode
 	// expandNode
 	// 当遇到一个未在当前节点内的新节点时，扩展它，返回多个任务序列。
-	expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *MinCostParams) [][]types.Job
+	expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *BranchAndBoundMinCostParams) [][]types.Job
 	// predict
 	// 对当前的扩展节点计算一个预测的cost，将其他未在队列的jobs都加入进来，并按照SJF排序，计算一个cost。它必定>=最优解的cost。
 	// 如果预测的cost小于minCost，则将minCost更新为predictCost，这样能够任意一个答案节点计算出来之前，获得一个cost上界。
@@ -28,7 +27,7 @@ type MinCostAlgoByBranchAndBound interface {
 	// cHat为当前这个分支上，成本的下界，即这个序列的成本不可能 <= cHat。如果cHat都比minCost大，那么这条分支就不可能取最优解。
 	predict(newJobs []types.Job,
 		otherJobs []types.Job,
-		params *MinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job)
+		params *BranchAndBoundMinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job)
 
 	String() string
 }
@@ -58,21 +57,62 @@ const (
 )
 
 type BranchAndBoundSummaryRecord struct {
-	CallRecords                         map[int][]*BranchAndBoundCallRecord `json:"-"` // jobsCount to record
-	AverageDurationNano                 int                                 `json:"average_duration_nano"`
-	AverageExpandNodesCount             float64                             `json:"average_expand_nodes_count"`
-	AverageJobsCount                    float64                             `json:"average_jobs_count"`
-	MaxJobsCount                        int                                 `json:"max_jobs_count"`
-	AverageTotalCutCount                float64                             `json:"average_total_cut_count"`
-	AverageAfterExpandCutCount          float64                             `json:"average_after_expand_cut_count"`
-	AveragePredictionIsOptimusCutCount  float64                             `json:"average_prediction_is_optimus_cut_count"`
-	AveragePredictionReduceMinCostCount float64                             `json:"average_prediction_reduce_min_cost_count"`
-	AverageExpandNothingCutCount        float64                             `json:"average_expand_nothing_cut_count"`
-	AverageCHatCutCount                 float64                             `json:"average_c_hat_cut_count"`
-	JobsCount2SummaryRecord             []interface{}                       `json:"jobs_count_2_summary_record"`
+	CallCount                       int                                     `json:"call_count"`
+	ExceedLatencyCount int `json:"exceed_latency_count"`
+	UseFallBackCount int `json:"use_fall_back_count"`
+
+	SumDurationNano                 int64                                   `json:"-"`
+	SumExpandNodesCount             int                                     `json:"-"`
+	SumJobsCount                    int                                     `json:"-"`
+	SumTotalCutCount                int                                     `json:"-"`
+	SumAfterExpandCutCount          int                                     `json:"-"`
+	SumPredictionIsOptimusCutCount  int                                     `json:"-"`
+	SumPredictionReduceMinCostCount int                                     `json:"-"`
+	SumExpandNothingCutCount        int                                     `json:"-"`
+	SumCHatCutCount                 int                                     `json:"-"`
+	JobsCount2SummaryRecordMap      map[int]*SpecificJobsCountSummaryRecord `json:"-"`
+
+	// CallRecords                         map[int][]*BranchAndBoundCallRecord `json:"-"` // jobsCount to record
+	AverageDurationNano                 int64         `json:"average_duration_nano"`
+	AverageExpandNodesCount             float64       `json:"average_expand_nodes_count"`
+	AverageJobsCount                    float64       `json:"average_jobs_count"`
+	MaxJobsCount                        int           `json:"max_jobs_count"`
+	AverageTotalCutCount                float64       `json:"average_total_cut_count"`
+	AverageAfterExpandCutCount          float64       `json:"average_after_expand_cut_count"`
+	AveragePredictionIsOptimusCutCount  float64       `json:"average_prediction_is_optimus_cut_count"`
+	AveragePredictionReduceMinCostCount float64       `json:"average_prediction_reduce_min_cost_count"`
+	AverageExpandNothingCutCount        float64       `json:"average_expand_nothing_cut_count"`
+	AverageCHatCutCount                 float64       `json:"average_c_hat_cut_count"`
+	JobsCount2SummaryRecord             []interface{} `json:"jobs_count_2_summary_record"`
+}
+
+type SpecificJobsCountSummaryRecord struct {
+	CallCount int `json:"call_count"`
+	JobsCount int `json:"jobs_count"`
+	ExceedLatencyCount int `json:"exceed_latency_count"`
+	UseFallBackCount int `json:"use_fall_back_count"`
+
+	SumExpandNodesCount             int   `json:"-"`
+	SumDurationNano                 int64 `json:"-"`
+	SumTotalCutCount                int   `json:"-"`
+	SumExpandNothingCutCount        int   `json:"-"`
+	SumCHatCutCount                 int   `json:"-"`
+	SumAfterExpandCutCount          int   `json:"-"`
+	SumPredictionIsOptimusCutCount  int   `json:"-"`
+	SumPredictionReduceMinCostCount int   `json:"-"`
+
+	AverageExpandNodesCount             float64 `json:"average_expand_nodes_count"`
+	AverageDurationNano                 int64   `json:"average_duration_nano"`
+	AverageTotalCutCount                float64 `json:"average_total_cut_count"`
+	AverageExpandNothingCutCount        float64 `json:"average_expand_nothing_cut_count"`
+	AverageCHatCutCount                 float64 `json:"average_c_hat_cut_count"`
+	AverageAfterExpandCutCount          float64 `json:"average_after_expand_cut_count"`
+	AveragePredictionIsOptimusCutCount  float64 `json:"average_prediction_is_optimus_cut_count"`
+	AveragePredictionReduceMinCostCount float64 `json:"average_prediction_reduce_min_cost_count"`
 }
 
 type BranchAndBoundCallRecord struct {
+	ExceedLatency bool
 	Duration                     time.Duration `json:"duration"`
 	JobsCount                    int           `json:"jobs_count"`
 	ExpandNodesCount             int           `json:"expand_nodes_count"`
@@ -88,18 +128,44 @@ type BranchAndBoundTemplate struct {
 	LCStandard BranchAndBoundLCStandard
 	impl       MinCostAlgoByBranchAndBound
 
+	AlgoLatency time.Duration
+	Fallback MinCostAlgo
+
 	Record   *BranchAndBoundSummaryRecord
 	RecordMu *sync.Mutex
+}
+
+type BranchAndBoundMinCostParams struct {
+	*MinCostParams
+	start time.Time
+	latency time.Duration
 }
 
 func NewBranchAndBoundAlgo(LCStandard BranchAndBoundLCStandard, algoType BranchAndBoundAlgoType) MinCostAlgoByBranchAndBound {
 	template := &BranchAndBoundTemplate{
 		LCStandard: LCStandard,
 		Record: &BranchAndBoundSummaryRecord{
-			CallRecords: make(map[int][]*BranchAndBoundCallRecord),
+			JobsCount2SummaryRecordMap: make(map[int]*SpecificJobsCountSummaryRecord),
 		},
 		RecordMu: &sync.Mutex{},
 	}
+	return newBranchAndBoundImpl(algoType, template)
+}
+
+func NewBranchAndBoundAlgoWithLatency(LCStandard BranchAndBoundLCStandard, algoType BranchAndBoundAlgoType, latency time.Duration, fallback MinCostAlgo) MinCostAlgoByBranchAndBound {
+	template := &BranchAndBoundTemplate{
+		LCStandard: LCStandard,
+		Record: &BranchAndBoundSummaryRecord{
+			JobsCount2SummaryRecordMap: make(map[int]*SpecificJobsCountSummaryRecord),
+		},
+		RecordMu: &sync.Mutex{},
+		AlgoLatency: latency,
+		Fallback: fallback,
+	}
+	return newBranchAndBoundImpl(algoType, template)
+}
+
+func newBranchAndBoundImpl(algoType BranchAndBoundAlgoType, template *BranchAndBoundTemplate) MinCostAlgoByBranchAndBound {
 	impl := func() MinCostAlgoByBranchAndBound {
 		switch algoType {
 		case BranchAndBoundAlgoTypeAllPermutation:
@@ -116,11 +182,18 @@ func NewBranchAndBoundAlgo(LCStandard BranchAndBoundLCStandard, algoType BranchA
 	return impl
 }
 
-func (m *BranchAndBoundTemplate) initNodes(params *MinCostParams) []*BranchAndBoundNode {
+func (m *BranchAndBoundTemplate) lockRecording(f func()) {
+	m.RecordMu.Lock()
+	defer m.RecordMu.Unlock()
+	f()
+}
+
+
+func (m *BranchAndBoundTemplate) initNodes(params *BranchAndBoundMinCostParams) []*BranchAndBoundNode {
 	panic("Template method should not be called.")
 }
 
-func (m *BranchAndBoundTemplate) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *MinCostParams) [][]types.Job {
+func (m *BranchAndBoundTemplate) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *BranchAndBoundMinCostParams) [][]types.Job {
 	panic("Template method should not be called.")
 }
 
@@ -128,7 +201,7 @@ func (m *BranchAndBoundTemplate) predict(
 	jobNamesInCurrNode map[types.JobName]bool,
 	newJob types.Job,
 	newJobs []types.Job,
-	params *MinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job) {
+	params *BranchAndBoundMinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job) {
 	panic("Template method should not be called.")
 }
 
@@ -137,121 +210,102 @@ func (m *BranchAndBoundTemplate) String() string {
 }
 
 func (m *BranchAndBoundTemplate) RecordExtra() interface{} {
-	recordsCount := 0
-	sumAllJobsCount := 0
-	sumAllTotalCutCount := 0
-	sumAllCHatCutCount := 0
-	sumAllDuration := time.Duration(0)
-	sumAllExpandNodesCount := 0
-	sumAllAfterExpandCutCount := 0
-	sumAllPredictionIsOptimusCutCount := 0
-	sumAllPredictionReduceMinCostCount := 0
-	sumAllExpandNothingCutCount := 0
-	maxJobsCount := 0
-	type specificJobsCountSummaryRecord struct {
-		CallCount                           int     `json:"call_count"`
-		JobsCount                           int     `json:"jobs_count"`
-		AverageExpandNodesCount             float64 `json:"average_expand_nodes_count"`
-		AverageDurationNano                 int     `json:"average_duration_nano"`
-		AverageTotalCutCount                float64 `json:"average_total_cut_count"`
-		AverageExpandNothingCutCount        float64 `json:"average_expand_nothing_cut_count"`
-		AverageCHatCutCount                 float64 `json:"average_c_hat_cut_count"`
-		AverageAfterExpandCutCount          float64 `json:"average_after_expand_cut_count"`
-		AveragePredictionIsOptimusCutCount  float64 `json:"average_prediction_is_optimus_cut_count"`
-		AveragePredictionReduceMinCostCount float64 `json:"average_prediction_reduce_min_cost_count"`
+	if m.Record.CallCount == 0 {
+		m.Record.JobsCount2SummaryRecord = []interface{}{}
+		return m.Record
 	}
-	JobsCount2SummaryRecord := make([]interface{}, 0)
-	for jobsCount, records := range m.Record.CallRecords {
-		currJobsCountRecordsCount := len(records)
-		sumAllJobsCount += currJobsCountRecordsCount * jobsCount
-		recordsCount += currJobsCountRecordsCount
+	recordsCount := m.Record.CallCount
+	maxJobsCount := 0
+	for jobsCount := range m.Record.JobsCount2SummaryRecordMap {
 		if jobsCount > maxJobsCount {
 			maxJobsCount = jobsCount
 		}
-		sumDuration := time.Duration(0)
-		sumExpandNodesCount := 0
-		sumTotalCutCount := 0
-		sumExpandNothingCutCount := 0
-		sumCHatCutCount := 0
-		sumAfterExpandCutCount := 0
-		sumPredictionIsOptimusCutCount := 0
-		sumPredictionReduceMinCostCount := 0
-		for _, record := range records {
-			// 执行开销统计。
-			sumAllDuration += record.Duration
-			sumDuration += record.Duration
-
-			// 扩展节点的数量。
-			sumAllExpandNodesCount += record.ExpandNodesCount
-			sumExpandNodesCount += record.ExpandNodesCount
-
-			// 剪枝信息记录
-			sumAllTotalCutCount += record.TotalCutCount
-			sumTotalCutCount += record.TotalCutCount
-
-			sumAllExpandNothingCutCount += record.ExpandNothingCutCount
-			sumExpandNothingCutCount += record.ExpandNothingCutCount
-
-			sumAllCHatCutCount += record.CHatCutCount
-			sumCHatCutCount += record.CHatCutCount
-
-			sumAllAfterExpandCutCount += record.AfterExpandCutCount
-			sumAfterExpandCutCount += record.AfterExpandCutCount
-
-			sumAllPredictionIsOptimusCutCount += record.PredictionIsOptimusCutCount
-			sumPredictionIsOptimusCutCount += record.PredictionIsOptimusCutCount
-
-			// 统计prediction有效减小minCost的次数。
-			sumAllPredictionReduceMinCostCount += record.PredictionReduceMinCostCount
-			sumPredictionReduceMinCostCount += record.PredictionReduceMinCostCount
-		}
-		JobsCount2SummaryRecord = append(JobsCount2SummaryRecord, &specificJobsCountSummaryRecord{
+	}
+	JobsCount2SummaryRecord := make([]interface{}, maxJobsCount)
+	for jobsCount, sr := range m.Record.JobsCount2SummaryRecordMap {
+		c := sr.CallCount
+		r := &SpecificJobsCountSummaryRecord{
 			JobsCount:                           jobsCount,
-			CallCount:                           currJobsCountRecordsCount,
-			AverageExpandNodesCount:             float64(sumExpandNodesCount) / float64(currJobsCountRecordsCount),
-			AverageDurationNano:                 int((sumDuration / time.Duration(currJobsCountRecordsCount)).Nanoseconds()),
-			AverageTotalCutCount:                float64(sumTotalCutCount) / float64(currJobsCountRecordsCount),
-			AverageExpandNothingCutCount:        float64(sumExpandNothingCutCount) / float64(currJobsCountRecordsCount),
-			AverageCHatCutCount:                 float64(sumCHatCutCount) / float64(currJobsCountRecordsCount),
-			AverageAfterExpandCutCount:          float64(sumAfterExpandCutCount) / float64(currJobsCountRecordsCount),
-			AveragePredictionIsOptimusCutCount:  float64(sumPredictionIsOptimusCutCount) / float64(currJobsCountRecordsCount),
-			AveragePredictionReduceMinCostCount: float64(sumPredictionReduceMinCostCount) / float64(currJobsCountRecordsCount),
-		})
+			CallCount:                           c,
+			ExceedLatencyCount: sr.ExceedLatencyCount,
+			UseFallBackCount: sr.UseFallBackCount,
+			AverageExpandNodesCount:             float64(sr.SumExpandNodesCount) / float64(c),
+			AverageDurationNano:                 sr.SumDurationNano / int64(c),
+			AverageTotalCutCount:                float64(sr.SumTotalCutCount) / float64(c),
+			AverageExpandNothingCutCount:        float64(sr.SumExpandNothingCutCount) / float64(c),
+			AverageCHatCutCount:                 float64(sr.SumCHatCutCount) / float64(c),
+			AverageAfterExpandCutCount:          float64(sr.SumAfterExpandCutCount) / float64(c),
+			AveragePredictionIsOptimusCutCount:  float64(sr.SumPredictionIsOptimusCutCount) / float64(c),
+			AveragePredictionReduceMinCostCount: float64(sr.SumPredictionReduceMinCostCount) / float64(c),
+		}
+		JobsCount2SummaryRecord[jobsCount-1] = r
 	}
-	if recordsCount == 0 {
-		return m.Record
+	for i, sr := range JobsCount2SummaryRecord {
+		if sr == nil {
+			JobsCount2SummaryRecord[i] = &SpecificJobsCountSummaryRecord{}
+		}
 	}
-	m.Record.MaxJobsCount = maxJobsCount
-	m.Record.AverageExpandNodesCount = float64(sumAllExpandNodesCount) / float64(recordsCount)
-	m.Record.AverageJobsCount = float64(sumAllJobsCount) / float64(recordsCount)
-	m.Record.AverageDurationNano = int((sumAllDuration / time.Duration(recordsCount)).Nanoseconds())
-	m.Record.AverageTotalCutCount = float64(sumAllTotalCutCount) / float64(recordsCount)
-	m.Record.AverageExpandNothingCutCount = float64(sumAllExpandNothingCutCount) / float64(recordsCount)
-	m.Record.AverageCHatCutCount = float64(sumAllCHatCutCount) / float64(recordsCount)
-	m.Record.AverageAfterExpandCutCount = float64(sumAllAfterExpandCutCount) / float64(recordsCount)
-	m.Record.AveragePredictionIsOptimusCutCount = float64(sumAllPredictionIsOptimusCutCount) / float64(recordsCount)
-	m.Record.AveragePredictionReduceMinCostCount = float64(sumAllPredictionReduceMinCostCount) / float64(recordsCount)
-	sorter := &util.Sorter{
-		LenFunc: func() int {
-			return len(JobsCount2SummaryRecord)
-		},
-		LessFunc: func(i, j int) bool {
-			left := JobsCount2SummaryRecord[i].(*specificJobsCountSummaryRecord)
-			right := JobsCount2SummaryRecord[j].(*specificJobsCountSummaryRecord)
-			return left.JobsCount < right.JobsCount
-		},
-		SwapFunc: func(i, j int) {
-			t := JobsCount2SummaryRecord[i]
-			JobsCount2SummaryRecord[i] = JobsCount2SummaryRecord[j]
-			JobsCount2SummaryRecord[j] = t
-		},
-	}
-	sort.Sort(sorter)
 	m.Record.JobsCount2SummaryRecord = JobsCount2SummaryRecord
+	m.Record.JobsCount2SummaryRecordMap = nil
+	m.Record.MaxJobsCount = maxJobsCount
+	m.Record.AverageExpandNodesCount = float64(m.Record.SumExpandNodesCount) / float64(recordsCount)
+	m.Record.AverageJobsCount = float64(m.Record.SumJobsCount) / float64(recordsCount)
+	m.Record.AverageDurationNano = m.Record.SumDurationNano / int64(recordsCount)
+	m.Record.AverageTotalCutCount = float64(m.Record.SumTotalCutCount) / float64(recordsCount)
+	m.Record.AverageExpandNothingCutCount = float64(m.Record.SumExpandNothingCutCount) / float64(recordsCount)
+	m.Record.AverageCHatCutCount = float64(m.Record.SumCHatCutCount) / float64(recordsCount)
+	m.Record.AverageAfterExpandCutCount = float64(m.Record.SumAfterExpandCutCount) / float64(recordsCount)
+	m.Record.AveragePredictionIsOptimusCutCount = float64(m.Record.SumPredictionIsOptimusCutCount) / float64(recordsCount)
+	m.Record.AveragePredictionReduceMinCostCount = float64(m.Record.SumPredictionReduceMinCostCount) / float64(recordsCount)
 	return m.Record
 }
 
 func (m *BranchAndBoundTemplate) MinCost(params *MinCostParams) (float64, []types.Job) {
+	if m.AlgoLatency == 0 {
+		return m.minCost(&BranchAndBoundMinCostParams{
+			MinCostParams: params,
+		})
+	}
+	var babCost float64
+	var babJobs []types.Job
+	wg := &sync.WaitGroup{}
+	copied1 := jobs_util.GetJobsSliceUtil().Copy(params.Jobs)
+	copied2 := jobs_util.GetJobsSliceUtil().Copy(params.Jobs)
+	params1 := &MinCostParams{
+		CostSolver: params.CostSolver,
+		GPU:        params.GPU,
+		Jobs:       copied1,
+	}
+	params2 := &MinCostParams{
+		CostSolver: params.CostSolver,
+		GPU:        params.GPU,
+		Jobs:       copied2,
+	}
+	util.GoWithWG(wg, 0, func(_ int) {
+		babCost, babJobs = m.minCost(&BranchAndBoundMinCostParams{
+			MinCostParams: params1,
+			start: time.Now(),
+			latency: m.AlgoLatency,
+		})
+	})
+	var fallbackCost float64
+	var fallbackJobs []types.Job
+	util.GoWithWG(wg, 0, func(_ int) {
+		fallbackCost, fallbackJobs = m.Fallback.MinCost(params2)
+	})
+	wg.Wait()
+	if babCost <= fallbackCost {
+		return babCost, babJobs
+	} else {
+		m.lockRecording(func() {
+			m.Record.UseFallBackCount++
+			m.Record.JobsCount2SummaryRecordMap[len(params.Jobs)].UseFallBackCount++
+		})
+		return fallbackCost, fallbackJobs
+	}
+}
+
+func (m *BranchAndBoundTemplate) minCost(params *BranchAndBoundMinCostParams) (float64, []types.Job) {
 	record := &BranchAndBoundCallRecord{
 		JobsCount: len(params.Jobs),
 	}
@@ -261,10 +315,37 @@ func (m *BranchAndBoundTemplate) MinCost(params *MinCostParams) (float64, []type
 		record.Duration = duration
 		m.RecordMu.Lock()
 		defer m.RecordMu.Unlock()
-		if _, ok := m.Record.CallRecords[record.JobsCount]; !ok {
-			m.Record.CallRecords[record.JobsCount] = make([]*BranchAndBoundCallRecord, 0, 1024)
+		if m.Record.JobsCount2SummaryRecordMap[record.JobsCount] == nil {
+			m.Record.JobsCount2SummaryRecordMap[record.JobsCount] = &SpecificJobsCountSummaryRecord{JobsCount: record.JobsCount}
 		}
-		m.Record.CallRecords[record.JobsCount] = append(m.Record.CallRecords[record.JobsCount], record)
+		if record.ExceedLatency {
+			m.Record.ExceedLatencyCount++
+			m.Record.JobsCount2SummaryRecordMap[record.JobsCount].ExceedLatencyCount++
+		}
+
+		m.Record.SumDurationNano += duration.Nanoseconds()
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumDurationNano += duration.Nanoseconds()
+
+		m.Record.SumTotalCutCount += record.TotalCutCount
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumTotalCutCount += record.TotalCutCount
+
+		m.Record.SumAfterExpandCutCount += record.AfterExpandCutCount
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumAfterExpandCutCount += record.AfterExpandCutCount
+
+		m.Record.SumCHatCutCount += record.CHatCutCount
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumCHatCutCount += record.CHatCutCount
+
+		m.Record.SumExpandNodesCount += record.ExpandNodesCount
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumExpandNodesCount += record.ExpandNodesCount
+
+		m.Record.SumPredictionIsOptimusCutCount += record.PredictionIsOptimusCutCount
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumPredictionIsOptimusCutCount += record.PredictionIsOptimusCutCount
+
+		m.Record.SumPredictionReduceMinCostCount += record.PredictionReduceMinCostCount
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumPredictionReduceMinCostCount += record.PredictionReduceMinCostCount
+
+		m.Record.CallCount += 1
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].CallCount += 1
 	}()
 	costSolver := params.CostSolver
 	gpu := params.GPU
@@ -325,6 +406,12 @@ func (m *BranchAndBoundTemplate) MinCost(params *MinCostParams) (float64, []type
 	heap.Init(minHeap)
 	// 当还存在活节点时，从heap中找出最小成本的节点，进行扩展。
 	for minHeap.Len() > 0 {
+		if params.latency > 0 {
+			if time.Since(params.start) > params.latency {
+				record.ExceedLatency = true
+				return minCost, optimus
+			}
+		}
 		expandingNode := heap.Pop(minHeap).(*BranchAndBoundNode)
 		// 首先查看当前节点是否是一个答案节点。
 		if len(expandingNode.jobs) == len(params.Jobs) {
@@ -441,7 +528,7 @@ func (m *BranchAndBoundAllPermutation) String() string {
 	return fmt.Sprintf("BranchAndBoundAllPermutation[LCStandard=%s]", m.LCStandard)
 }
 
-func (m *BranchAndBoundAllPermutation) initNodes(params *MinCostParams) []*BranchAndBoundNode {
+func (m *BranchAndBoundAllPermutation) initNodes(params *BranchAndBoundMinCostParams) []*BranchAndBoundNode {
 	return []*BranchAndBoundNode{
 		{
 			[]types.Job{}, math.Inf(1), math.Inf(1), math.Inf(1),
@@ -449,7 +536,7 @@ func (m *BranchAndBoundAllPermutation) initNodes(params *MinCostParams) []*Branc
 	}
 }
 
-func (m *BranchAndBoundAllPermutation) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *MinCostParams) [][]types.Job {
+func (m *BranchAndBoundAllPermutation) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *BranchAndBoundMinCostParams) [][]types.Job {
 	newJobs := make([]types.Job, len(currNode.jobs), len(currNode.jobs)+1)
 	copy(newJobs, currNode.jobs)
 	newJobs = append(newJobs, newJob)
@@ -459,7 +546,7 @@ func (m *BranchAndBoundAllPermutation) expandNode(currNode *BranchAndBoundNode, 
 func (m *BranchAndBoundAllPermutation) predict(
 	newJobs []types.Job,
 	otherJobs []types.Job,
-	params *MinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job) {
+	params *BranchAndBoundMinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job) {
 
 	// 将他们按照SRTF排序。
 	jobs_util.GetJobsSliceUtil().ReorderToSRTF(params.GPU.Type(), otherJobs)
@@ -502,7 +589,7 @@ func (b *BranchAndBoundFixNonDDL) String() string {
 	return fmt.Sprintf("BranchAndBoundFixNonDDL[LCStandard=%s]", b.LCStandard)
 }
 
-func (b *BranchAndBoundFixNonDDL) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *MinCostParams) [][]types.Job {
+func (b *BranchAndBoundFixNonDDL) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *BranchAndBoundMinCostParams) [][]types.Job {
 	jobsUtil := jobs_util.GetJobsSliceUtil()
 	if !jobsUtil.JobHasDDL(newJob) {
 		for _, job := range currNode.jobs {
@@ -525,7 +612,7 @@ func (b *BranchAndBoundDDLInsertion) String() string {
 	return fmt.Sprintf("BranchAndBoundDDLInsertion[LCStandard=%s]", b.LCStandard)
 }
 
-func (b *BranchAndBoundDDLInsertion) initNodes(params *MinCostParams) []*BranchAndBoundNode {
+func (b *BranchAndBoundDDLInsertion) initNodes(params *BranchAndBoundMinCostParams) []*BranchAndBoundNode {
 	noDDLJobs := make([]types.Job, 0, len(params.Jobs))
 	withDDLJobs := make([]types.Job, 0, len(params.Jobs))
 	for _, job := range params.Jobs {
@@ -549,7 +636,7 @@ func (b *BranchAndBoundDDLInsertion) initNodes(params *MinCostParams) []*BranchA
 }
 
 // expandNode 使用插空位的方式，生成扩展节点。
-func (b *BranchAndBoundDDLInsertion) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *MinCostParams) [][]types.Job {
+func (b *BranchAndBoundDDLInsertion) expandNode(currNode *BranchAndBoundNode, newJob types.Job, params *BranchAndBoundMinCostParams) [][]types.Job {
 	newJobsSequence := make([][]types.Job, 0, len(currNode.jobs)+1)
 	for i := 0; i < len(currNode.jobs)+1; i++ {
 		newJobs := make([]types.Job, len(currNode.jobs)+1, len(currNode.jobs)+1)
@@ -564,7 +651,7 @@ func (b *BranchAndBoundDDLInsertion) expandNode(currNode *BranchAndBoundNode, ne
 func (b *BranchAndBoundDDLInsertion) predict(
 	newJobs []types.Job,
 	otherJobs []types.Job,
-	params *MinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job) {
+	params *BranchAndBoundMinCostParams) (cHat float64, predictValidCost float64, predictValidOptimus []types.Job) {
 	jobs_util.GetJobsSliceUtil().ReorderToSRTF(params.GPU.Type(), otherJobs)
 	// 构建新预测的完整jobs队列。
 	// 设计一个简单的贪心预测方法：在DDL Insertion方案中，otherJobs都是具有DDL的任务。

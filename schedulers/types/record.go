@@ -1,6 +1,8 @@
 package types
 
-import "time"
+import (
+	"time"
+)
 
 type SchedulerRecord struct {
 	DoScheduleRecords []*DoScheduleCallRecord
@@ -13,8 +15,11 @@ type DoScheduleCallRecord struct {
 }
 
 type Record struct {
-	Scheduler       Scheduler
-	Cluster         Cluster
+	SchedulerName string
+	SchedulerInfo interface{}
+	GPUs map[GPUType][]GPU
+	// Scheduler       Scheduler
+	// Cluster         Cluster
 	FinishedJobs    []Job
 	SchedulerRecord *SchedulerRecord
 	CaseRange       []int

@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"math"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -92,7 +92,7 @@ func transformClusterConfigs(o []map[string]int) []*ClusterConfig {
 	return r
 }
 
-func SaveSimulationReport(folder string, schedulerType2Records map[string][]*types.Record, config *SimulationMetaConfig) {
+func SaveSimulationReport(folder string, schedulerType2Reports map[string][]*Report, config *SimulationMetaConfig) {
 	caseName := strings.Split(config.CaseFileName, ".")[0]
 	reports := &Reports{
 		CaseName:       caseName,
@@ -100,16 +100,11 @@ func SaveSimulationReport(folder string, schedulerType2Records map[string][]*typ
 		ClusterConfigs: transformClusterConfigs(config.ClusterConfigs),
 		Reports:        make(map[string][]*Report),
 	}
-	for schedulerType, records := range schedulerType2Records {
-		reportsSlice := make([]*Report, 0, len(records))
-		for _, record := range records {
-			report := generateSimulationReport(record)
-			reportsSlice = append(reportsSlice, report)
-		}
-		reports.Reports[schedulerType] = reportsSlice
+	for schedulerType, rs := range schedulerType2Reports {
+		reports.Reports[schedulerType] = rs
 	}
 	fileName := generateFileName(reports)
-	filePath := path.Join(folder, fileName)
+	filePath := filepath.Join(folder, fileName)
 	bs, err := json.MarshalIndent(reports, "", "\t")
 	if err != nil {
 		panic(fmt.Sprintf("Save Report json Marshal failed, err = %s", err.Error()))
@@ -139,13 +134,13 @@ func generateFileName(reports *Reports) string {
 		datetime)
 }
 
-func generateSimulationReport(record *types.Record) *Report {
+func GenerateSingleSimulationReport(record *types.Record) *Report {
 	report := &Report{
-		SchedulerName: record.Scheduler.Name(),
-		SchedulerInfo: record.Scheduler.Info(),
+		SchedulerName: record.SchedulerName,
+		SchedulerInfo: record.SchedulerInfo,
 	}
 	clusterConfig := &ClusterConfig{GPUs: make(map[string]int)}
-	for gpuType, gpus := range record.Cluster.GPUs() {
+	for gpuType, gpus := range record.GPUs {
 		clusterConfig.GPUs[string(gpuType)] = len(gpus)
 		clusterConfig.GPUCount += len(gpus)
 	}
@@ -165,7 +160,7 @@ func generateSimulationReport(record *types.Record) *Report {
 		AverageDDLViolationDurationSeconds: avgViolatedDuration,
 		TotalDDLViolationDurationSeconds:   avgViolatedDuration * float64(len(violatedJobs)),
 		// DDLViolatedJobs:               packJobs(violatedJobs),
-		DDLViolatedJobsCount: len(violatedJobs),
+		DDLViolatedJobsCount:             len(violatedJobs),
 		// FinishedJobs:                  packJobs(record.FinishedJobs),
 		FinishedJobsCount:             len(record.FinishedJobs),
 		DoScheduleCount:               len(schedulerRecord.DoScheduleRecords),

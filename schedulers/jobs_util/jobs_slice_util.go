@@ -87,3 +87,33 @@ func (u JobsSliceUtil) Copy(jobs []types.Job) []types.Job {
 	copy(c, jobs)
 	return c
 }
+
+func (u JobsSliceUtil) Slice2Map(jobs []types.Job) map[types.JobName]types.Job {
+	m := make(map[types.JobName]types.Job)
+	for _, job := range jobs {
+		m[job.JobName()] = job
+	}
+	return m
+}
+
+// IndicesOf 返回target在source中的序号位置。不存在返回-1
+func (u JobsSliceUtil) IndicesOf(target, source []types.Job) []int {
+	sourceJob2Index := make(map[types.JobName]int)
+	for i, job := range source {
+		sourceJob2Index[job.JobName()] = i
+	}
+	result := make([]int, len(target))
+	for i, jobInTarget := range target {
+		idx, ok := sourceJob2Index[jobInTarget.JobName()]
+		if !ok {
+			result[i] = -1
+		} else {
+			result[i] = idx
+		}
+	}
+	return result
+}
+
+func (u JobsSliceUtil) IndexOf(target types.Job, source []types.Job) int {
+	return u.IndicesOf([]types.Job{target}, source)[0]
+}

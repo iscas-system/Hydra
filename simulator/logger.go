@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -98,7 +98,7 @@ func (l *logger) startLogRoutine() {
 	l.wg.Add(1)
 	go func() {
 		logFileName := time.Now().Format("2006-01-02_15:04:05.log")
-		logPath := path.Join(l.logDirPath, logFileName)
+		logPath := filepath.Join(l.logDirPath, logFileName)
 		fp, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 		if err != nil {
 			panic(err)

@@ -59,8 +59,9 @@ func (s *Simulator) Run() *types.Record {
 	})
 	s.passDuration(0, true)
 	return &types.Record{
-		Scheduler:       s.scheduler,
-		Cluster:         s.cluster,
+		SchedulerName: s.scheduler.Name(),
+		SchedulerInfo: s.scheduler.Info(),
+		GPUs: s.cluster.GPUs(),
 		FinishedJobs:    s.recordedFinishedJobs,
 		SchedulerRecord: s.scheduler.Record(),
 	}

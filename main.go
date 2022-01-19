@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"path"
+	"path/filepath"
 	"time"
 )
 
@@ -23,19 +23,19 @@ func main() {
 	// clusterConfigs 代表集群的配置变化空间，分别传入初始的状态，以及末尾状态，以及增加步长，可以按顺序获取一批gpu配置
 	clusterConfigs := generateGPUConfig(
 		map[string]int{
-			"V100": 25,
+			"V100": 10,
 			"P100": 10,
 			"T4":   10,
 		}, map[string]int{
-			"V100": 25,
-			"P100": 10,
-			"T4":   10,
+			"V100": 30,
+			"P100": 30,
+			"T4":   30,
 		}, 1)
 
-	caseFileName := "case_5000_all_30_ddl.csv"
+	caseFileName := "case_5000_all_20_ddl.csv"
 	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 	caseRanges := make([][]int, 0)
-	for i := 300; i <= 400; i += 10 {
+	for i := 300; i <= 300; i += 10 {
 		caseRanges = append(caseRanges, []int{0, i})
 	}
 
@@ -43,27 +43,29 @@ func main() {
 	schedulerTypes := []SchedulerType{
 		SJF,
 		EDF,
-		KMeans,
+		//KMeans,
+		//KMeansHeuristic,
+		//KMeansBABWithHeuristic,
 		//Allox,
 	}
 
 	// records := doSimulationForOneClusterConfig(config, caseFileName, clusterConfig, caseRanges, schedulerTypes)
-	records := doSimulationForMultiClusterConfig(config, caseFileName, clusterConfigs, caseRanges, schedulerTypes)
+	reports := doSimulationForMultiClusterConfig(config, caseFileName, clusterConfigs, caseRanges, schedulerTypes)
 
-	metrics.SaveSimulationReport(config.ReportsPath, records, &metrics.SimulationMetaConfig{
+	metrics.SaveSimulationReport(config.ReportsPath, reports, &metrics.SimulationMetaConfig{
 		CaseFileName:   caseFileName,
 		CaseRanges:     caseRanges,
 		ClusterConfigs: clusterConfigs,
 	})
 }
 
-func doSimulationForMultiClusterConfig(config *Config, caseFileName string, clusterConfig []map[string]int, caseRanges [][]int, schedulerTypes []SchedulerType) map[string][]*types.Record {
-	result := make(map[string][]*types.Record)
+func doSimulationForMultiClusterConfig(config *Config, caseFileName string, clusterConfig []map[string]int, caseRanges [][]int, schedulerTypes []SchedulerType) map[string][]*metrics.Report {
+	result := make(map[string][]*metrics.Report)
 	for _, cc := range clusterConfig {
 		m := doSimulationForOneClusterConfig(config, caseFileName, cc, caseRanges, schedulerTypes)
 		for k, v := range m {
 			if _, ok := result[k]; !ok {
-				result[k] = make([]*types.Record, 0)
+				result[k] = make([]*metrics.Report, 0)
 			}
 			result[k] = append(result[k], v...)
 		}
@@ -71,9 +73,9 @@ func doSimulationForMultiClusterConfig(config *Config, caseFileName string, clus
 	return result
 }
 
-func doSimulationForOneClusterConfig(config *Config, caseFileName string, clusterConfig map[string]int, caseRanges [][]int, schedulerTypes []SchedulerType) map[string][]*types.Record {
-	casePath := path.Join(config.CasesPath, caseFileName)
-	schedulerType2records := make(map[string][]*types.Record)
+func doSimulationForOneClusterConfig(config *Config, caseFileName string, clusterConfig map[string]int, caseRanges [][]int, schedulerTypes []SchedulerType) map[string][]*metrics.Report {
+	casePath := filepath.Join(config.CasesPath, caseFileName)
+	schedulerType2reports := make(map[string][]*metrics.Report)
 	fmt.Printf("Starting simulation...\n")
 	fmt.Printf("Case Path: %s, Cluster Config: %+v\n", casePath, util.Pretty(clusterConfig))
 	fmt.Printf("Case Ranges: %+v, SchedulerTypes: %+v\n", casePath, util.Pretty(clusterConfig))
@@ -83,7 +85,7 @@ func doSimulationForOneClusterConfig(config *Config, caseFileName string, cluste
 	for _, schedulerType := range schedulerTypes {
 		schedulerStart := time.Now()
 		fmt.Printf("Starting Simulation For Scheduler %s, StartTime: %s\n", schedulerType, schedulerStart.Format(timeLayout))
-		recordsSlice := make([]*types.Record, 0, len(caseRanges))
+		reports := make([]*metrics.Report, 0, len(caseRanges))
 		for _, caseRange := range caseRanges {
 			start := time.Now()
 			fmt.Printf("Simulation For Scheduler %s, CaseRange: %d, StartTime: %s\n",
@@ -100,16 +102,16 @@ func doSimulationForOneClusterConfig(config *Config, caseFileName string, cluste
 			fmt.Printf("Simulation For Scheduler %s, CaseRange: %d Finished, EndTime: %s, RunTime: %.2f\n",
 				schedulerType, caseRange, end.Format(timeLayout), duration.Seconds())
 			record.CaseRange = caseRange
-			recordsSlice = append(recordsSlice, record)
+			reports = append(reports, metrics.GenerateSingleSimulationReport(record))
 		}
-		schedulerType2records[string(schedulerType)] = recordsSlice
+		schedulerType2reports[string(schedulerType)] = reports
 		schedulerEnd := time.Now()
 		fmt.Printf("Ending Simulation For Scheduler %s, EndTime: %s, RunTime: %.2f\n",
 			schedulerType, schedulerEnd.Format(timeLayout), schedulerEnd.Sub(schedulerStart).Seconds())
 	}
 	endSimulation := time.Now()
 	fmt.Printf("End Simulation Time: %s, RunTime: %.2f\n", endSimulation.Format(timeLayout), endSimulation.Sub(startSimulation).Seconds())
-	return schedulerType2records
+	return schedulerType2reports
 }
 
 func getScheduler(schedulerType SchedulerType) types.Scheduler {
@@ -123,6 +125,10 @@ func getScheduler(schedulerType SchedulerType) types.Scheduler {
 		scheduler = initEDFScheduler()
 	case KMeans:
 		scheduler = initKMeansScheduler()
+	case KMeansHeuristic:
+		scheduler = initKMeansHeuristicScheduler()
+	case KMeansBABWithHeuristic:
+		scheduler = initKMeansBABHeuristicScheduler()
 	case Allox:
 		scheduler = initAlloxScheduler()
 	default:
@@ -138,6 +144,8 @@ const (
 	SJF    SchedulerType = "SJF"
 	EDF    SchedulerType = "EDF"
 	KMeans SchedulerType = "KMeans"
+	KMeansHeuristic SchedulerType = "KMeansHeuristic"
+	KMeansBABWithHeuristic SchedulerType = "KMeansBABWithHeuristic"
 	Allox  SchedulerType = "Allox"
 )
 
@@ -159,12 +167,27 @@ func initAlloxScheduler() types.Scheduler {
 
 func initKMeansScheduler() types.Scheduler {
 	return kmeans_scheduler.New(
-		//kmeans_scheduler.WithScheme(kmeans_scheduler.NewBasicScheduleScheme(true, false, -1, false)),
 		kmeans_scheduler.WithScheme(kmeans_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
 		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
-			//cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeDDLInsertion),
-			//cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeAllPermutation),
 			cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeFixNonDDL),
+			cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
+	)
+}
+
+func initKMeansHeuristicScheduler() types.Scheduler {
+	return kmeans_scheduler.New(
+		kmeans_scheduler.WithScheme(kmeans_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
+		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
+			cost.NewSwapHeuristic(),
+			cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
+	)
+}
+
+func initKMeansBABHeuristicScheduler() types.Scheduler {
+	return kmeans_scheduler.New(
+		kmeans_scheduler.WithScheme(kmeans_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
+		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
+			cost.NewBranchAndBoundAlgoWithLatency(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeFixNonDDL, 5*time.Second, cost.NewSwapHeuristic()),
 			cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 }

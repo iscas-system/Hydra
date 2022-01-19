@@ -61,9 +61,14 @@ func (c *solverCommon) CalJCTAndDDLViolations(jctOffset types.Time, gpu types.GP
 	return JCTs, ddlViolations, ddlViolatedJobs
 }
 
+func (c *solverCommon) JCTOffset(gpu types.GPU) types.Time {
+	return c.jctOffsetGetter(gpu)
+}
+
 // Solver 定义成本计算方式。
 type Solver interface {
 	Cost(gpu types.GPU, jobs []types.Job) *Resp
+	JCTOffset(gpu types.GPU) types.Time
 }
 
 type SolverMaker func(jctOffsetGetter jctOffsetGetter) Solver

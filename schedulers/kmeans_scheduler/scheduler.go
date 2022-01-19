@@ -531,10 +531,6 @@ type MinCostDistanceCallRecord struct {
 // 如果，有任务违反了ddl，则进行分支限界法搜索。
 // 使用MinCost顺序选择开节点，每个节点的估计成本为：将所有未放置到搜索路径的任务按照SJF排序后，该队列的代价值。
 func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU types.GPU, kMeansPointJobs []types.Job, jobNotInKMeansCluster types.Job) *distanceResp {
-	record := &MinCostDistanceCallRecord{
-		CenterGPUName:  kMeansCenterGPU.String(),
-		PointJobsCount: len(kMeansPointJobs),
-	}
 	locked := func(f func()) {
 		m.RecordMu.Lock()
 		defer m.RecordMu.Unlock()
@@ -562,7 +558,6 @@ func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU
 	})
 	costResp := costSolver.Cost(kMeansCenterGPU, jobs)
 	if !costResp.DDLViolated {
-		record.UseMinCostAlgo = false
 		return &distanceResp{
 			jobsSeq:  jobs,
 			distance: costResp.Cost,
@@ -575,8 +570,6 @@ func (m *MinCostDistanceAlgo) Distance(gpuCluster types.Cluster, kMeansCenterGPU
 		Jobs:       jobs,
 	})
 	duration := time.Since(start)
-	record.UseMinCostAlgo = true
-	record.MinCostAlgoDuration = duration
 	locked(func() {
 		m.Record.UseMinCostAlgoCount++
 		m.Record.SumMinCostAlgoDuration += duration
@@ -603,7 +596,9 @@ func NewMinCostDistanceAlgo(minCostAlgo cost.MinCostAlgo, costSolverMaker cost.S
 
 func (m *MinCostDistanceAlgo) RecordExtra() interface{} {
 	m.Record.UseSJFGreedyCount = m.Record.CallCount - m.Record.UseMinCostAlgoCount
-	m.Record.AverageMinCostAlgoDurationsMs = int(m.Record.SumMinCostAlgoDuration.Milliseconds() / int64(m.Record.UseMinCostAlgoCount))
+	if m.Record.UseMinCostAlgoCount > 0 {
+		m.Record.AverageMinCostAlgoDurationsMs = int(m.Record.SumMinCostAlgoDuration.Milliseconds() / int64(m.Record.UseMinCostAlgoCount))
+	}
 	m.Record.MinCostAlgoRecordExtra = m.minCostAlgo.RecordExtra()
 	return m.Record
 }
