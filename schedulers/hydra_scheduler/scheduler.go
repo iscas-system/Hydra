@@ -1,8 +1,8 @@
 package hydra_scheduler
 
 import (
+	"DES-go/schedulers/hydra_scheduler/cost"
 	"DES-go/schedulers/jobs_util"
-	"DES-go/schedulers/kmeans_scheduler/cost"
 	"DES-go/schedulers/types"
 	"DES-go/util"
 	"fmt"
