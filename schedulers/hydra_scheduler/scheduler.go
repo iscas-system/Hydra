@@ -1,4 +1,4 @@
-package kmeans_scheduler
+package hydra_scheduler
 
 import (
 	"DES-go/schedulers/jobs_util"
@@ -321,6 +321,7 @@ func (s *BasicScheduleScheme) KMeansRoundInParallel(scheduler *Scheduler, kMeans
 				util.GoWithWG(innerWg, 0, func(_ int) {
 					distanceResp := s.distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
 					if len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1) {
+						//fmt.Printf("distanceResp.jobSeq %+v, jobsInCluster %+v\n", util.Pretty(distanceResp.jobsSeq), jobsInCluster)
 						panic("len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1)")
 					}
 					mu.Lock()

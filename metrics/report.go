@@ -121,7 +121,7 @@ func generateFileName(reports *Reports) string {
 	datetime := time.Now().Format("01-02_15:04:05")
 	schedulerNames := make([]string, 0, len(reports.Reports))
 	for schedulerName := range reports.Reports {
-		schedulerNames = append(schedulerNames, schedulerName)
+		schedulerNames = append(schedulerNames, schedulerName[len(schedulerName) - 3:])
 	}
 	schedulersCombined := util.StringSliceJoinWith(schedulerNames, "_")
 	firstCaseRangeCombined := util.IntSliceJoinWith(reports.CaseRanges[0], "_")

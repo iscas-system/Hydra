@@ -12,11 +12,20 @@ type MinCostAlgoByHeuristic interface {
 }
 
 type SwapHeuristic struct {
-
+	LeftThreshold int
 }
 
 func NewSwapHeuristic() *SwapHeuristic {
 	return &SwapHeuristic{}
+}
+
+func NewSwapHeuristicWithLeftThreshold(leftThreshold int) *SwapHeuristic {
+	return &SwapHeuristic{LeftThreshold: leftThreshold}
+}
+
+type SwapHeuristicMinCostParams struct {
+	*MinCostParams
+	NeedReorderToSRTF bool
 }
 
 func (s SwapHeuristic) String() string {
@@ -33,6 +42,13 @@ type SwapHeuristicShiftingList struct {
 	J int // 移动列表的最右侧任务index。开区间。
 }
 
+func (s *SwapHeuristic) MinCost(params *MinCostParams) (float64, []types.Job) {
+	return s.minCost(&SwapHeuristicMinCostParams{
+		MinCostParams:     params,
+		NeedReorderToSRTF: true,
+	})
+}
+
 // MinCost SwapHeuristic 使用基于交换的启发式算法。
 // 具体方法：先将任务按照SJF排序。从右向左遍历，直到找到有ddl违约的任务。
 // 找到首个ddl违约的任务后，将它加入一个移动列表，表示我们要将这个移动列表内的任务向左移动。
@@ -45,12 +61,14 @@ type SwapHeuristicShiftingList struct {
 //    一旦发现最右侧有任务的ddl已经得到满足，则将它从移动列表去除。
 // 2. 移动到右侧的任务没有产生ddl违约，而且移动列表最右侧的任务依然违约，则继续移动。
 // 3. 移动到右侧的任务没有产生ddl违约，但移动列表最右侧出现了满足ddl约束的任务，则将它们从移动列表去除。
-func (s *SwapHeuristic) MinCost(params *MinCostParams) (float64, []types.Job) {
+func (s *SwapHeuristic) minCost(params *SwapHeuristicMinCostParams) (float64, []types.Job) {
 	jobsUtil := jobs_util.GetJobsSliceUtil()
-	jobsUtil.ReorderToSRTF(params.GPU.Type(), params.Jobs)
-	costResp := params.CostSolver.Cost(params.GPU, params.Jobs)
-	if !costResp.DDLViolated {
-		return costResp.Cost, params.Jobs
+	if params.NeedReorderToSRTF {
+		jobsUtil.ReorderToSRTF(params.GPU.Type(), params.Jobs)
+		costResp := params.CostSolver.Cost(params.GPU, params.Jobs)
+		if !costResp.DDLViolated {
+			return costResp.Cost, params.Jobs
+		}
 	}
 	// 初始化ShiftingList
 	shiftingList := &SwapHeuristicShiftingList{}
@@ -75,18 +93,18 @@ func (s *SwapHeuristic) MinCost(params *MinCostParams) (float64, []types.Job) {
 			continue
 		}
 	}
-	costResp = params.CostSolver.Cost(params.GPU, params.Jobs)
+	costResp := params.CostSolver.Cost(params.GPU, params.Jobs)
 	return costResp.Cost, params.Jobs
 }
 
-func (s *SwapHeuristic) RemoveUnnecessaryJobsInShiftingList(shiftingList *SwapHeuristicShiftingList, params *MinCostParams) {
+func (s *SwapHeuristic) RemoveUnnecessaryJobsInShiftingList(shiftingList *SwapHeuristicShiftingList, params *SwapHeuristicMinCostParams) {
 	checker := s.JobDDLViolatedChecker(params)
 	for shiftingList.J > shiftingList.I && !checker(params.Jobs[shiftingList.J - 1]) {
 		shiftingList.J--
 	}
 }
 
-func (s *SwapHeuristic) InitShiftingList(shiftingList *SwapHeuristicShiftingList, params *MinCostParams) {
+func (s *SwapHeuristic) InitShiftingList(shiftingList *SwapHeuristicShiftingList, params *SwapHeuristicMinCostParams) {
 	checker := s.JobDDLViolatedChecker(params)
 	for i := len(params.Jobs) - 1; i >= 0; i-- {
 		if checker(params.Jobs[i]) {
@@ -99,7 +117,7 @@ func (s *SwapHeuristic) InitShiftingList(shiftingList *SwapHeuristicShiftingList
 	shiftingList.J = 0
 }
 
-func (s *SwapHeuristic) JobDDLViolatedChecker(params *MinCostParams) func(job types.Job) bool {
+func (s *SwapHeuristic) JobDDLViolatedChecker(params *SwapHeuristicMinCostParams) func(job types.Job) bool {
 	costResp := params.CostSolver.Cost(params.GPU, params.Jobs)
 	// 1. 首先检查移动到右侧的任务是否产生ddl违约。
 	violatedJobMap := jobs_util.GetJobsSliceUtil().Slice2Map(costResp.DDLViolatedJobs)
@@ -131,7 +149,7 @@ func (s *SwapHeuristic) ReorderJobsByViolationProb(jobs []types.Job, GPUType typ
 }
 
 func (s *SwapHeuristic) ShiftLeft(sl *SwapHeuristicShiftingList, jobs []types.Job) bool {
-	if sl.I == 0 {
+	if sl.I <= s.LeftThreshold {
 		return false
 	}
 	victim := jobs[sl.I - 1]

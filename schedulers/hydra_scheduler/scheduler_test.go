@@ -1,4 +1,4 @@
-package kmeans_scheduler
+package hydra_scheduler
 
 //
 //import (

@@ -1,0 +1,3649 @@
+{
+	"case_name": "case_5000_all_20_ddl",
+	"case_ranges": [
+		[
+			0,
+			400
+		]
+	],
+	"cluster_configs": [
+		{
+			"GPUs": {
+				"P100": 15,
+				"T4": 15,
+				"V100": 15
+			},
+			"gpu_count": 45
+		}
+	],
+	"reports": {
+		"EDF": [
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 3331.8,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 10,
+					"do_schedule_count": 11,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 0,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					10
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 5708.4,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 20,
+					"do_schedule_count": 21,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 0,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					20
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 19634.9,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 30,
+					"do_schedule_count": 31,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					30
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 28649.725,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 40,
+					"do_schedule_count": 41,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 4,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					40
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16955.04,
+					"average_queue_delay_seconds": 81.3,
+					"average_ddl_violation_duration_seconds": 2594.9999999999964,
+					"total_ddl_violation_duration_seconds": 2594.9999999999964,
+					"ddl_violated_jobs_count": 1,
+					"finished_jobs_count": 50,
+					"do_schedule_count": 51,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					50
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17010.53333333333,
+					"average_queue_delay_seconds": 311.68333333333334,
+					"average_ddl_violation_duration_seconds": 2523.4999999999886,
+					"total_ddl_violation_duration_seconds": 5046.999999999977,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 60,
+					"do_schedule_count": 61,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					60
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24297.65714285714,
+					"average_queue_delay_seconds": 745.6571428571428,
+					"average_ddl_violation_duration_seconds": 16165.999999999956,
+					"total_ddl_violation_duration_seconds": 16165.999999999956,
+					"ddl_violated_jobs_count": 1,
+					"finished_jobs_count": 70,
+					"do_schedule_count": 70,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					70
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 26388.399999999987,
+					"average_queue_delay_seconds": 1147.8375,
+					"average_ddl_violation_duration_seconds": 2764.6666666666556,
+					"total_ddl_violation_duration_seconds": 8293.999999999967,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 80,
+					"do_schedule_count": 80,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					80
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 25858.95555555555,
+					"average_queue_delay_seconds": 1313.8666666666666,
+					"average_ddl_violation_duration_seconds": 2849.500000000002,
+					"total_ddl_violation_duration_seconds": 5699.000000000004,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 90,
+					"do_schedule_count": 91,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					90
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22451.149999999994,
+					"average_queue_delay_seconds": 1730.96,
+					"average_ddl_violation_duration_seconds": 1802.6666666666595,
+					"total_ddl_violation_duration_seconds": 5407.999999999978,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 100,
+					"do_schedule_count": 101,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					100
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18090.945454545454,
+					"average_queue_delay_seconds": 2115.5636363636363,
+					"average_ddl_violation_duration_seconds": 1477.9999999999875,
+					"total_ddl_violation_duration_seconds": 2955.999999999975,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 110,
+					"do_schedule_count": 111,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					110
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22056.97499999999,
+					"average_queue_delay_seconds": 2624.7916666666665,
+					"average_ddl_violation_duration_seconds": 16165.999999999862,
+					"total_ddl_violation_duration_seconds": 16165.999999999862,
+					"ddl_violated_jobs_count": 1,
+					"finished_jobs_count": 120,
+					"do_schedule_count": 121,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					120
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22131.09230769231,
+					"average_queue_delay_seconds": 3085.576923076923,
+					"average_ddl_violation_duration_seconds": 1477.9999999999818,
+					"total_ddl_violation_duration_seconds": 2955.9999999999636,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 130,
+					"do_schedule_count": 131,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					130
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21090.22857142857,
+					"average_queue_delay_seconds": 3428.214285714286,
+					"average_ddl_violation_duration_seconds": 979.9999999999918,
+					"total_ddl_violation_duration_seconds": 3919.9999999999673,
+					"ddl_violated_jobs_count": 4,
+					"finished_jobs_count": 140,
+					"do_schedule_count": 140,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					140
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 19417.98,
+					"average_queue_delay_seconds": 3851.0133333333333,
+					"average_ddl_violation_duration_seconds": 1137.5999999999947,
+					"total_ddl_violation_duration_seconds": 5687.999999999974,
+					"ddl_violated_jobs_count": 5,
+					"finished_jobs_count": 150,
+					"do_schedule_count": 151,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					150
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21991.86875,
+					"average_queue_delay_seconds": 4714.375,
+					"average_ddl_violation_duration_seconds": 2849.5000000000036,
+					"total_ddl_violation_duration_seconds": 5699.000000000007,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 160,
+					"do_schedule_count": 161,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					160
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 23166.500000000007,
+					"average_queue_delay_seconds": 5390.547058823529,
+					"average_ddl_violation_duration_seconds": 2698.999999999989,
+					"total_ddl_violation_duration_seconds": 10795.999999999956,
+					"ddl_violated_jobs_count": 4,
+					"finished_jobs_count": 170,
+					"do_schedule_count": 171,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					170
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21120.31666666667,
+					"average_queue_delay_seconds": 5914.083333333333,
+					"average_ddl_violation_duration_seconds": 1477.9999999999854,
+					"total_ddl_violation_duration_seconds": 2955.999999999971,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 180,
+					"do_schedule_count": 179,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					180
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22484.1052631579,
+					"average_queue_delay_seconds": 6243.615789473684,
+					"average_ddl_violation_duration_seconds": 4439.7999999999865,
+					"total_ddl_violation_duration_seconds": 22198.999999999935,
+					"ddl_violated_jobs_count": 5,
+					"finished_jobs_count": 190,
+					"do_schedule_count": 190,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					190
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22950.515,
+					"average_queue_delay_seconds": 6997.69,
+					"average_ddl_violation_duration_seconds": 2875.6000000000063,
+					"total_ddl_violation_duration_seconds": 14378.000000000031,
+					"ddl_violated_jobs_count": 5,
+					"finished_jobs_count": 200,
+					"do_schedule_count": 198,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					200
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22457.885714285705,
+					"average_queue_delay_seconds": 7349.385714285714,
+					"average_ddl_violation_duration_seconds": 12191.49999999965,
+					"total_ddl_violation_duration_seconds": 73148.9999999979,
+					"ddl_violated_jobs_count": 6,
+					"finished_jobs_count": 210,
+					"do_schedule_count": 211,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					210
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22780.759090909083,
+					"average_queue_delay_seconds": 7601.486363636363,
+					"average_ddl_violation_duration_seconds": 12265.857142856843,
+					"total_ddl_violation_duration_seconds": 85860.9999999979,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 220,
+					"do_schedule_count": 221,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					220
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 23580.19130434783,
+					"average_queue_delay_seconds": 8490.178260869565,
+					"average_ddl_violation_duration_seconds": 2526.8571428571095,
+					"total_ddl_violation_duration_seconds": 17687.999999999767,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 230,
+					"do_schedule_count": 230,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					230
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21796.5125,
+					"average_queue_delay_seconds": 8346.0875,
+					"average_ddl_violation_duration_seconds": 5887.444444444416,
+					"total_ddl_violation_duration_seconds": 52986.999999999745,
+					"ddl_violated_jobs_count": 9,
+					"finished_jobs_count": 240,
+					"do_schedule_count": 241,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					240
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24026.072000000004,
+					"average_queue_delay_seconds": 8996.888,
+					"average_ddl_violation_duration_seconds": 5218.999999999955,
+					"total_ddl_violation_duration_seconds": 26094.999999999778,
+					"ddl_violated_jobs_count": 5,
+					"finished_jobs_count": 250,
+					"do_schedule_count": 251,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					250
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 23962.538461538465,
+					"average_queue_delay_seconds": 9633.234615384616,
+					"average_ddl_violation_duration_seconds": 4980.42857142856,
+					"total_ddl_violation_duration_seconds": 34862.99999999992,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 260,
+					"do_schedule_count": 260,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 6,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					260
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 23781.04814814815,
+					"average_queue_delay_seconds": 10095.333333333334,
+					"average_ddl_violation_duration_seconds": 5686.99999999995,
+					"total_ddl_violation_duration_seconds": 39808.99999999965,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 270,
+					"do_schedule_count": 271,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					270
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 25378.860714285714,
+					"average_queue_delay_seconds": 11395.010714285714,
+					"average_ddl_violation_duration_seconds": 4419.99999999997,
+					"total_ddl_violation_duration_seconds": 26519.999999999818,
+					"ddl_violated_jobs_count": 6,
+					"finished_jobs_count": 280,
+					"do_schedule_count": 280,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 3,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					280
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 25813.17586206897,
+					"average_queue_delay_seconds": 11284.403448275862,
+					"average_ddl_violation_duration_seconds": 5646.428571428555,
+					"total_ddl_violation_duration_seconds": 39524.99999999988,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 290,
+					"do_schedule_count": 291,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 0,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					290
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 26450.706666666665,
+					"average_queue_delay_seconds": 12261.713333333333,
+					"average_ddl_violation_duration_seconds": 5228.666666666632,
+					"total_ddl_violation_duration_seconds": 31371.999999999796,
+					"ddl_violated_jobs_count": 6,
+					"finished_jobs_count": 300,
+					"do_schedule_count": 301,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					300
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 30786.509677419344,
+					"average_queue_delay_seconds": 13351.72258064516,
+					"average_ddl_violation_duration_seconds": 23170.66666666609,
+					"total_ddl_violation_duration_seconds": 208535.99999999482,
+					"ddl_violated_jobs_count": 9,
+					"finished_jobs_count": 310,
+					"do_schedule_count": 310,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					310
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 30669.653124999993,
+					"average_queue_delay_seconds": 13966.4125,
+					"average_ddl_violation_duration_seconds": 18487.374999999676,
+					"total_ddl_violation_duration_seconds": 147898.9999999974,
+					"ddl_violated_jobs_count": 8,
+					"finished_jobs_count": 320,
+					"do_schedule_count": 321,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					320
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 31326.56060606062,
+					"average_queue_delay_seconds": 14761.41212121212,
+					"average_ddl_violation_duration_seconds": 9644.999999999682,
+					"total_ddl_violation_duration_seconds": 77159.99999999745,
+					"ddl_violated_jobs_count": 8,
+					"finished_jobs_count": 330,
+					"do_schedule_count": 330,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					330
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 33105.950000000004,
+					"average_queue_delay_seconds": 16899.482352941177,
+					"average_ddl_violation_duration_seconds": 3417.2499999999823,
+					"total_ddl_violation_duration_seconds": 27337.999999999858,
+					"ddl_violated_jobs_count": 8,
+					"finished_jobs_count": 340,
+					"do_schedule_count": 341,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					340
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 33216.531428571434,
+					"average_queue_delay_seconds": 17363.03714285714,
+					"average_ddl_violation_duration_seconds": 2782.4999999999977,
+					"total_ddl_violation_duration_seconds": 16694.999999999985,
+					"ddl_violated_jobs_count": 6,
+					"finished_jobs_count": 350,
+					"do_schedule_count": 349,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					350
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 33495.46944444445,
+					"average_queue_delay_seconds": 18197.08611111111,
+					"average_ddl_violation_duration_seconds": 2239.875000000002,
+					"total_ddl_violation_duration_seconds": 17919.000000000015,
+					"ddl_violated_jobs_count": 8,
+					"finished_jobs_count": 360,
+					"do_schedule_count": 361,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					360
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 33141.194594594606,
+					"average_queue_delay_seconds": 18270.08108108108,
+					"average_ddl_violation_duration_seconds": 5038.857142857122,
+					"total_ddl_violation_duration_seconds": 35271.999999999854,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 370,
+					"do_schedule_count": 371,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 4,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					370
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 33505.13684210527,
+					"average_queue_delay_seconds": 18634.365789473683,
+					"average_ddl_violation_duration_seconds": 1877.0000000000032,
+					"total_ddl_violation_duration_seconds": 16893.00000000003,
+					"ddl_violated_jobs_count": 9,
+					"finished_jobs_count": 380,
+					"do_schedule_count": 380,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					380
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 34334.984615384616,
+					"average_queue_delay_seconds": 18842.492307692308,
+					"average_ddl_violation_duration_seconds": 15499.666666666417,
+					"total_ddl_violation_duration_seconds": 139496.99999999776,
+					"ddl_violated_jobs_count": 9,
+					"finished_jobs_count": 390,
+					"do_schedule_count": 390,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					390
+				]
+			},
+			{
+				"scheduler_name": "EDFScheduler",
+				"scheduler_info": "EDFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 35863.87999999999,
+					"average_queue_delay_seconds": 19437.86,
+					"average_ddl_violation_duration_seconds": 15637.59999999959,
+					"total_ddl_violation_duration_seconds": 234563.99999999383,
+					"ddl_violated_jobs_count": 15,
+					"finished_jobs_count": 400,
+					"do_schedule_count": 400,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					400
+				]
+			}
+		],
+		"Hydra": [
+			{
+				"scheduler_name": "HydraScheduler",
+				"scheduler_info": {
+					"DistanceAlgo": "MinCostDistanceAlgo[minCostAlgo=BranchAndBoundFixNonDDL[LCStandard=PredictCost]]",
+					"ScheduleScheme": "BasicScheduleScheme[Parallel=true, OneShot=true]",
+					"Type": "HydraScheduler"
+				},
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 15,
+						"V100": 15
+					},
+					"gpu_count": 45
+				},
+				"case_range": [
+					0,
+					400
+				],
+				"execution": {
+					"average_jct_seconds": 31283.8,
+					"average_queue_delay_seconds": 16393.16,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 400,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 191822,
+					"max_do_schedule_duration_ms": 191822,
+					"scheduler_execution_record_extra": {
+						"average_k_means_round_duration_ms": 479,
+						"max_k_means_round_duration_ms": 30345,
+						"min_k_means_round_duration_ms": 2,
+						"distance_solver_record_extra": {
+							"memorized_call_count": 3511200,
+							"non_memorized_call_count": 97800,
+							"call_count": 3609000,
+							"distance_algo_record_extra": {
+								"call_count": 97800,
+								"use_min_cost_algo_count": 21739,
+								"use_sjf_greedy_count": 76061,
+								"average_min_cost_algo_durations_ms": 51,
+								"min_cost_algo_record_extra": {
+									"call_count": 21739,
+									"exceed_latency_count": 0,
+									"use_fall_back_count": 0,
+									"average_duration_nano": 51715925,
+									"average_expand_nodes_count": 1462.6839781038686,
+									"average_jobs_count": 0,
+									"max_jobs_count": 14,
+									"average_total_cut_count": 1874.1586549519297,
+									"average_after_expand_cut_count": 764.8281889691339,
+									"average_prediction_is_optimus_cut_count": 20.42697456184737,
+									"average_prediction_reduce_min_cost_count": 0,
+									"average_expand_nothing_cut_count": 875.2589815538893,
+									"average_c_hat_cut_count": 191.68834813008877,
+									"jobs_count_2_summary_record": [
+										{
+											"call_count": 645,
+											"jobs_count": 1,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 2,
+											"average_duration_nano": 275114,
+											"average_total_cut_count": 1,
+											"average_expand_nothing_cut_count": 0,
+											"average_c_hat_cut_count": 0,
+											"average_after_expand_cut_count": 0,
+											"average_prediction_is_optimus_cut_count": 1,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 909,
+											"jobs_count": 2,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 4.214521452145214,
+											"average_duration_nano": 184174,
+											"average_total_cut_count": 2,
+											"average_expand_nothing_cut_count": 0,
+											"average_c_hat_cut_count": 0,
+											"average_after_expand_cut_count": 1,
+											"average_prediction_is_optimus_cut_count": 1,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 1433,
+											"jobs_count": 3,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 8.517096999302163,
+											"average_duration_nano": 295964,
+											"average_total_cut_count": 4.896022330774599,
+											"average_expand_nothing_cut_count": 0.46545708304256805,
+											"average_c_hat_cut_count": 0.5987438939288207,
+											"average_after_expand_cut_count": 2.515003489183531,
+											"average_prediction_is_optimus_cut_count": 1.316817864619679,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 2044,
+											"jobs_count": 4,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 16.52495107632094,
+											"average_duration_nano": 519681,
+											"average_total_cut_count": 11.53522504892368,
+											"average_expand_nothing_cut_count": 2.3199608610567513,
+											"average_c_hat_cut_count": 2.146771037181996,
+											"average_after_expand_cut_count": 5.160469667318982,
+											"average_prediction_is_optimus_cut_count": 1.899706457925636,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 2941,
+											"jobs_count": 5,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 30.095545732743965,
+											"average_duration_nano": 1165786,
+											"average_total_cut_count": 23.851071064263856,
+											"average_expand_nothing_cut_count": 5.865351921115267,
+											"average_c_hat_cut_count": 5.773546412784767,
+											"average_after_expand_cut_count": 9.31791907514451,
+											"average_prediction_is_optimus_cut_count": 2.885073104386263,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 2855,
+											"jobs_count": 6,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 55.952714535901926,
+											"average_duration_nano": 2345741,
+											"average_total_cut_count": 51.89877408056042,
+											"average_expand_nothing_cut_count": 17.658844133099826,
+											"average_c_hat_cut_count": 11.040980735551663,
+											"average_after_expand_cut_count": 19.164973730297724,
+											"average_prediction_is_optimus_cut_count": 3.9660245183887914,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 2504,
+											"jobs_count": 7,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 101.120607028754,
+											"average_duration_nano": 5395688,
+											"average_total_cut_count": 104.82068690095846,
+											"average_expand_nothing_cut_count": 40.947683706070286,
+											"average_c_hat_cut_count": 22.740015974440894,
+											"average_after_expand_cut_count": 34.51198083067093,
+											"average_prediction_is_optimus_cut_count": 6.452476038338658,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 2564,
+											"jobs_count": 8,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 183.54953198127924,
+											"average_duration_nano": 13251755,
+											"average_total_cut_count": 203.43564742589703,
+											"average_expand_nothing_cut_count": 82.26560062402496,
+											"average_c_hat_cut_count": 50.488689547581906,
+											"average_after_expand_cut_count": 59.579953198127924,
+											"average_prediction_is_optimus_cut_count": 10.376755070202808,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 2213,
+											"jobs_count": 9,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 456.2557614098509,
+											"average_duration_nano": 33054453,
+											"average_total_cut_count": 524.8364211477632,
+											"average_expand_nothing_cut_count": 224.50474469046543,
+											"average_c_hat_cut_count": 105.68142792589245,
+											"average_after_expand_cut_count": 169.8400361500226,
+											"average_prediction_is_optimus_cut_count": 18.36150022593764,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 1426,
+											"jobs_count": 10,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 1097.4046283309958,
+											"average_duration_nano": 68693606,
+											"average_total_cut_count": 1238.7861150070125,
+											"average_expand_nothing_cut_count": 511.8807854137447,
+											"average_c_hat_cut_count": 227.48106591865357,
+											"average_after_expand_cut_count": 449.2517531556802,
+											"average_prediction_is_optimus_cut_count": 36.96633941093969,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 981,
+											"jobs_count": 11,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 3347.0754332313963,
+											"average_duration_nano": 157695315,
+											"average_total_cut_count": 4046.441386340469,
+											"average_expand_nothing_cut_count": 1790.144750254842,
+											"average_c_hat_cut_count": 612.0560652395515,
+											"average_after_expand_cut_count": 1512.466870540265,
+											"average_prediction_is_optimus_cut_count": 82.81039755351682,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 847,
+											"jobs_count": 12,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 13069.404958677685,
+											"average_duration_nano": 534194374,
+											"average_total_cut_count": 16756.774498229042,
+											"average_expand_nothing_cut_count": 7810.2231404958675,
+											"average_c_hat_cut_count": 1628.3128689492326,
+											"average_after_expand_cut_count": 6985.889020070838,
+											"average_prediction_is_optimus_cut_count": 127.88429752066116,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 335,
+											"jobs_count": 13,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 33425.017910447765,
+											"average_duration_nano": 732784148,
+											"average_total_cut_count": 44425.653731343285,
+											"average_expand_nothing_cut_count": 21474.16119402985,
+											"average_c_hat_cut_count": 3372.579104477612,
+											"average_after_expand_cut_count": 18848.36417910448,
+											"average_prediction_is_optimus_cut_count": 237.1402985074627,
+											"average_prediction_reduce_min_cost_count": 0
+										},
+										{
+											"call_count": 42,
+											"jobs_count": 14,
+											"exceed_latency_count": 0,
+											"use_fall_back_count": 0,
+											"average_expand_nodes_count": 63068.09523809524,
+											"average_duration_nano": 977530930,
+											"average_total_cut_count": 88899.23809523809,
+											"average_expand_nothing_cut_count": 44016.95238095238,
+											"average_c_hat_cut_count": 6173.523809523809,
+											"average_after_expand_cut_count": 37113.54761904762,
+											"average_prediction_is_optimus_cut_count": 281.4761904761905,
+											"average_prediction_reduce_min_cost_count": 0
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		],
+		"SJF": [
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 2907.1,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 10,
+					"do_schedule_count": 11,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					10
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 5125.25,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 20,
+					"do_schedule_count": 21,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 0,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					20
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21639.966666666667,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 30,
+					"do_schedule_count": 31,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					30
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 29229.15,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 40,
+					"do_schedule_count": 41,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					40
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16628.46,
+					"average_queue_delay_seconds": 81.3,
+					"average_ddl_violation_duration_seconds": 10751.99999999999,
+					"total_ddl_violation_duration_seconds": 21503.99999999998,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 50,
+					"do_schedule_count": 51,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					50
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16587.399999999998,
+					"average_queue_delay_seconds": 311.68333333333334,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 60,
+					"do_schedule_count": 61,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					60
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24628.42857142857,
+					"average_queue_delay_seconds": 675.7428571428571,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 70,
+					"do_schedule_count": 71,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					70
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24981.512499999997,
+					"average_queue_delay_seconds": 1103.5125,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 80,
+					"do_schedule_count": 81,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 3,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					80
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21774.011111111107,
+					"average_queue_delay_seconds": 1383.5333333333333,
+					"average_ddl_violation_duration_seconds": 24081.333333333212,
+					"total_ddl_violation_duration_seconds": 72243.99999999964,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 90,
+					"do_schedule_count": 91,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					90
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21703.34,
+					"average_queue_delay_seconds": 1749.07,
+					"average_ddl_violation_duration_seconds": 33544.999999999796,
+					"total_ddl_violation_duration_seconds": 67089.99999999959,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 100,
+					"do_schedule_count": 101,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					100
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24150.836363636354,
+					"average_queue_delay_seconds": 1836.418181818182,
+					"average_ddl_violation_duration_seconds": 27396.333333333245,
+					"total_ddl_violation_duration_seconds": 82188.99999999974,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 110,
+					"do_schedule_count": 111,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					110
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 20676.183333333334,
+					"average_queue_delay_seconds": 2232.7166666666667,
+					"average_ddl_violation_duration_seconds": 8238.333333333338,
+					"total_ddl_violation_duration_seconds": 24715.000000000015,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 120,
+					"do_schedule_count": 121,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					120
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 20122.207692307693,
+					"average_queue_delay_seconds": 2619.5846153846155,
+					"average_ddl_violation_duration_seconds": 14651.99999999998,
+					"total_ddl_violation_duration_seconds": 43955.99999999994,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 130,
+					"do_schedule_count": 131,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					130
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18539.285714285714,
+					"average_queue_delay_seconds": 2937.307142857143,
+					"average_ddl_violation_duration_seconds": 11369.500000000011,
+					"total_ddl_violation_duration_seconds": 22739.000000000022,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 140,
+					"do_schedule_count": 141,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					140
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18172.506666666664,
+					"average_queue_delay_seconds": 3207.0133333333333,
+					"average_ddl_violation_duration_seconds": 18524.999999999894,
+					"total_ddl_violation_duration_seconds": 92624.99999999948,
+					"ddl_violated_jobs_count": 5,
+					"finished_jobs_count": 150,
+					"do_schedule_count": 151,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					150
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22119.662499999995,
+					"average_queue_delay_seconds": 3880.2625,
+					"average_ddl_violation_duration_seconds": 12970.571428571362,
+					"total_ddl_violation_duration_seconds": 90793.99999999953,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 160,
+					"do_schedule_count": 161,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					160
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 23043.61764705882,
+					"average_queue_delay_seconds": 4334.15294117647,
+					"average_ddl_violation_duration_seconds": 16074.999999999938,
+					"total_ddl_violation_duration_seconds": 112524.99999999956,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 170,
+					"do_schedule_count": 170,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					170
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22881.533333333333,
+					"average_queue_delay_seconds": 4662.938888888889,
+					"average_ddl_violation_duration_seconds": 6092.900000000001,
+					"total_ddl_violation_duration_seconds": 60929.00000000001,
+					"ddl_violated_jobs_count": 10,
+					"finished_jobs_count": 180,
+					"do_schedule_count": 179,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					180
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21524.70526315789,
+					"average_queue_delay_seconds": 4816.61052631579,
+					"average_ddl_violation_duration_seconds": 5051.874999999995,
+					"total_ddl_violation_duration_seconds": 40414.99999999996,
+					"ddl_violated_jobs_count": 8,
+					"finished_jobs_count": 190,
+					"do_schedule_count": 191,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					190
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 19869.69,
+					"average_queue_delay_seconds": 5063.565,
+					"average_ddl_violation_duration_seconds": 6094.181818181818,
+					"total_ddl_violation_duration_seconds": 67036,
+					"ddl_violated_jobs_count": 11,
+					"finished_jobs_count": 200,
+					"do_schedule_count": 201,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					200
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18227.261904761905,
+					"average_queue_delay_seconds": 5399.342857142857,
+					"average_ddl_violation_duration_seconds": 5553.999999999996,
+					"total_ddl_violation_duration_seconds": 61093.999999999956,
+					"ddl_violated_jobs_count": 11,
+					"finished_jobs_count": 210,
+					"do_schedule_count": 211,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					210
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 20894.986363636363,
+					"average_queue_delay_seconds": 5988.086363636364,
+					"average_ddl_violation_duration_seconds": 9862.533333333318,
+					"total_ddl_violation_duration_seconds": 147937.99999999977,
+					"ddl_violated_jobs_count": 15,
+					"finished_jobs_count": 220,
+					"do_schedule_count": 221,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					220
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21601.06086956522,
+					"average_queue_delay_seconds": 6465.626086956522,
+					"average_ddl_violation_duration_seconds": 12271.733333333306,
+					"total_ddl_violation_duration_seconds": 184075.9999999996,
+					"ddl_violated_jobs_count": 15,
+					"finished_jobs_count": 230,
+					"do_schedule_count": 230,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					230
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21479.641666666666,
+					"average_queue_delay_seconds": 6666.566666666667,
+					"average_ddl_violation_duration_seconds": 6376.749999999996,
+					"total_ddl_violation_duration_seconds": 102027.99999999994,
+					"ddl_violated_jobs_count": 16,
+					"finished_jobs_count": 240,
+					"do_schedule_count": 240,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					240
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22212.272,
+					"average_queue_delay_seconds": 7084.332,
+					"average_ddl_violation_duration_seconds": 3946.549999999998,
+					"total_ddl_violation_duration_seconds": 78930.99999999996,
+					"ddl_violated_jobs_count": 20,
+					"finished_jobs_count": 250,
+					"do_schedule_count": 250,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					250
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21096,
+					"average_queue_delay_seconds": 7505.084615384615,
+					"average_ddl_violation_duration_seconds": 7192.045454545455,
+					"total_ddl_violation_duration_seconds": 158225,
+					"ddl_violated_jobs_count": 22,
+					"finished_jobs_count": 260,
+					"do_schedule_count": 261,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					260
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 20988.725925925926,
+					"average_queue_delay_seconds": 7838.107407407408,
+					"average_ddl_violation_duration_seconds": 7039.772727272724,
+					"total_ddl_violation_duration_seconds": 154874.99999999994,
+					"ddl_violated_jobs_count": 22,
+					"finished_jobs_count": 270,
+					"do_schedule_count": 268,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					270
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21696.339285714286,
+					"average_queue_delay_seconds": 8395.646428571428,
+					"average_ddl_violation_duration_seconds": 7419.318181818179,
+					"total_ddl_violation_duration_seconds": 163224.99999999994,
+					"ddl_violated_jobs_count": 22,
+					"finished_jobs_count": 280,
+					"do_schedule_count": 280,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					280
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22864.455172413793,
+					"average_queue_delay_seconds": 8843.779310344828,
+					"average_ddl_violation_duration_seconds": 12328.913043478238,
+					"total_ddl_violation_duration_seconds": 283564.9999999995,
+					"ddl_violated_jobs_count": 23,
+					"finished_jobs_count": 290,
+					"do_schedule_count": 290,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					290
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24014.503333333334,
+					"average_queue_delay_seconds": 9310.363333333333,
+					"average_ddl_violation_duration_seconds": 6824.624999999997,
+					"total_ddl_violation_duration_seconds": 163790.99999999994,
+					"ddl_violated_jobs_count": 24,
+					"finished_jobs_count": 300,
+					"do_schedule_count": 301,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					300
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 26618.94516129032,
+					"average_queue_delay_seconds": 9664.867741935484,
+					"average_ddl_violation_duration_seconds": 14654.733333333303,
+					"total_ddl_violation_duration_seconds": 439641.99999999907,
+					"ddl_violated_jobs_count": 30,
+					"finished_jobs_count": 310,
+					"do_schedule_count": 310,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					310
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 27631.65625,
+					"average_queue_delay_seconds": 10205.678125,
+					"average_ddl_violation_duration_seconds": 10985.413793103431,
+					"total_ddl_violation_duration_seconds": 318576.9999999995,
+					"ddl_violated_jobs_count": 29,
+					"finished_jobs_count": 320,
+					"do_schedule_count": 320,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 0,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					320
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 27568.9,
+					"average_queue_delay_seconds": 10666.815151515151,
+					"average_ddl_violation_duration_seconds": 10565.193548387082,
+					"total_ddl_violation_duration_seconds": 327520.99999999953,
+					"ddl_violated_jobs_count": 31,
+					"finished_jobs_count": 330,
+					"do_schedule_count": 330,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					330
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 26925.305882352943,
+					"average_queue_delay_seconds": 11315.44411764706,
+					"average_ddl_violation_duration_seconds": 6748.969696969698,
+					"total_ddl_violation_duration_seconds": 222716.00000000003,
+					"ddl_violated_jobs_count": 33,
+					"finished_jobs_count": 340,
+					"do_schedule_count": 340,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					340
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 26820.568571428572,
+					"average_queue_delay_seconds": 11537.988571428572,
+					"average_ddl_violation_duration_seconds": 7992.055555555554,
+					"total_ddl_violation_duration_seconds": 287713.99999999994,
+					"ddl_violated_jobs_count": 36,
+					"finished_jobs_count": 350,
+					"do_schedule_count": 349,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					350
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 26639.48611111111,
+					"average_queue_delay_seconds": 12062.733333333334,
+					"average_ddl_violation_duration_seconds": 7923.871794871795,
+					"total_ddl_violation_duration_seconds": 309031,
+					"ddl_violated_jobs_count": 39,
+					"finished_jobs_count": 360,
+					"do_schedule_count": 359,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 2,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					360
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 28159.432432432433,
+					"average_queue_delay_seconds": 12427.437837837839,
+					"average_ddl_violation_duration_seconds": 11260.32558139534,
+					"total_ddl_violation_duration_seconds": 484193.99999999965,
+					"ddl_violated_jobs_count": 43,
+					"finished_jobs_count": 370,
+					"do_schedule_count": 370,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					370
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 28508.884210526317,
+					"average_queue_delay_seconds": 12754.563157894738,
+					"average_ddl_violation_duration_seconds": 10914.585365853649,
+					"total_ddl_violation_duration_seconds": 447497.9999999996,
+					"ddl_violated_jobs_count": 41,
+					"finished_jobs_count": 380,
+					"do_schedule_count": 379,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					380
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 28608.63076923077,
+					"average_queue_delay_seconds": 13098.941025641026,
+					"average_ddl_violation_duration_seconds": 11176.357142857123,
+					"total_ddl_violation_duration_seconds": 469406.9999999992,
+					"ddl_violated_jobs_count": 42,
+					"finished_jobs_count": 390,
+					"do_schedule_count": 390,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					390
+				]
+			},
+			{
+				"scheduler_name": "SJFScheduler",
+				"scheduler_info": "SJFScheduler",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 30839.4775,
+					"average_queue_delay_seconds": 13515.9275,
+					"average_ddl_violation_duration_seconds": 8196.999999999998,
+					"total_ddl_violation_duration_seconds": 368864.99999999994,
+					"ddl_violated_jobs_count": 45,
+					"finished_jobs_count": 400,
+					"do_schedule_count": 399,
+					"average_do_schedule_duration_ms": 0,
+					"max_do_schedule_duration_ms": 1,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					400
+				]
+			}
+		],
+		"Allox": [
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 2907.1,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 10,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 36,
+					"max_do_schedule_duration_ms": 36,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					10
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 5125.25,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 20,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 98,
+					"max_do_schedule_duration_ms": 98,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					20
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 13284.1,
+					"average_queue_delay_seconds": 0,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 30,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 237,
+					"max_do_schedule_duration_ms": 237,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					30
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 12689.125,
+					"average_queue_delay_seconds": 183.775,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 40,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 463,
+					"max_do_schedule_duration_ms": 463,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					40
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 12399.439999999997,
+					"average_queue_delay_seconds": 497.3,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 50,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 987,
+					"max_do_schedule_duration_ms": 987,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					50
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 15514.149999999996,
+					"average_queue_delay_seconds": 698.9166666666666,
+					"average_ddl_violation_duration_seconds": 0,
+					"total_ddl_violation_duration_seconds": 0,
+					"ddl_violated_jobs_count": 0,
+					"finished_jobs_count": 60,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1944,
+					"max_do_schedule_duration_ms": 1944,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					60
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18214.714285714286,
+					"average_queue_delay_seconds": 1004.0857142857143,
+					"average_ddl_violation_duration_seconds": 853.0000000000005,
+					"total_ddl_violation_duration_seconds": 853.0000000000005,
+					"ddl_violated_jobs_count": 1,
+					"finished_jobs_count": 70,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 3548,
+					"max_do_schedule_duration_ms": 3548,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					70
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17693.2,
+					"average_queue_delay_seconds": 1338.8,
+					"average_ddl_violation_duration_seconds": 539.5000000000007,
+					"total_ddl_violation_duration_seconds": 1079.0000000000014,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 80,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 5776,
+					"max_do_schedule_duration_ms": 5776,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					80
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16420.5,
+					"average_queue_delay_seconds": 1556.3666666666666,
+					"average_ddl_violation_duration_seconds": 361.00000000000045,
+					"total_ddl_violation_duration_seconds": 361.00000000000045,
+					"ddl_violated_jobs_count": 1,
+					"finished_jobs_count": 90,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 8646,
+					"max_do_schedule_duration_ms": 8646,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					90
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16832.949999999997,
+					"average_queue_delay_seconds": 1859.62,
+					"average_ddl_violation_duration_seconds": 2025.499999999989,
+					"total_ddl_violation_duration_seconds": 4050.999999999978,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 100,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 12932,
+					"max_do_schedule_duration_ms": 12932,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					100
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 15913.109090909089,
+					"average_queue_delay_seconds": 2069.9636363636364,
+					"average_ddl_violation_duration_seconds": 2515.4999999999873,
+					"total_ddl_violation_duration_seconds": 5030.9999999999745,
+					"ddl_violated_jobs_count": 2,
+					"finished_jobs_count": 110,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 17687,
+					"max_do_schedule_duration_ms": 17687,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					110
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 15896.85,
+					"average_queue_delay_seconds": 2355.1916666666666,
+					"average_ddl_violation_duration_seconds": 1984.9999999999939,
+					"total_ddl_violation_duration_seconds": 5954.999999999982,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 120,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 23317,
+					"max_do_schedule_duration_ms": 23317,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					120
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16404.7,
+					"average_queue_delay_seconds": 2712,
+					"average_ddl_violation_duration_seconds": 1677.333333333321,
+					"total_ddl_violation_duration_seconds": 5031.999999999963,
+					"ddl_violated_jobs_count": 3,
+					"finished_jobs_count": 130,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 31652,
+					"max_do_schedule_duration_ms": 31652,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					130
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16463.85,
+					"average_queue_delay_seconds": 3066.4785714285713,
+					"average_ddl_violation_duration_seconds": 2454.7999999999965,
+					"total_ddl_violation_duration_seconds": 12273.999999999982,
+					"ddl_violated_jobs_count": 5,
+					"finished_jobs_count": 140,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 42197,
+					"max_do_schedule_duration_ms": 42197,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					140
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 16099.106666666667,
+					"average_queue_delay_seconds": 3291.4266666666667,
+					"average_ddl_violation_duration_seconds": 2357.4999999999986,
+					"total_ddl_violation_duration_seconds": 14144.999999999993,
+					"ddl_violated_jobs_count": 6,
+					"finished_jobs_count": 150,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 59108,
+					"max_do_schedule_duration_ms": 59108,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					150
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17175.6875,
+					"average_queue_delay_seconds": 3948.65,
+					"average_ddl_violation_duration_seconds": 2850.4285714285693,
+					"total_ddl_violation_duration_seconds": 19952.999999999985,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 160,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 72740,
+					"max_do_schedule_duration_ms": 72740,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					160
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17606.941176470587,
+					"average_queue_delay_seconds": 4372.5,
+					"average_ddl_violation_duration_seconds": 3103.285714285708,
+					"total_ddl_violation_duration_seconds": 21722.999999999956,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 170,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 91009,
+					"max_do_schedule_duration_ms": 91009,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					170
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17809.55,
+					"average_queue_delay_seconds": 4824.866666666667,
+					"average_ddl_violation_duration_seconds": 2214.7499999999927,
+					"total_ddl_violation_duration_seconds": 17717.99999999994,
+					"ddl_violated_jobs_count": 8,
+					"finished_jobs_count": 180,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 111078,
+					"max_do_schedule_duration_ms": 111078,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					180
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17486.915789473685,
+					"average_queue_delay_seconds": 5016.026315789473,
+					"average_ddl_violation_duration_seconds": 3301.28571428571,
+					"total_ddl_violation_duration_seconds": 23108.99999999997,
+					"ddl_violated_jobs_count": 7,
+					"finished_jobs_count": 190,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 132808,
+					"max_do_schedule_duration_ms": 132808,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					190
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17395.045,
+					"average_queue_delay_seconds": 5315.64,
+					"average_ddl_violation_duration_seconds": 3130.7499999999964,
+					"total_ddl_violation_duration_seconds": 37568.999999999956,
+					"ddl_violated_jobs_count": 12,
+					"finished_jobs_count": 200,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 158505,
+					"max_do_schedule_duration_ms": 158505,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					200
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 17517.114285714284,
+					"average_queue_delay_seconds": 5739.647619047619,
+					"average_ddl_violation_duration_seconds": 2666.4615384615363,
+					"total_ddl_violation_duration_seconds": 34663.99999999997,
+					"ddl_violated_jobs_count": 13,
+					"finished_jobs_count": 210,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 186423,
+					"max_do_schedule_duration_ms": 186423,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					210
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18019.19090909091,
+					"average_queue_delay_seconds": 6236.731818181818,
+					"average_ddl_violation_duration_seconds": 3735.166666666662,
+					"total_ddl_violation_duration_seconds": 44821.99999999994,
+					"ddl_violated_jobs_count": 12,
+					"finished_jobs_count": 220,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 221188,
+					"max_do_schedule_duration_ms": 221188,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					220
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18133.047826086957,
+					"average_queue_delay_seconds": 6598.730434782608,
+					"average_ddl_violation_duration_seconds": 4330.07692307692,
+					"total_ddl_violation_duration_seconds": 56290.99999999996,
+					"ddl_violated_jobs_count": 13,
+					"finished_jobs_count": 230,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 255257,
+					"max_do_schedule_duration_ms": 255257,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					230
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18089.85,
+					"average_queue_delay_seconds": 6878.775,
+					"average_ddl_violation_duration_seconds": 3329.2499999999955,
+					"total_ddl_violation_duration_seconds": 53267.99999999993,
+					"ddl_violated_jobs_count": 16,
+					"finished_jobs_count": 240,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 294341,
+					"max_do_schedule_duration_ms": 294341,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					240
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 18803.856,
+					"average_queue_delay_seconds": 7488.2,
+					"average_ddl_violation_duration_seconds": 3760.4999999999977,
+					"total_ddl_violation_duration_seconds": 67688.99999999996,
+					"ddl_violated_jobs_count": 18,
+					"finished_jobs_count": 250,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 330368,
+					"max_do_schedule_duration_ms": 330368,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					250
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 19094.48076923077,
+					"average_queue_delay_seconds": 7956.176923076923,
+					"average_ddl_violation_duration_seconds": 5130.117647058822,
+					"total_ddl_violation_duration_seconds": 87211.99999999997,
+					"ddl_violated_jobs_count": 17,
+					"finished_jobs_count": 260,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 389596,
+					"max_do_schedule_duration_ms": 389596,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					260
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 19694.262962962963,
+					"average_queue_delay_seconds": 8259.977777777778,
+					"average_ddl_violation_duration_seconds": 4237.7,
+					"total_ddl_violation_duration_seconds": 84754,
+					"ddl_violated_jobs_count": 20,
+					"finished_jobs_count": 270,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 447705,
+					"max_do_schedule_duration_ms": 447705,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					270
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 20258.560714285715,
+					"average_queue_delay_seconds": 8845.389285714286,
+					"average_ddl_violation_duration_seconds": 4444.666666666666,
+					"total_ddl_violation_duration_seconds": 106671.99999999999,
+					"ddl_violated_jobs_count": 24,
+					"finished_jobs_count": 280,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 498635,
+					"max_do_schedule_duration_ms": 498635,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					280
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 20616.579310344827,
+					"average_queue_delay_seconds": 9155.965517241379,
+					"average_ddl_violation_duration_seconds": 5560.227272727273,
+					"total_ddl_violation_duration_seconds": 122325,
+					"ddl_violated_jobs_count": 22,
+					"finished_jobs_count": 290,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 576976,
+					"max_do_schedule_duration_ms": 576976,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					290
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 21430.883333333335,
+					"average_queue_delay_seconds": 9528.62,
+					"average_ddl_violation_duration_seconds": 4637.11111111111,
+					"total_ddl_violation_duration_seconds": 125201.99999999999,
+					"ddl_violated_jobs_count": 27,
+					"finished_jobs_count": 300,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 654995,
+					"max_do_schedule_duration_ms": 654995,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					300
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 22621.132258064517,
+					"average_queue_delay_seconds": 9912.86129032258,
+					"average_ddl_violation_duration_seconds": 5942.874999999997,
+					"total_ddl_violation_duration_seconds": 142628.99999999994,
+					"ddl_violated_jobs_count": 24,
+					"finished_jobs_count": 310,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 737625,
+					"max_do_schedule_duration_ms": 737625,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					310
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 23412.046875,
+					"average_queue_delay_seconds": 10531.43125,
+					"average_ddl_violation_duration_seconds": 5254.892857142855,
+					"total_ddl_violation_duration_seconds": 147136.99999999994,
+					"ddl_violated_jobs_count": 28,
+					"finished_jobs_count": 320,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 829747,
+					"max_do_schedule_duration_ms": 829747,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					320
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 23745.621212121212,
+					"average_queue_delay_seconds": 10956.030303030304,
+					"average_ddl_violation_duration_seconds": 5869.749999999997,
+					"total_ddl_violation_duration_seconds": 164352.9999999999,
+					"ddl_violated_jobs_count": 28,
+					"finished_jobs_count": 330,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 931114,
+					"max_do_schedule_duration_ms": 931114,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					330
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24659.676470588234,
+					"average_queue_delay_seconds": 11595.117647058823,
+					"average_ddl_violation_duration_seconds": 6082.258064516127,
+					"total_ddl_violation_duration_seconds": 188549.99999999994,
+					"ddl_violated_jobs_count": 31,
+					"finished_jobs_count": 340,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1036759,
+					"max_do_schedule_duration_ms": 1036759,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					340
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 24701.28,
+					"average_queue_delay_seconds": 11892.162857142857,
+					"average_ddl_violation_duration_seconds": 6361.4838709677415,
+					"total_ddl_violation_duration_seconds": 197206,
+					"ddl_violated_jobs_count": 31,
+					"finished_jobs_count": 350,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1152001,
+					"max_do_schedule_duration_ms": 1152001,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					350
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 25322.980555555554,
+					"average_queue_delay_seconds": 12425.43888888889,
+					"average_ddl_violation_duration_seconds": 6647.444444444444,
+					"total_ddl_violation_duration_seconds": 239308,
+					"ddl_violated_jobs_count": 36,
+					"finished_jobs_count": 360,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1255102,
+					"max_do_schedule_duration_ms": 1255102,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					360
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 25378.367567567566,
+					"average_queue_delay_seconds": 12703.005405405405,
+					"average_ddl_violation_duration_seconds": 6470.820512820513,
+					"total_ddl_violation_duration_seconds": 252362,
+					"ddl_violated_jobs_count": 39,
+					"finished_jobs_count": 370,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1385795,
+					"max_do_schedule_duration_ms": 1385795,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					370
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 25409.35,
+					"average_queue_delay_seconds": 12930.742105263158,
+					"average_ddl_violation_duration_seconds": 6641.357142857141,
+					"total_ddl_violation_duration_seconds": 278936.99999999994,
+					"ddl_violated_jobs_count": 42,
+					"finished_jobs_count": 380,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1506755,
+					"max_do_schedule_duration_ms": 1506755,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					380
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 25580.964102564103,
+					"average_queue_delay_seconds": 13291.048717948717,
+					"average_ddl_violation_duration_seconds": 7241.674999999998,
+					"total_ddl_violation_duration_seconds": 289666.99999999994,
+					"ddl_violated_jobs_count": 40,
+					"finished_jobs_count": 390,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1674578,
+					"max_do_schedule_duration_ms": 1674578,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					390
+				]
+			},
+			{
+				"scheduler_name": "AlloxScheduler",
+				"scheduler_info": "AlloxScheduler[online=false]",
+				"cluster_config": {
+					"GPUs": {
+						"P100": 15,
+						"T4": 20,
+						"V100": 10
+					},
+					"gpu_count": 45
+				},
+				"execution": {
+					"average_jct_seconds": 26772.715,
+					"average_queue_delay_seconds": 13722.465,
+					"average_ddl_violation_duration_seconds": 8648.578947368422,
+					"total_ddl_violation_duration_seconds": 328646,
+					"ddl_violated_jobs_count": 38,
+					"finished_jobs_count": 400,
+					"do_schedule_count": 1,
+					"average_do_schedule_duration_ms": 1815386,
+					"max_do_schedule_duration_ms": 1815386,
+					"scheduler_execution_record_extra": null
+				},
+				"case_range": [
+					0,
+					400
+				]
+			}
+		]
+	}
+}

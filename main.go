@@ -4,8 +4,8 @@ import (
 	"DES-go/metrics"
 	"DES-go/schedulers"
 	"DES-go/schedulers/allox_scheduler"
-	"DES-go/schedulers/kmeans_scheduler"
-	"DES-go/schedulers/kmeans_scheduler/cost"
+	"DES-go/schedulers/hydra_scheduler"
+	"DES-go/schedulers/hydra_scheduler/cost"
 	"DES-go/schedulers/types"
 	"DES-go/simulator"
 	"DES-go/util"
@@ -13,40 +13,43 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 )
 
 func main() {
-	//config := loadConfig("/home/yzc/go/src/DES-go/config.json")
 	config := loadConfig("/Users/purchaser/go/src/DES-go/config.json")
 
 	// clusterConfigs 代表集群的配置变化空间，分别传入初始的状态，以及末尾状态，以及增加步长，可以按顺序获取一批gpu配置
 	clusterConfigs := generateGPUConfig(
 		map[string]int{
 			"V100": 10,
-			"P100": 10,
-			"T4":   10,
+			"P100": 15,
+			"T4":   20,
 		}, map[string]int{
-			"V100": 30,
-			"P100": 30,
-			"T4":   30,
+			"V100": 10,
+			"P100": 15,
+			"T4":   20,
 		}, 1)
 
-	caseFileName := "case_5000_all_20_ddl.csv"
+	caseFileName := "case_5000_all_10_ddl.csv"
 	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 	caseRanges := make([][]int, 0)
-	for i := 300; i <= 300; i += 10 {
+	for i := 10; i <= 400; i += 10 {
 		caseRanges = append(caseRanges, []int{0, i})
 	}
 
-	// schedulerTypes 表示了要进行模拟的调度器类型。
 	schedulerTypes := []SchedulerType{
-		SJF,
-		EDF,
-		//KMeans,
-		//KMeansHeuristic,
-		//KMeansBABWithHeuristic,
-		//Allox,
+		Gavel,
+		Chronus,
+		HydraPureHeuristic,
+		HydraBABWithHeuristic1s,
+		HydraBABWithHeuristic3s,
+		HydraBABWithHeuristic5s,
+		HydraBABWithHeuristic7s,
+		HydraBABWithHeuristic9s,
+		Allox,
 	}
 
 	// records := doSimulationForOneClusterConfig(config, caseFileName, clusterConfig, caseRanges, schedulerTypes)
@@ -115,20 +118,21 @@ func doSimulationForOneClusterConfig(config *Config, caseFileName string, cluste
 }
 
 func getScheduler(schedulerType SchedulerType) types.Scheduler {
+	if strings.HasPrefix(string(schedulerType), "HydraBABWithHeuristic") {
+		l, _ := strconv.Atoi(strings.Split(string(schedulerType), "_")[1])
+		//return initHydraBABHeuristicScheduler(time.Duration(l)*time.Second)
+		return initHydraBABHeuristicScheduler(time.Duration(100*l)*time.Millisecond)
+	}
 	var scheduler types.Scheduler = nil
 	switch schedulerType {
 	case Dummy:
 		scheduler = initDummyScheduler()
-	case SJF:
+	case Gavel:
 		scheduler = initSJFScheduler()
-	case EDF:
+	case Chronus:
 		scheduler = initEDFScheduler()
-	case KMeans:
-		scheduler = initKMeansScheduler()
-	case KMeansHeuristic:
-		scheduler = initKMeansHeuristicScheduler()
-	case KMeansBABWithHeuristic:
-		scheduler = initKMeansBABHeuristicScheduler()
+	case HydraPureHeuristic:
+		scheduler = initHydraHeuristicScheduler()
 	case Allox:
 		scheduler = initAlloxScheduler()
 	default:
@@ -140,13 +144,16 @@ func getScheduler(schedulerType SchedulerType) types.Scheduler {
 type SchedulerType string
 
 const (
-	Dummy  SchedulerType = "Dummy"
-	SJF    SchedulerType = "SJF"
-	EDF    SchedulerType = "EDF"
-	KMeans SchedulerType = "KMeans"
-	KMeansHeuristic SchedulerType = "KMeansHeuristic"
-	KMeansBABWithHeuristic SchedulerType = "KMeansBABWithHeuristic"
-	Allox  SchedulerType = "Allox"
+	Dummy SchedulerType = "Dummy"
+	Gavel              SchedulerType = "Gavel"
+	Chronus            SchedulerType = "Chronus"
+	HydraPureHeuristic SchedulerType = "HydraPureHeuristic"
+	HydraBABWithHeuristic1s  SchedulerType = "HydraBABWithHeuristic_1"
+	HydraBABWithHeuristic3s  SchedulerType = "HydraBABWithHeuristic_3"
+	HydraBABWithHeuristic5s  SchedulerType = "HydraBABWithHeuristic_5"
+	HydraBABWithHeuristic7s  SchedulerType = "HydraBABWithHeuristic_7"
+	HydraBABWithHeuristic9s  SchedulerType = "HydraBABWithHeuristic_9"
+	Allox                    SchedulerType = "Allox"
 )
 
 func initDummyScheduler() types.Scheduler {
@@ -154,7 +161,7 @@ func initDummyScheduler() types.Scheduler {
 }
 
 func initSJFScheduler() types.Scheduler {
-	return schedulers.NewSJFScheduler()
+	return schedulers.NewGavelScheduler()
 }
 
 func initEDFScheduler() types.Scheduler {
@@ -165,29 +172,30 @@ func initAlloxScheduler() types.Scheduler {
 	return allox_scheduler.NewAlloxScheduler(false)
 }
 
-func initKMeansScheduler() types.Scheduler {
-	return kmeans_scheduler.New(
-		kmeans_scheduler.WithScheme(kmeans_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
-		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
+func initHydraScheduler() types.Scheduler {
+	return hydra_scheduler.New(
+		hydra_scheduler.WithScheme(hydra_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
+		hydra_scheduler.WithDistanceAlgo(hydra_scheduler.NewMinCostDistanceAlgo(
 			cost.NewBranchAndBoundAlgo(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeFixNonDDL),
 			cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 }
 
-func initKMeansHeuristicScheduler() types.Scheduler {
-	return kmeans_scheduler.New(
-		kmeans_scheduler.WithScheme(kmeans_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
-		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
+func initHydraHeuristicScheduler() types.Scheduler {
+	return hydra_scheduler.New(
+		hydra_scheduler.WithScheme(hydra_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
+		hydra_scheduler.WithDistanceAlgo(hydra_scheduler.NewMinCostDistanceAlgo(
 			cost.NewSwapHeuristic(),
 			cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 }
 
-func initKMeansBABHeuristicScheduler() types.Scheduler {
-	return kmeans_scheduler.New(
-		kmeans_scheduler.WithScheme(kmeans_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
-		kmeans_scheduler.WithDistanceAlgo(kmeans_scheduler.NewMinCostDistanceAlgo(
-			cost.NewBranchAndBoundAlgoWithLatency(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeFixNonDDL, 5*time.Second, cost.NewSwapHeuristic()),
+func initHydraBABHeuristicScheduler(latency time.Duration) types.Scheduler {
+	return hydra_scheduler.New(
+		hydra_scheduler.WithScheme(hydra_scheduler.NewBasicScheduleScheme(true, false, -1, true)),
+		hydra_scheduler.WithDistanceAlgo(hydra_scheduler.NewMinCostDistanceAlgo(
+			//cost.NewBranchAndBoundAlgoWithLatency(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeFixNonDDL, time.Duration(latencySec)*time.Second, cost.NewSwapHeuristic()),
+			cost.NewBranchAndBoundAlgoWithLatency(cost.BranchAndBoundLCStandardPredictCost, cost.BranchAndBoundAlgoTypeFixNonDDL, latency, cost.NewSwapHeuristic()),
 			cost.NewSimpleAddCostSolverMaker(cost.DDLCostTypeStrict, 1e20))),
 	)
 }

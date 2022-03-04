@@ -7,21 +7,21 @@ import (
 	"math"
 )
 
-// EDFScheduler 最早ddl优先。对于没有ddl的任务，按照SJF排序。
-type EDFScheduler struct {
+// ChronusScheduler
+type ChronusScheduler struct {
 	*GreedySchedulerTemplate
 }
 
-func NewEDFScheduler() *EDFScheduler {
+func NewEDFScheduler() *ChronusScheduler {
 	template := NewGreedySchedulerTemplate()
-	edf := &EDFScheduler{
+	edf := &ChronusScheduler{
 		template,
 	}
 	template.impl = edf
 	return edf
 }
 
-func (s *EDFScheduler) pickTarget(emptyQueues []types.GPUJobQueue) (types.Job, types.GPUJobQueue) {
+func (s *ChronusScheduler) pickTarget(emptyQueues []types.GPUJobQueue) (types.Job, types.GPUJobQueue) {
 	var targetJob types.Job = nil
 	var targetQueue types.GPUJobQueue = nil
 	leastRemainingDuration := types.Duration(math.Inf(1))
@@ -76,7 +76,7 @@ func (s *EDFScheduler) pickTarget(emptyQueues []types.GPUJobQueue) (types.Job, t
 	return targetJob, targetQueue
 }
 
-func (s *EDFScheduler) insertJob2SortedWaitingJobs(job types.Job) {
+func (s *ChronusScheduler) insertJob2SortedWaitingJobs(job types.Job) {
 nextGPU:
 	for _, gpuType := range s.cluster.GPUTypes() {
 		ls := s.sortedWaitingJobs[gpuType]
@@ -104,10 +104,10 @@ nextGPU:
 	}
 }
 
-func (s *EDFScheduler) Name() string {
-	return fmt.Sprintf("EDFScheduler")
+func (s *ChronusScheduler) Name() string {
+	return fmt.Sprintf("ChronusScheduler")
 }
 
-func (s *EDFScheduler) Info() interface{} {
+func (s *ChronusScheduler) Info() interface{} {
 	return s.Name()
 }

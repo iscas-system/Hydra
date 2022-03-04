@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// SJFScheduler
+// GavelScheduler
 // 采取了Shortest Job First策略。分别实现了抢占与非抢占。
 // 采取调度器内部做任务缓存队列的思想。将所有未在GPU上运行的任务缓存到sortedWaitingJobs中来。
 // 这就是说集群中的每个GPUJobQueue最多只有一个任务在队列中。
@@ -22,7 +22,7 @@ import (
 // 将它放置到GPU队列后，再迭代这个过程。
 // 抢占与非抢占的区别就在于，非抢占只遍历那些空闲的GPU，而抢占式，则会先将GPU队列中的全部任务卸下，
 // 让它们全部变为空闲的GPU，再按照非抢占的调度算法执行即可。
-type SJFScheduler struct {
+type GavelScheduler struct {
 	*GreedySchedulerTemplate
 	//
 	//cluster types.Cluster
@@ -33,29 +33,29 @@ type SJFScheduler struct {
 	//DoScheduleCalls []*types.DoScheduleCallRecord
 }
 
-//func NewSJFSchedulerXXX() *SJFScheduler {
-//	return &SJFScheduler{
+//func NewSJFSchedulerXXX() *GavelScheduler {
+//	return &GavelScheduler{
 //		DoScheduleCalls: make([]*types.DoScheduleCallRecord, 0),
 //	}
 //}
 
-func NewSJFScheduler() *SJFScheduler {
+func NewGavelScheduler() *GavelScheduler {
 	template := NewGreedySchedulerTemplate()
-	edf := &SJFScheduler{
+	edf := &GavelScheduler{
 		template,
 	}
 	template.impl = edf
 	return edf
 }
 
-func (s *SJFScheduler) DoSchedule() {
+func (s *GavelScheduler) DoSchedule() {
 	start := time.Now()
 	s.doSchedule()
 	duration := time.Since(start)
 	s.DoScheduleCalls = append(s.DoScheduleCalls, &types.DoScheduleCallRecord{Duration: duration})
 }
 
-func (s *SJFScheduler) doSchedule() {
+func (s *GavelScheduler) doSchedule() {
 	for s.hasWaitingJob() && s.hasEmptyGPUQueue() {
 		// 从waitingJobs中，在全部可能的EmptyGPUSlot上，挑选一个速度最快的。
 		emptyQueues := s.getEmptyGPUQueues()
@@ -98,7 +98,7 @@ func (s *SJFScheduler) doSchedule() {
 	}
 }
 
-func (s *SJFScheduler) pickTarget(emptyQueues []types.GPUJobQueue) (types.Job, types.GPUJobQueue) {
+func (s *GavelScheduler) pickTarget(emptyQueues []types.GPUJobQueue) (types.Job, types.GPUJobQueue) {
 	var targetJob types.Job = nil
 	var targetQueue types.GPUJobQueue = nil
 	leastRemainingDuration := types.Duration(math.Inf(1))
@@ -131,7 +131,7 @@ func (s *SJFScheduler) pickTarget(emptyQueues []types.GPUJobQueue) (types.Job, t
 	return targetJob, targetQueue
 }
 
-func (s *SJFScheduler) hasWaitingJob() bool {
+func (s *GavelScheduler) hasWaitingJob() bool {
 	for _, l := range s.sortedWaitingJobs {
 		if len(l) > 0 {
 			return true
@@ -140,7 +140,7 @@ func (s *SJFScheduler) hasWaitingJob() bool {
 	return false
 }
 
-func (s *SJFScheduler) insertJob2SortedWaitingJobs(job types.Job) {
+func (s *GavelScheduler) insertJob2SortedWaitingJobs(job types.Job) {
 	for _, gpuType := range s.cluster.GPUTypes() {
 		ls := s.sortedWaitingJobs[gpuType]
 		target := job.RemainingDuration(gpuType)
@@ -151,7 +151,7 @@ func (s *SJFScheduler) insertJob2SortedWaitingJobs(job types.Job) {
 	}
 }
 
-func (s *SJFScheduler) removeFromSortedWaitingJobs(job types.Job) {
+func (s *GavelScheduler) removeFromSortedWaitingJobs(job types.Job) {
 	for _, gpuType := range s.cluster.GPUTypes() {
 		ls := s.sortedWaitingJobs[gpuType]
 		target := job.RemainingDuration(gpuType)
@@ -180,7 +180,7 @@ func (s *SJFScheduler) removeFromSortedWaitingJobs(job types.Job) {
 	}
 }
 
-func (s *SJFScheduler) hasEmptyGPUQueue() bool {
+func (s *GavelScheduler) hasEmptyGPUQueue() bool {
 	for _, queue := range s.cluster.GPUJobQueues() {
 		if len(queue.Jobs()) == 0 {
 			return true
@@ -189,7 +189,7 @@ func (s *SJFScheduler) hasEmptyGPUQueue() bool {
 	return false
 }
 
-func (s *SJFScheduler) getEmptyGPUQueues() []types.GPUJobQueue {
+func (s *GavelScheduler) getEmptyGPUQueues() []types.GPUJobQueue {
 	queues := make([]types.GPUJobQueue, 0, len(s.cluster.GPUJobQueues()))
 	for _, queue := range s.cluster.GPUJobQueues() {
 		if len(queue.Jobs()) == 0 {
@@ -199,7 +199,7 @@ func (s *SJFScheduler) getEmptyGPUQueues() []types.GPUJobQueue {
 	return queues
 }
 
-func (s *SJFScheduler) SetCluster(cluster types.Cluster) {
+func (s *GavelScheduler) SetCluster(cluster types.Cluster) {
 	s.cluster = cluster
 	s.sortedWaitingJobs = make(map[types.GPUType][]types.Job)
 	for _, gpuType := range s.cluster.GPUTypes() {
@@ -207,7 +207,7 @@ func (s *SJFScheduler) SetCluster(cluster types.Cluster) {
 	}
 }
 
-func (s *SJFScheduler) OnScheduleEvent(event types.ScheduleEvent) {
+func (s *GavelScheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	switch e := event.(type) {
 	case *types.ScheduleEventJobsArrived:
 		{
@@ -226,19 +226,19 @@ func (s *SJFScheduler) OnScheduleEvent(event types.ScheduleEvent) {
 	}
 }
 
-func (s *SJFScheduler) NextActiveScheduleTime() types.Time {
+func (s *GavelScheduler) NextActiveScheduleTime() types.Time {
 	return types.Time(math.Inf(1))
 }
 
-func (s *SJFScheduler) Name() string {
-	return fmt.Sprintf("SJFScheduler")
+func (s *GavelScheduler) Name() string {
+	return fmt.Sprintf("GavelScheduler")
 }
 
-func (s *SJFScheduler) Info() interface{} {
+func (s *GavelScheduler) Info() interface{} {
 	return s.Name()
 }
 
-func (s *SJFScheduler) Record() *types.SchedulerRecord {
+func (s *GavelScheduler) Record() *types.SchedulerRecord {
 	return &types.SchedulerRecord{
 		DoScheduleRecords: s.DoScheduleCalls,
 	}

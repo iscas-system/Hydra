@@ -294,7 +294,7 @@ func (m *BranchAndBoundTemplate) MinCost(params *MinCostParams) (float64, []type
 		fallbackCost, fallbackJobs = m.Fallback.MinCost(params2)
 	})
 	wg.Wait()
-	if babCost <= fallbackCost {
+	if babCost <= fallbackCost && len(babJobs) == len(params.Jobs) {
 		return babCost, babJobs
 	} else {
 		m.lockRecording(func() {
@@ -331,6 +331,9 @@ func (m *BranchAndBoundTemplate) minCost(params *BranchAndBoundMinCostParams) (f
 
 		m.Record.SumAfterExpandCutCount += record.AfterExpandCutCount
 		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumAfterExpandCutCount += record.AfterExpandCutCount
+
+		m.Record.SumExpandNothingCutCount += record.ExpandNothingCutCount
+		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumExpandNothingCutCount += record.ExpandNothingCutCount
 
 		m.Record.SumCHatCutCount += record.CHatCutCount
 		m.Record.JobsCount2SummaryRecordMap[record.JobsCount].SumCHatCutCount += record.CHatCutCount
@@ -576,7 +579,17 @@ func (m *BranchAndBoundAllPermutation) predict(
 	// TODO 目前将otherJobs经过SRTF排序后的cost直接作为最小成本上界。
 	// TODO 但实际上，也可以通过其他算法，如启发式的贪心算法，获得一个更好的最小成本上界。
 	// TODO 后续添加其他算法在这个位置。
+	//swapHeuristic := NewSwapHeuristicWithLeftThreshold(len(newJobs))
+	//predictedByHeuristic, _ := swapHeuristic.minCost(&SwapHeuristicMinCostParams{
+	//	MinCostParams: &MinCostParams{
+	//		CostSolver: params.CostSolver,
+	//		GPU:        params.GPU,
+	//		Jobs:       predictJobList,
+	//	},
+	//	NeedReorderToSRTF: false,
+	//})
 	U := predictCostResp.Cost
+	//U := predictedByHeuristic
 
 	return cHat, U, nil
 }
