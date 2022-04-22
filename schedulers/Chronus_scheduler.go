@@ -9,10 +9,10 @@ import (
 
 // ChronusScheduler
 type ChronusScheduler struct {
-	*GreedySchedulerTemplate
+	*SchedulerTemplate
 }
 
-func NewEDFScheduler() *ChronusScheduler {
+func NewChronusScheduler() *ChronusScheduler {
 	template := NewGreedySchedulerTemplate()
 	edf := &ChronusScheduler{
 		template,

@@ -164,7 +164,7 @@ func GenerateSingleSimulationReport(record *types.Record) *Report {
 		// FinishedJobs:                  packJobs(record.FinishedJobs),
 		FinishedJobsCount:             len(record.FinishedJobs),
 		DoScheduleCount:               len(schedulerRecord.DoScheduleRecords),
-		AverageDoScheduleDurationMs:   int((sumDoScheduleRecordDuration / time.Duration(len(schedulerRecord.DoScheduleRecords))).Milliseconds()),
+		//AverageDoScheduleDurationMs:   int((sumDoScheduleRecordDuration / time.Duration(len(schedulerRecord.DoScheduleRecords))).Milliseconds()),
 		MaxDoScheduleDurationMs:       int(maxDoScheduleRecordDuration.Milliseconds()),
 		SchedulerExecutionRecordExtra: schedulerRecord.Extra,
 	}

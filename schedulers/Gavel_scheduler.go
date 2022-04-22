@@ -23,7 +23,7 @@ import (
 // 抢占与非抢占的区别就在于，非抢占只遍历那些空闲的GPU，而抢占式，则会先将GPU队列中的全部任务卸下，
 // 让它们全部变为空闲的GPU，再按照非抢占的调度算法执行即可。
 type GavelScheduler struct {
-	*GreedySchedulerTemplate
+	*SchedulerTemplate
 	//
 	//cluster types.Cluster
 	//
@@ -91,7 +91,7 @@ func (s *GavelScheduler) doSchedule() {
 			}
 		}
 		if targetJob == nil || targetQueue == nil {
-			panic("GreedySchedulerTemplate targetJob == nil || targetQueue == nil")
+			panic("SchedulerTemplate targetJob == nil || targetQueue == nil")
 		}
 		s.removeFromSortedWaitingJobs(targetJob)
 		targetQueue.SetJobs(targetJob)
@@ -159,7 +159,7 @@ func (s *GavelScheduler) removeFromSortedWaitingJobs(job types.Job) {
 			return ls[i].RemainingDuration(gpuType) >= target
 		})
 		if ls[i].RemainingDuration(gpuType) != target {
-			panic("GreedySchedulerTemplate removeFromSortedWaitingJobs ls[i].RemainingDuration(gpuType) != target")
+			panic("SchedulerTemplate removeFromSortedWaitingJobs ls[i].RemainingDuration(gpuType) != target")
 		}
 		var targetIdx = -1
 		for ls[i].RemainingDuration(gpuType) == target {
@@ -170,12 +170,12 @@ func (s *GavelScheduler) removeFromSortedWaitingJobs(job types.Job) {
 			i++
 		}
 		if targetIdx == -1 {
-			panic("GreedySchedulerTemplate removeFromSortedWaitingJobs targetIdx == -1")
+			panic("SchedulerTemplate removeFromSortedWaitingJobs targetIdx == -1")
 		}
 		var removed types.Job
 		removed, s.sortedWaitingJobs[gpuType] = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(targetIdx, ls)
 		if removed != job {
-			panic("GreedySchedulerTemplate removeFromSortedWaitingJobs removed != job")
+			panic("SchedulerTemplate removeFromSortedWaitingJobs removed != job")
 		}
 	}
 }

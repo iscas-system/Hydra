@@ -33,7 +33,7 @@ func main() {
 			"T4":   20,
 		}, 1)
 
-	caseFileName := "case_5000_all_10_ddl.csv"
+	caseFileName := "case_5000_all_20_ddl.csv"
 	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 	caseRanges := make([][]int, 0)
 	for i := 10; i <= 400; i += 10 {
@@ -165,7 +165,7 @@ func initSJFScheduler() types.Scheduler {
 }
 
 func initEDFScheduler() types.Scheduler {
-	return schedulers.NewEDFScheduler()
+	return schedulers.NewChronusScheduler()
 }
 
 func initAlloxScheduler() types.Scheduler {
