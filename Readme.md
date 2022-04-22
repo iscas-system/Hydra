@@ -32,12 +32,12 @@ config := loadConfig("path_configuration.json")
 clusterConfigs := generateGPUConfig(
 	map[string]int{
 		"V100": 10,
-		"P100": 10,
-		"T4":   10,
+		"GTX2080Ti": 10,
+		"A100":   10,
 	}, map[string]int{
 		"V100": 20,
-		"P100": 20,
-		"T4":   20,
+		"GTX2080Ti": 20,
+		"A100":   20,
     }, 1)
 // specify the case to simulate.
 caseFileName := "case_5000_all_10_ddl.csv"
@@ -51,10 +51,16 @@ for i := 10; i <= 400; i += 10 {
 
 3. run main.go
 
-## Case Generation
+## Cases
+
+### Generate manually
 1. Download ali-trace from https://github.com/alibaba/clusterdata
 2. Extract files.
 3. Use cases/preprocess.ipynb to generate cases.
+
+### Use pre-generated cases
+`cases/case_5000_all_20_ddl.csv` and `cases/case_5000_all_30_ddl.csv` are pre-generated cases.
+The former one is the _light workload_ while the latter one is the _heavy workload_.
 
 ## Report Analysis
 A report is generated to show all the metrics we evaluate. It is a json file with the below format.
@@ -71,8 +77,8 @@ A report is generated to show all the metrics we evaluate. It is a json file wit
 	"cluster_configs": [
 		{
 			"GPUs": {
-				"P100": 15,
-				"T4": 10,
+				"GTX2080Ti": 15,
+				"A100": 10,
 				"V100": 20
 			},
 			"gpu_count": 45
@@ -86,8 +92,8 @@ A report is generated to show all the metrics we evaluate. It is a json file wit
 				"scheduler_info": "AnyInfo",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45

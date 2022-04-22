@@ -28,8 +28,8 @@ var defaultOptions = &Options{
 	logDirPath: os.TempDir(),
 	gpuType2Count: map[types.GPUType]int{
 		"V100": 1,
-		"T4":   1,
-		"P100": 1,
+		"A100":   1,
+		"GTX2080Ti": 1,
 	},
 	minDurationPassInterval: 1.,
 	dataSourceCSVPath:       "",

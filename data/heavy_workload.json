@@ -165,8 +165,8 @@
 	"cluster_configs": [
 		{
 			"GPUs": {
-				"P100": 15,
-				"T4": 10,
+				"GTX2080Ti": 15,
+				"A100": 10,
 				"V100": 20
 			},
 			"gpu_count": 45
@@ -179,8 +179,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -207,8 +207,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -235,8 +235,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -263,8 +263,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -291,8 +291,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -319,8 +319,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -347,8 +347,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -375,8 +375,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -403,8 +403,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -431,8 +431,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -459,8 +459,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -487,8 +487,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -515,8 +515,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -543,8 +543,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -571,8 +571,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -599,8 +599,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -627,8 +627,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -655,8 +655,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -683,8 +683,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -711,8 +711,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -739,8 +739,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -767,8 +767,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -795,8 +795,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -823,8 +823,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -851,8 +851,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -879,8 +879,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -907,8 +907,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -935,8 +935,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -963,8 +963,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -991,8 +991,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1019,8 +1019,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1047,8 +1047,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1075,8 +1075,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1103,8 +1103,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1131,8 +1131,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1159,8 +1159,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1187,8 +1187,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1215,8 +1215,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1243,8 +1243,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1271,8 +1271,8 @@
 				"scheduler_info": "ChronusScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1301,8 +1301,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1329,8 +1329,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1357,8 +1357,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1385,8 +1385,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1413,8 +1413,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1441,8 +1441,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1469,8 +1469,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1497,8 +1497,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1525,8 +1525,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1553,8 +1553,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1581,8 +1581,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1609,8 +1609,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1637,8 +1637,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1665,8 +1665,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1693,8 +1693,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1721,8 +1721,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1749,8 +1749,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1777,8 +1777,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1805,8 +1805,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1833,8 +1833,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1861,8 +1861,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1889,8 +1889,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1917,8 +1917,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1945,8 +1945,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -1973,8 +1973,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2001,8 +2001,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2029,8 +2029,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2057,8 +2057,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2085,8 +2085,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2113,8 +2113,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2141,8 +2141,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2169,8 +2169,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2197,8 +2197,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2225,8 +2225,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2253,8 +2253,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2281,8 +2281,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2309,8 +2309,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2337,8 +2337,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2365,8 +2365,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2393,8 +2393,8 @@
 				"scheduler_info": "GavelScheduler",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2423,8 +2423,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2451,8 +2451,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2479,8 +2479,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2507,8 +2507,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2535,8 +2535,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2563,8 +2563,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2591,8 +2591,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2619,8 +2619,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2647,8 +2647,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2675,8 +2675,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2703,8 +2703,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2731,8 +2731,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2759,8 +2759,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2787,8 +2787,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2815,8 +2815,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2843,8 +2843,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2871,8 +2871,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2899,8 +2899,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2927,8 +2927,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2955,8 +2955,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -2983,8 +2983,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3011,8 +3011,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3039,8 +3039,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3067,8 +3067,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3095,8 +3095,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3123,8 +3123,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3151,8 +3151,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3179,8 +3179,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3207,8 +3207,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3235,8 +3235,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3263,8 +3263,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3291,8 +3291,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3319,8 +3319,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3347,8 +3347,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3375,8 +3375,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3403,8 +3403,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3431,8 +3431,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3459,8 +3459,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3487,8 +3487,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3515,8 +3515,8 @@
 				"scheduler_info": "AlloxScheduler[online=false]",
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3549,8 +3549,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3627,8 +3627,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3733,8 +3733,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3839,8 +3839,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -3959,8 +3959,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -4079,8 +4079,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -4213,8 +4213,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -4347,8 +4347,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -4481,8 +4481,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -4615,8 +4615,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -4763,8 +4763,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -4925,8 +4925,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -5087,8 +5087,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -5249,8 +5249,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -5411,8 +5411,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -5587,8 +5587,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -5763,8 +5763,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -5939,8 +5939,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -6129,8 +6129,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -6319,8 +6319,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -6509,8 +6509,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -6699,8 +6699,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -6903,8 +6903,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -7107,8 +7107,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -7325,8 +7325,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -7543,8 +7543,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -7761,8 +7761,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -7979,8 +7979,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -8211,8 +8211,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -8443,8 +8443,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -8675,8 +8675,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -8921,8 +8921,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -9167,8 +9167,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -9427,8 +9427,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -9687,8 +9687,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -9961,8 +9961,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -10221,8 +10221,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -10495,8 +10495,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -10769,8 +10769,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11043,8 +11043,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11333,8 +11333,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11381,8 +11381,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11429,8 +11429,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11477,8 +11477,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11525,8 +11525,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11573,8 +11573,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11621,8 +11621,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11669,8 +11669,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11717,8 +11717,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11765,8 +11765,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11813,8 +11813,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11861,8 +11861,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11909,8 +11909,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -11957,8 +11957,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12005,8 +12005,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12053,8 +12053,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12101,8 +12101,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12149,8 +12149,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12197,8 +12197,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12245,8 +12245,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12293,8 +12293,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12341,8 +12341,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12389,8 +12389,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12437,8 +12437,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12485,8 +12485,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12533,8 +12533,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12581,8 +12581,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12629,8 +12629,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12677,8 +12677,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12725,8 +12725,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12773,8 +12773,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12821,8 +12821,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12869,8 +12869,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12917,8 +12917,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -12965,8 +12965,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -13013,8 +13013,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -13061,8 +13061,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -13109,8 +13109,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -13157,8 +13157,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
@@ -13205,8 +13205,8 @@
 				},
 				"cluster_config": {
 					"GPUs": {
-						"P100": 15,
-						"T4": 10,
+						"GTX2080Ti": 15,
+						"A100": 10,
 						"V100": 20
 					},
 					"gpu_count": 45
