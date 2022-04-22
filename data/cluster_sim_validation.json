@@ -1,0 +1,64 @@
+{
+	"reports": {
+		"Chronus": {
+			"simulation": {
+				"average_jct_seconds": 36995.44,
+				"average_queue_delay_seconds": 17973.06,
+				"total_ddl_violation_duration_seconds": 7790
+			},
+			"cluster": {
+				"average_jct_seconds": 37114.39,
+				"average_queue_delay_seconds": 18016.42,
+				"total_ddl_violation_duration_seconds": 7921
+			}
+		},
+		"Gavel": {
+			"simulation": {
+				"average_jct_seconds": 30789.82,
+				"average_queue_delay_seconds": 12979.26,
+				"total_ddl_violation_duration_seconds": 45239
+			},
+			"cluster": {
+				"average_jct_seconds": 31216.15,
+				"average_queue_delay_seconds": 13401.96,
+				"total_ddl_violation_duration_seconds": 45931
+			}
+		},
+		"Allox": {
+			"simulation": {
+				"average_jct_seconds": 28486.48,
+				"average_queue_delay_seconds": 14033.46,
+				"total_ddl_violation_duration_seconds": 71496.99
+			},
+			"cluster": {
+				"average_jct_seconds": 27497.93,
+				"average_queue_delay_seconds": 14512.10,
+				"total_ddl_violation_duration_seconds": 72100.13
+			}
+		},
+		"KMeansBABWithHeuristic": {
+			"simulation": {
+				"average_jct_seconds": 31687.28,
+				"average_queue_delay_seconds": 15060.52,
+				"total_ddl_violation_duration_seconds": 0
+			},
+			"cluster": {
+				"average_jct_seconds": 31910.48,
+				"average_queue_delay_seconds": 15381.1,
+				"total_ddl_violation_duration_seconds": 0
+			}
+		},
+		"KMeansHeuristic": {
+			"simulation": {
+				"average_jct_seconds": 33300.66,
+				"average_queue_delay_seconds": 15060.52,
+				"total_ddl_violation_duration_seconds": 0
+			},
+			"cluster": {
+				"average_jct_seconds": 33519.7,
+				"average_queue_delay_seconds": 15209.55,
+				"total_ddl_violation_duration_seconds": 0
+			}
+		}
+	}
+}

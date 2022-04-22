@@ -1,7 +1,5 @@
 package types
 
-import "DES-go/util"
-
 type JobName string
 
 type JobExecutionDetail interface {
@@ -34,7 +32,6 @@ type Job interface {
 	JCT() Time
 	HasDDL() bool
 	ActualRuntimeOnGPUs() Duration
-	util.PrettyExpose
 }
 
 type JobMeta interface {

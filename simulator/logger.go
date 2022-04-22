@@ -1,8 +1,8 @@
 package simulator
 
 import (
-	"DES-go/util"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -79,7 +79,11 @@ func (l *logger) finishedJobsLogger() func(finishedJobs []*Job) {
 		for _, job := range finishedJobs {
 			fl := genFirstLine(loggedFinishedJobsCount)
 			b.WriteString(fl)
-			strJob := util.Pretty(job)
+			bytes, err := json.Marshal(job)
+			if err != nil {
+				panic(err)
+			}
+			strJob := string(bytes)
 			b.WriteString(strJob)
 			b.WriteString(genLastLine(fl))
 			loggedFinishedJobsCount++

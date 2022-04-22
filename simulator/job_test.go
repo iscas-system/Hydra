@@ -1,7 +1,6 @@
 package simulator
 
 import (
-	"DES-go/util"
 	"testing"
 )
 
@@ -15,7 +14,7 @@ func TestJobExecutionDetail_AddExecutionRange(t *testing.T) {
 
 	m := make(map[*GPU]*Job)
 	m[gpu] = j
-	t.Log(util.PrettyF("pretty\n%# v\n", m))
+	//t.Log(util.PrettyF("pretty\n%# v\n", m))
 }
 
 func TestNewJob(t *testing.T) {

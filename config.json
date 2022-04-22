@@ -1,4 +1,7 @@
 {
-  "cases_path": "/Users/purchaser/go/src/DES-go/cases/",
-  "reports_path": "/Users/purchaser/go/src/DES-go/reports/"
+  "cases_path": "/hydra/cases/",
+  "reports_path": "/hydra/reports/",
+  "workload": "light",
+  "number_of_jobs": [0, 200],
+  "algorithms": ["hydra_alpha_0", "hydra_alpha_1", "hydra_alpha_3", "hydra_alpha_5", "hydra_alpha_7", "hydra_alpha_9", "allox", "gavel", "chronus"]
 }

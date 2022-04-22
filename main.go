@@ -12,47 +12,93 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 )
 
+var defaultConfig = &Config{
+	CasesPath:   "/hydra/cases",
+	ReportsPath: "/hydra/data",
+	Workload: "light",
+	NumberOfJobs: []int{0, 100},
+	Algorithms: []string{"hydra_alpha_0", "hydra_alpha_1", "hydra_alpha_3", "hydra_alpha_5", "hydra_alpha_7", "hydra_alpha_9", "allox", "gavel", "chronus"},
+}
+
 func main() {
-	config := loadConfig("/Users/purchaser/go/src/DES-go/config.json")
+	args := os.Args
+	var config *Config
+	if len(args) == 1 {
+		config = defaultConfig
+	} else {
+		path := args[1]
+		log.Printf("specified configuration path: %v", path)
+		config = loadConfig(path)
+	}
+	clusterConfig := make(map[string]int)
+	var caseFileName string
+	if config.Workload == "light" {
+		clusterConfig["V100"] = 10
+		clusterConfig["GTX2080Ti"] = 15
+		clusterConfig["A100"] = 20
+		caseFileName = "20_ddl.csv"
+	} else if config.Workload == "heavy" {
+		clusterConfig["V100"] = 15
+		clusterConfig["GTX2080Ti"] = 15
+		clusterConfig["A100"] = 15
+		caseFileName = "30_ddl.csv"
+	} else {
+		panic("configuration param error: Workload must be \"light\" or \"heavy\".")
+	}
+	if len(config.NumberOfJobs) != 2 {
+		panic("configuration param error: NumberOfJobs must be an array of 2 numbers.")
+	}
+	config.NumberOfJobs[0] = config.NumberOfJobs[0] / 10 * 10
+	config.NumberOfJobs[1] = config.NumberOfJobs[1] / 10 * 10
+	if config.NumberOfJobs[0] < 0 || config.NumberOfJobs[1] < 0 {
+		panic("configuration param error: NumberOfJobs must not be negative.")
+	}
+	if config.NumberOfJobs[1] > 400 {
+		config.NumberOfJobs[1] = 400
+	}
 
 	// clusterConfigs 代表集群的配置变化空间，分别传入初始的状态，以及末尾状态，以及增加步长，可以按顺序获取一批gpu配置
-	clusterConfigs := generateGPUConfig(
-		map[string]int{
-			"V100": 10,
-			"GTX2080Ti": 15,
-			"A100":   20,
-		}, map[string]int{
-			"V100": 10,
-			"GTX2080Ti": 15,
-			"A100":   20,
-		}, 1)
-
-	caseFileName := "case_5000_all_20_ddl.csv"
+	clusterConfigs := []map[string]int{clusterConfig}
 	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 	caseRanges := make([][]int, 0)
-	for i := 10; i <= 400; i += 10 {
+	for i := config.NumberOfJobs[0]; i <= config.NumberOfJobs[1]; i += 10 {
 		caseRanges = append(caseRanges, []int{0, i})
 	}
-
-	schedulerTypes := []SchedulerType{
-		Gavel,
-		Chronus,
-		HydraPureHeuristic,
-		HydraBABWithHeuristic1s,
-		HydraBABWithHeuristic3s,
-		HydraBABWithHeuristic5s,
-		HydraBABWithHeuristic7s,
-		HydraBABWithHeuristic9s,
-		Allox,
+	log.Printf("config.NumberOfJobs is fixed to [%d, %d]", config.NumberOfJobs[0], config.NumberOfJobs[1])
+	algo2type := map[string]SchedulerType {
+		"gavel": Gavel,
+		"chronus": Chronus,
+		"allox": Allox,
+		"hydra_alpha_0": HydraPureHeuristic,
+		"hydra_alpha_1": HydraBABWithHeuristic1s,
+		"hydra_alpha_3": HydraBABWithHeuristic3s,
+		"hydra_alpha_5": HydraBABWithHeuristic5s,
+		"hydra_alpha_7": HydraBABWithHeuristic7s,
+		"hydra_alpha_9": HydraBABWithHeuristic9s,
+	}
+	schedulerTypes := make([]SchedulerType, 0)
+	for _, algo := range config.Algorithms {
+		getSt := func(algo string) SchedulerType {
+			if t, ok := algo2type[algo]; ok {
+				return t
+			}
+			algos := make([]string, 0, len(algo2type))
+			for algo := range algo2type {
+				algos = append(algos, algo)
+			}
+			panic(fmt.Sprintf("configuration param error: algorithm %s not exists! valid algo types: %v", algo, algos))
+		}
+		schedulerTypes = append(schedulerTypes, getSt(algo))
 	}
 
-	// records := doSimulationForOneClusterConfig(config, caseFileName, clusterConfig, caseRanges, schedulerTypes)
 	reports := doSimulationForMultiClusterConfig(config, caseFileName, clusterConfigs, caseRanges, schedulerTypes)
 
 	metrics.SaveSimulationReport(config.ReportsPath, reports, &metrics.SimulationMetaConfig{
@@ -80,8 +126,12 @@ func doSimulationForOneClusterConfig(config *Config, caseFileName string, cluste
 	casePath := filepath.Join(config.CasesPath, caseFileName)
 	schedulerType2reports := make(map[string][]*metrics.Report)
 	fmt.Printf("Starting simulation...\n")
-	fmt.Printf("Case Path: %s, Cluster Config: %+v\n", casePath, util.Pretty(clusterConfig))
-	fmt.Printf("Case Ranges: %+v, SchedulerTypes: %+v\n", casePath, util.Pretty(clusterConfig))
+	bs, err := json.Marshal(clusterConfig)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Case Path: %s, Cluster Config: %s\n", casePath, string(bs))
+	fmt.Printf("Case Ranges: %+v, SchedulerTypes: %+v\n", casePath, schedulerTypes)
 	timeLayout := "2006-01-02_15:04:05"
 	startSimulation := time.Now()
 	fmt.Printf("Start simulation time: %s\n", startSimulation.Format(timeLayout))
@@ -203,6 +253,9 @@ func initHydraBABHeuristicScheduler(latency time.Duration) types.Scheduler {
 type Config struct {
 	CasesPath   string `json:"cases_path"`
 	ReportsPath string `json:"reports_path"`
+	Workload string `json:"workload"`
+	NumberOfJobs []int `json:"number_of_jobs"`
+	Algorithms []string `json:"algorithms"`
 }
 
 func loadConfig(configPath string) *Config {

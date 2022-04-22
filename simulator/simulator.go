@@ -2,7 +2,6 @@ package simulator
 
 import (
 	"DES-go/schedulers/types"
-	"DES-go/util"
 	"fmt"
 	"log"
 	"math"
@@ -112,7 +111,7 @@ func (s *Simulator) transformJobs(jobs []*Job) []types.Job {
 
 func (s *Simulator) logTimePassed(duration types.Duration) {
 	if s.opts.formatPrintLevel == AllFormatPrint {
-		allInfo := util.PrettyF("\nTime Passed: %f seconds, finished jobs count: %d. \ncluster info: \n%# v.\n", float64(duration), len(s.recordedFinishedJobs), s.cluster)
+		allInfo := fmt.Sprintf("\nTime Passed: %f seconds, finished jobs count: %d. \ncluster info: \n%v.\n", float64(duration), len(s.recordedFinishedJobs), s.cluster)
 		log.Printf(allInfo)
 	} else if s.opts.formatPrintLevel == ShortMsgPrint {
 		log.Printf("\nTime Passed: %f seconds, finished jobs count: %d.\n", float64(duration), len(s.recordedFinishedJobs))

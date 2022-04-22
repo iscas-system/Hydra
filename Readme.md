@@ -1,6 +1,8 @@
 # Hydra
 Hydra is a deadline-aware efficient scheduler for deep learning training jobs on heterogeneous GPU clusters. This repository is composed of an event-driven heterogeneous GPU cluster simulator, and an implementation of scheduler.
 
+This repository contains the scheduler implementation and a heterogeneous GPU cluster simulator. The Kubernetes ported version is in another developing [repository](https://github.com/MLSched/UNS).
+
 ## Contents
 ```
 .
@@ -9,47 +11,56 @@ Hydra is a deadline-aware efficient scheduler for deep learning training jobs on
 ├── metrics: code for metrics.
 ├── schedulers: schedulers implementations.
 ├── simulator: heterogenous GPU cluster simulator.
+├── config.json: configuration file.
+├── main.go: entry point.
 └── util: helper codes.
+
 ```
+## Requirements
+Linux OS (e.g., CentOS, RedHat, Ubuntu).
+
+Docker >= 20.10.13.
 
 ## How to use
 
-1. prepare a path configuration file
+### Step 1: pull docker image
+`docker pull yzc1114/hydra:latest`
+
+### Step 2: run docker container runtime
+`docker run -it yzc1114/hydra:latest /bin/bash`
+
+### Step 3: (optional) prepare config.json
+When you enter the container runtime of this image, you will be at /hydra directory.
+This directory contains all codes and data used in Hydra.
+
+You can edit config.json to specify the evaluations of the simulation.
 ``` json
 {
-  "cases_path": "/path/to/cases/",
-  "reports_path": "/path/to/output/reports/"
+  // cases_path: specify the datasets path.  
+  "cases_path": "/hydra/cases/",
+  // reports_path: specify the generated experiments results path.
+  "reports_path": "/hydra/reports/",
+  // workload: "light" or "heavy".
+  "workload": "light", 
+  // number_of_jobs: specify the range of the numbers of jobs. It must contain 2 integers that form a range. Each number will be fixed to a multiple of 10.
+  // For example, the number of jobs will step up by 10 from 0 to 200 in this case. Max number of jobs is restricted to 400.
+  "number_of_jobs": [0, 200], 
+  // algorithms: specify the tested algorothms. hydra_alpha_1 stands for the parameter alpha is 1 second
+  // hydra_alpha_0 is the pure heuristic version of hydra and hydra_alpha_5 is the default version of hydra.
+  "algorithms": ["hydra_alpha_0", "hydra_alpha_1", "hydra_alpha_3", "hydra_alpha_5", "hydra_alpha_7", "hydra_alpha_9", "allox", "gavel", "chronus"]
 }
 ```
+This image contains `vim` which can be used to edit config.json directly in container runtime.
 
-2. specify cluster and cases parameters
+Note: When the number of jobs is set large (300 ~ 400), the evaluation speed will be slow. 
 
-``` go
-// Load a configuration file for paths
-config := loadConfig("path_configuration.json")
-// Specify a cluster parameters range.
-// The number of GPU increases from lower to higher by the step you specify.
-clusterConfigs := generateGPUConfig(
-	map[string]int{
-		"V100": 10,
-		"GTX2080Ti": 10,
-		"A100":   10,
-	}, map[string]int{
-		"V100": 20,
-		"GTX2080Ti": 20,
-		"A100":   20,
-    }, 1)
-// specify the case to simulate.
-caseFileName := "case_5000_all_10_ddl.csv"
-// caseRanges specify the ranges of the cases.
-// e.p. a case range of []int{0, 200} means use the first 200 jobs data. 
-caseRanges := make([][]int, 0)
-for i := 10; i <= 400; i += 10 {
-	caseRanges = append(caseRanges, []int{0, i})
-}
-```
+### step 4: execute hydra command
+`hydra /hydra/config.json` or `hydra` to evaluate in a default setting.
 
-3. run main.go
+### step 5: check the results
+
+The experiments result output data is stored in `/hydra/reports/[name]-[datetime].json` in default. 
+The output directory can be specified in `config.json`
 
 ## Cases
 
@@ -59,15 +70,15 @@ for i := 10; i <= 400; i += 10 {
 3. Use cases/preprocess.ipynb to generate cases.
 
 ### Use pre-generated cases
-`cases/case_5000_all_20_ddl.csv` and `cases/case_5000_all_30_ddl.csv` are pre-generated cases.
+`cases/20_ddl.csv` and `cases/30_ddl.csv` are pre-generated cases.
 The former one is the _light workload_ while the latter one is the _heavy workload_.
 
 ## Report Analysis
-A report is generated to show all the metrics we evaluate. It is a json file with the below format.
+A report is generated to show all the metrics we evaluate. It is a json file with the below format. Explanatory comments have been included in the json to explain the meanings of the fields.
 ``` json
 {
     // "case_name", "case_ranges" and "cluster_configs" are the meta simulation parameters of this report.
-	"case_name": "case_5000_all_30_ddl", 
+	"case_name": "30_ddl", 
 	"case_ranges": [
 		[
 			0,

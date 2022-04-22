@@ -1,7 +1,5 @@
 package types
 
-import "DES-go/util"
-
 type Cluster interface {
 	GPUJobQueues() map[GPUID]GPUJobQueue
 	EmptyGPUJobQueues() []GPUJobQueue
@@ -12,5 +10,4 @@ type Cluster interface {
 	CurrRunningJob(gpuID GPUID) Job
 	ClosestTimeToFinishAnyJob() Time
 	InitJob(jobMeta JobMeta) Job
-	util.PrettyExpose
 }
