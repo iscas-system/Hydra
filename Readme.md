@@ -1,5 +1,5 @@
 # Hydra
-Hydra is a deadline-aware efficient scheduler for deep learning training jobs on heterogeneous GPU clusters. This repository is composed of an event-driven heterogeneous GPU cluster simulator, and an implementation of scheduler.
+Hydra is a deadline-aware efficient scheduler for deep learning training jobs on heterogeneous GPU clusters. This repository is composed of an event-driven heterogeneous GPU cluster simulator and an implementation of the scheduler.
 
 This repository contains the scheduler implementation and a heterogeneous GPU cluster simulator. The Kubernetes ported version is in another developing [repository](https://github.com/MLSched/UNS).
 
@@ -10,7 +10,7 @@ This repository contains the scheduler implementation and a heterogeneous GPU cl
 ├── data: output metrics data.
 ├── metrics: code for metrics.
 ├── schedulers: schedulers implementations.
-├── simulator: heterogenous GPU cluster simulator.
+├── simulator: heterogeneous GPU cluster simulator.
 ├── config.json: configuration file.
 ├── main.go: entry point.
 └── util: helper codes.
@@ -45,21 +45,21 @@ You can edit config.json to specify the evaluations of the simulation.
   // number_of_jobs: specify the range of the numbers of jobs. It must contain 2 integers that form a range. Each number will be fixed to a multiple of 10.
   // For example, the number of jobs will step up by 10 from 0 to 200 in this case. Max number of jobs is restricted to 400.
   "number_of_jobs": [0, 200], 
-  // algorithms: specify the tested algorothms. hydra_alpha_1 stands for the parameter alpha is 1 second
+  // algorithms: specify the tested algorithms. hydra_alpha_1 stands for the parameter alpha is 1 second
   // hydra_alpha_0 is the pure heuristic version of hydra and hydra_alpha_5 is the default version of hydra.
   "algorithms": ["hydra_alpha_0", "hydra_alpha_1", "hydra_alpha_3", "hydra_alpha_5", "hydra_alpha_7", "hydra_alpha_9", "allox", "gavel", "chronus"]
 }
 ```
 This image contains `vim` which can be used to edit config.json directly in container runtime.
 
-Note: When the number of jobs is set large (300 ~ 400), the evaluation speed will be slow. 
+Note: When the number of jobs is set large (300 ~ 400), the evaluation speed will be slow.
 
 ### step 4: execute hydra command
 `hydra /hydra/config.json` or `hydra` to evaluate in a default setting.
 
 ### step 5: check the results
 
-The experiments result output data is stored in `/hydra/reports/[name]-[datetime].json` in default. 
+The experiments result output data is stored in `/hydra/reports/[name]-[datetime].json` in default.
 The output directory can be specified in `config.json`
 
 ## Cases
@@ -71,7 +71,7 @@ The output directory can be specified in `config.json`
 
 ### Use pre-generated cases
 `cases/20_ddl.csv` and `cases/30_ddl.csv` are pre-generated cases.
-The former one is the _light workload_ while the latter one is the _heavy workload_.
+The former is the _light workload_ while the latter is the _heavy workload_.
 
 ## Report Analysis
 A report is generated to show all the metrics we evaluate. It is a json file with the below format. Explanatory comments have been included in the json to explain the meanings of the fields.
