@@ -25,18 +25,18 @@ func main() {
 	clusterConfigs := generateGPUConfig(
 		map[string]int{
 			"V100": 10,
-			"P100": 15,
-			"T4":   20,
+			"GTX_2080Ti": 15,
+			"A100":   20,
 		}, map[string]int{
 			"V100": 10,
-			"P100": 15,
-			"T4":   20,
+			"GTX_2080Ti": 15,
+			"A100":   20,
 		}, 1)
 
 	caseFileName := "case_5000_all_20_ddl.csv"
 	// caseRange 表示，这个case的哪一部分用来做模拟。传入多个caseRange，即做多次实验。
 	caseRanges := make([][]int, 0)
-	for i := 10; i <= 400; i += 10 {
+	for i := 10; i <= 100; i += 10 {
 		caseRanges = append(caseRanges, []int{0, i})
 	}
 

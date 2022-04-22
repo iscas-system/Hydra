@@ -1,4 +1,4 @@
-,job_name,norm_job_submit_time,ddl,T4,P100,V100
+,job_name,norm_job_submit_time,ddl,A100,GTX_2080Ti,V100
 0,2ebaeee440f699e10270e169,0,inf,5966.0,9092.0,16406.0
 1,860da50334c030b8f350b7cb,0,inf,1822.0,2592.0,3422.0
 2,5dca7211dbc1185078afc673,0,inf,9978.0,16249.0,25268.0
