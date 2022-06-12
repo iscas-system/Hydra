@@ -39,6 +39,7 @@ func NewSimulator(scheduler types.Scheduler, setOpts ...SetOption) *Simulator {
 func (s *Simulator) Run() *types.Record {
 	s.cluster.startServe()
 	s.scheduler.SetCluster(s.cluster)
+	simulating = false
 	getDataSource().IterBySubmitTime(func(indices []int, metas []types.JobMeta) {
 		submitTime := metas[0].SubmitTime()
 		for _, meta := range metas {
@@ -46,17 +47,21 @@ func (s *Simulator) Run() *types.Record {
 				panic("getDataSource().IterBySubmitTime metas' submit times are different.")
 			}
 		}
-
 		if float64(submitTime-s.cluster.Now()) < -float64(s.opts.minDurationPassInterval) {
 			panic(fmt.Sprintf("meta.submitTime() = %v - s.cluster.Now() = %v) >= -float64(s.opts.minDurationPassInterval = %v)", submitTime, s.cluster.Now(), s.opts.minDurationPassInterval))
 		}
 		for s.cluster.Now() < submitTime {
 			passDuration := submitTime - s.cluster.Now()
+			simulating = true
 			s.passDuration(types.Duration(passDuration), false)
+			simulating = false
 		}
+		simulating = false
 		s.emitEvent(types.NewScheduleEventJobsArrived(metas))
 	})
+	simulating = true
 	s.passDuration(0, true)
+	simulating = false
 	return &types.Record{
 		SchedulerName: s.scheduler.Name(),
 		SchedulerInfo: s.scheduler.Info(),

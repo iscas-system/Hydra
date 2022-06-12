@@ -126,6 +126,8 @@ func (a *AlloxScheduler) DoOneShotSchedule() {
 		}
 	}
 	solver := NewMCMFSolver(g)
+	//fmt.Printf("solver.graph %v", solver.graph)
+	//fmt.Printf("weights: %v", weights)
 	solver.Solve()
 
 	scheduleResult := solver.GetSchedulingResult()
@@ -302,6 +304,8 @@ type MCMFSolver struct {
 	// spfa
 	distance map[Node]float64
 	visit    map[Node]bool
+
+	i int
 }
 
 func NewMCMFSolver(graph *Graph) *MCMFSolver {
@@ -331,7 +335,10 @@ func (solver *MCMFSolver) Solve() {
 }
 
 func (solver *MCMFSolver) spfa() bool {
-
+	//fmt.Printf("spfa %d\n", solver.i)
+	defer func() {
+		solver.i += 1
+	}()
 	for _, node := range solver.graph.nodes {
 		solver.distance[*node] = math.Inf(1)
 		solver.visit[*node] = false

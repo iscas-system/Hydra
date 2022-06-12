@@ -296,7 +296,7 @@ func (s *BasicScheduleScheme) FillKMeansCluster(scheduler *Scheduler, kMeansClus
 		_, scheduler.waitingJobs = jobs_util.GetJobsSliceUtil().RemoveJobsSlice(bestJobIdx, scheduler.waitingJobs)
 		duration := time.Since(start)
 		kMeansRoundsDurations = append(kMeansRoundsDurations, duration)
-		//fmt.Printf("kMeans round finished, waitingJobsLength = %3d\n", len(scheduler.waitingJobs))
+		fmt.Printf("kMeans round finished, waitingJobsLength = %3d\n", len(scheduler.waitingJobs))
 	}
 	s.Record.KMeansRoundDurations = append(s.Record.KMeansRoundDurations, kMeansRoundsDurations...)
 }
@@ -321,7 +321,7 @@ func (s *BasicScheduleScheme) KMeansRoundInParallel(scheduler *Scheduler, kMeans
 				util.GoWithWG(innerWg, 0, func(_ int) {
 					distanceResp := s.distanceSolver.Distance(gpu, jobsInCluster, waitingJob)
 					if len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1) {
-						//fmt.Printf("distanceResp.jobSeq %+v, jobsInCluster %+v\n", util.Pretty(distanceResp.jobsSeq), jobsInCluster)
+						//fmt.Printf("distanceResp.jobSeq %+v, jobsInCluster %+v\n", distanceResp.jobsSeq, jobsInCluster)
 						panic("len(distanceResp.jobsSeq) != (len(jobsInCluster) + 1)")
 					}
 					mu.Lock()
@@ -426,7 +426,7 @@ func (s *jobDistanceSolver) distanceMemoKey(kMeansCenterGPU types.GPU, kMeansPoi
 	builder.WriteString(kMeansCenterGPU.String())
 	writeJob := func(job types.Job) {
 		builder.WriteString(string(job.JobName()))
-		builder.WriteString(strconv.FormatFloat(job.RemainingRatio(), 'f', 6, 64))
+		builder.WriteString(strconv.FormatFloat(float64(job.RemainingDuration(kMeansCenterGPU.Type())), 'f', 6, 64))
 		builder.WriteByte('-')
 	}
 	if runningJob := s.scheduler.gpuCluster.CurrRunningJob(kMeansCenterGPU.ID()); runningJob != nil {

@@ -23,9 +23,21 @@ import (
 var defaultConfig = &Config{
 	CasesPath:   "/hydra/cases",
 	ReportsPath: "/hydra/data",
-	Workload: "light",
-	NumberOfJobs: []int{0, 100},
-	Algorithms: []string{"hydra_alpha_0", "hydra_alpha_1", "hydra_alpha_3", "hydra_alpha_5", "hydra_alpha_7", "hydra_alpha_9", "allox", "gavel", "chronus"},
+	//CasesPath: "/Users/purchaser/go/src/DES-go/cases",
+	//ReportsPath: "/Users/purchaser/go/src/DES-go/data",
+	Workload: "heavy",
+	NumberOfJobs: []int{10, 400},
+	Algorithms: []string{
+		//"hydra_alpha_0",
+		//"hydra_alpha_1",
+		//"hydra_alpha_3",
+		//"hydra_alpha_5",
+		//"hydra_alpha_7",
+		//"hydra_alpha_9",
+		//"allox",
+		//"gavel",
+		"chronus",
+	},
 }
 
 func main() {
@@ -41,14 +53,14 @@ func main() {
 	clusterConfig := make(map[string]int)
 	var caseFileName string
 	if config.Workload == "light" {
-		clusterConfig["V100"] = 10
-		clusterConfig["GTX2080Ti"] = 15
-		clusterConfig["A100"] = 20
-		caseFileName = "20_ddl.csv"
-	} else if config.Workload == "heavy" {
 		clusterConfig["V100"] = 15
 		clusterConfig["GTX2080Ti"] = 15
 		clusterConfig["A100"] = 15
+		caseFileName = "20_ddl.csv"
+	} else if config.Workload == "heavy" {
+		clusterConfig["V100"] = 20
+		clusterConfig["GTX2080Ti"] = 15
+		clusterConfig["A100"] = 10
 		caseFileName = "30_ddl.csv"
 	} else {
 		panic("configuration param error: Workload must be \"light\" or \"heavy\".")

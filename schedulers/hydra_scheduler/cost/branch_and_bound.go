@@ -406,6 +406,9 @@ func (m *BranchAndBoundTemplate) minCost(params *BranchAndBoundMinCostParams) (f
 			return node
 		},
 	}
+	if len(copiedJobs) > 1 {
+		print()
+	}
 	heap.Init(minHeap)
 	// 当还存在活节点时，从heap中找出最小成本的节点，进行扩展。
 	for minHeap.Len() > 0 {
@@ -518,7 +521,8 @@ func (m *BranchAndBoundTemplate) minCost(params *BranchAndBoundMinCostParams) (f
 		}
 	}
 	if optimus == nil {
-		panic("optimus == nil")
+		fmt.Println("optimus == nil")
+		return minCost, copiedJobs
 	}
 	return minCost, optimus
 }

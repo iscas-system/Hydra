@@ -3,8 +3,13 @@ package simulator
 import (
 	"DES-go/schedulers/types"
 	"fmt"
+	"hash/fnv"
 	"math"
+	"math/rand"
+	"sync"
 )
+
+var cacheJobDuration = &sync.Map{}
 
 type TimeRange struct {
 	start types.Time
@@ -216,9 +221,69 @@ func (j *Job) executesFor(gpu types.GPU, fromTime types.Time, executesDur types.
 	}
 }
 
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(s))
+	return h.Sum32()
+}
+
 func (j *Job) RemainingDuration(gpuType types.GPUType) types.Duration {
 	fullDurOnGPU := getDataSource().Duration(j.jobName, gpuType)
-	return types.Duration(j.remainingRatio * float64(fullDurOnGPU))
+	var flag = 1.
+	if flag == 0. || simulating {
+		return types.Duration(j.remainingRatio * float64(fullDurOnGPU))
+	}
+	jobOnGPU := string(j.JobName()) + string(gpuType)
+	cache, ok := cacheJobDuration.Load(jobOnGPU)
+	if ok {
+		return types.Duration(j.remainingRatio) * cache.(types.Duration)
+	} else {
+		strHash := hash(jobOnGPU)
+		rand.Seed(int64(strHash))
+		var flag = -1.
+		var percent float64
+		if flag == 1. {
+			f := rand.Float64()
+			if f < 0.2 {
+				percent = -rand.Float64() * 0.1
+			} else if rand.Float64() < 0.8 {
+				percent = rand.Float64() * 0.15
+			} else {
+				percent = rand.Float64() * 0.23
+			}
+		} else {
+			f := rand.Float64()
+			if f < 0.2 {
+				percent = -rand.Float64() * 0.1
+			} else if rand.Float64() < 0.8 {
+				percent = rand.Float64() * 0.1
+			} else {
+				percent = rand.Float64() * 0.2
+			}
+		}
+		finalDur := types.Duration(float64(fullDurOnGPU) + percent * flag * float64(fullDurOnGPU))
+		cacheJobDuration.Store(jobOnGPU, finalDur)
+		return types.Duration(j.remainingRatio) * finalDur
+	}
+	//jobName := j.JobName()
+	//if jobName == "8014d6c5e39fc326e14c8678" {
+	//	print()
+	//}
+	//strHash := hash(string(jobName))
+	//rand.Seed(int64(strHash))
+	//var flag = 1.
+	//var percent float64
+	//if rand.Float64() < 0.8 {
+	// 	5%
+		//percent = rand.Float64() * 0.05
+	//} else {
+	//	20%
+		//percent = rand.Float64() * 0.1
+	//}
+	//if !simulating {
+	//	fullDurOnGPU = types.Duration(float64(fullDurOnGPU) + percent * flag * float64(fullDurOnGPU))
+	//}
+	//return types.Duration(j.remainingRatio * float64(fullDurOnGPU))
 }
 
 func (j *Job) ActualRuntimeOnGPUs() types.Duration {
